@@ -20,5 +20,5 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const script = require('workflows/scripts/check-issue-event.js');
+            const script = require('./workflows/scripts/check-issue-event.js');
             return await script({github, context, core});
