@@ -6,6 +6,8 @@ on:
 jobs:
   main:
     name: 'Testing'
+    runs-on: ubuntu-latest
+    
     steps:
       - run: echo "Hello"
       - run: echo "${{ toJson(github.event) }}"
