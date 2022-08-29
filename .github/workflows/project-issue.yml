@@ -1,0 +1,11 @@
+name: 'Check Project Issue'
+
+on:
+  workflow_call:
+
+jobs:
+  main:
+    name: 'Testing'
+    steps:
+      - run: echo "Hello"
+      - run: echo "${{ toJson(github.event) }}"
