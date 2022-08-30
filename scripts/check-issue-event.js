@@ -135,10 +135,10 @@ module.exports = async ({github, context, core}) => {
         github.rest.issues.addLabels({...params, labels: ['error']}),
         github.rest.issues.addAssignees({...params, assignees: [context.actor]}),
         github.rest.issues.createComment({...params, body: issue_body})
-      ]).then(results => {
+      ]).then((results) => {
         core.startGroup(`Outputting status...`);
         for (const result in results) {
-          core.info(`Status: ${result.status}, Reason: ${result.reason}`);
+          core.info(result);
         }
         core.endGroup();
       });
