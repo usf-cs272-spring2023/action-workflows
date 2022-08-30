@@ -18,10 +18,7 @@ module.exports = async ({github, context, core}) => {
       'project1', 'project2', 'project3', 'project4',
       'grade-tests', 'grade-review', 'grade-design',
       'request-code-review', 'request-quick-review'
-    ]),
-
-    // labels to indicate some kind of error
-    errors: new Set(['error', 'fixme'])
+    ])
   };
 
   // placeholder to store error messages
@@ -61,12 +58,12 @@ module.exports = async ({github, context, core}) => {
     }
 
     // check to see if this issue was previously marked with an error
-    if (labels.some(x => allowed.errors.has(x))) {
-      error_messages.push(`Remove the "error" or "fixme" labels before re-opening this issue.`);
+    if (labels.includes('error')) {
+      error_messages.push(`Remove the "error" label before re-opening this issue.`);
     }
 
     // check if issue labels are valid (or error)
-    const invalid = labels.filter(x => !allowed.labels.has(x) && !allowed.errors.has(x));
+    const invalid = labels.filter(x => !allowed.labels.has(x));
 
     if (invalid.length > 0) {
       error_messages.push(`Found unexpected labels: ${invalid}`);
@@ -78,7 +75,11 @@ module.exports = async ({github, context, core}) => {
         // check if valid event sender
         if (!allowed.users.has(sender)) {
           error_messages.push(`Only approved users may modify issue labels!`);
-          await github.rest.issues.removeAllLabels(params);
+
+          core.setGroup(`Removing any existing labels...`);
+          const response = await github.rest.issues.removeAllLabels(params);
+          core.info(JSON.stringify(response));
+          core.endGroup();
         }
         break;
 
@@ -86,7 +87,11 @@ module.exports = async ({github, context, core}) => {
         // check if valid event sender
         if (!allowed.users.has(sender)) {
           error_messages.push(`Only approved users may modify issue assignees!`);
-          await github.rest.issues.removeAssignees({...params, assignees: assignees});
+          
+          core.setGroup(`Removing any existing assignees...`);
+          const response = await github.rest.issues.removeAssignees({...params, assignees: assignees});
+          core.info(JSON.stringify(response));
+          core.endGroup();
         }
         break;
 
@@ -109,10 +114,6 @@ module.exports = async ({github, context, core}) => {
     if (error_messages.length > 0) {
       core.setFailed(`Found ${error_messages.length} problems with this issue.`);
 
-      let issue_body = `
-      @${context.actor} there were ${error_messages.length} problems with your issue:
-      `;
-
       core.startGroup(`Outputting context...`);
       core.info(JSON.stringify(context, null, "  "));
       core.endGroup();
@@ -120,16 +121,14 @@ module.exports = async ({github, context, core}) => {
       core.startGroup(`Outputting errors...`);
       for (const message in error_messages) {
         core.error(message);
-
-        issue_body += `
-          1. ${message}
-        `;
       }
       core.endGroup();
 
-      issue_body += `
+      const issue_body = `
+      @${context.actor} there were ${error_messages.length} problems with your issue:
+
       :octocat: See [run id ${context.run_id}](https://github.com/${context.payload.repository.full_name}/actions/runs/${context.run_id}) for details.
-      `
+      `;
 
       // attempt to modify issue
       Promise.allSettled([
