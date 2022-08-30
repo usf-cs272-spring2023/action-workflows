@@ -27,17 +27,16 @@ module.exports = async ({github, context, core}) => {
   // placeholder to store error messages
   const error_messages = [];
 
+  const params = {
+    owner: context.payload.organization.login,
+    repo: context.payload.repository.name,
+    issue_number: context.payload.issue.number
+  };
+
+  core.info(JSON.stringify(params, null, "  "));
+  core.info('');
+
   try {
-    // common params used for api requests
-    const params = {
-      owner: context.payload.organization.login,
-      repo: context.payload.repository.name,
-      issue_number: context.payload.issue.number
-    };
-
-    core.info(JSON.stringify(params, null, "  "));
-    core.info('');
-
     // get event information
     const action = context.payload.action;
     const sender = context.payload.sender.login;
