@@ -47,26 +47,32 @@ module.exports = async ({github, context, core}) => {
     const labels = context.payload.issue.labels.map(x => x.name);
     const assignees = context.payload.issue.assignees.map(x => x.login);
     
-    core.info(`Issue Title:     ${title}`);
-    core.info(`Issue Labels:    ${JSON.stringify(labels)}`);
     core.info(`Issue Assignees: ${JSON.stringify(assignees)}`);
     core.info('');
 
     // check if issue title is valid
     if (!allowed.titles.has(title)) {
       error_messages.push(`Unexpected issue title: ${title}`);
+      core.info(`❌ ${title}`);
+    }
+    else {
+      core.info(`✅ ${title}`);
     }
 
-    // check to see if this issue was previously marked with an error
-    if (labels.includes('error')) {
-      error_messages.push(`Remove the "error" label before re-opening this issue.`);
-    }
-
-    // check if issue labels are valid (or error)
+    // check if issue labels are valid
     const invalid = labels.filter(x => !allowed.labels.has(x));
 
     if (invalid.length > 0) {
       error_messages.push(`Found unexpected labels: ${invalid}`);
+      core.info(`❌ Labels: ${invalid}`);
+    }
+    else {
+      core.info(`✅ Labels: ${labels}`);
+    }
+
+    // check to see if this issue was previously marked with an error
+    if (invalid.includes('error')) {
+      error_messages.push(`Remove the "error" label before re-opening this issue.`);
     }
 
     // check if valid event type
@@ -112,22 +118,23 @@ module.exports = async ({github, context, core}) => {
   }
   finally {
     if (error_messages.length > 0) {
-      core.setFailed(`Found ${error_messages.length} problems with this issue.`);
+      core.setFailed(`Found ${error_messages.length} problem(s) with this issue.`);
 
       core.startGroup(`Outputting context...`);
       core.info(JSON.stringify(context, null, "  "));
       core.endGroup();
 
       core.startGroup(`Outputting errors...`);
+      core.info(error_messages);
       for (const message in error_messages) {
         core.error(message);
       }
       core.endGroup();
 
       const issue_body = `
-      @${context.actor} there were ${error_messages.length} problems with your issue:
+@${context.actor} there were ${error_messages.length} problem(s) with your issue:
 
-      :octocat: See [run id ${context.run_id}](https://github.com/${context.payload.repository.full_name}/actions/runs/${context.run_id}) for details.
+:octocat: See [run id ${context.runId}](https://github.com/${context.payload.repository.full_name}/actions/runs/${context.runId}) for details.
       `;
 
       // attempt to modify issue
@@ -137,9 +144,7 @@ module.exports = async ({github, context, core}) => {
         github.rest.issues.createComment({...params, body: issue_body})
       ]).then((results) => {
         core.startGroup(`Outputting status...`);
-        for (const result in results) {
-          core.info(result);
-        }
+        core.info(JSON.stringify(results));
         core.endGroup();
       });
     }
