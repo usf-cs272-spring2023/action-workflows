@@ -111,7 +111,7 @@ module.exports = async ({github, context, core}) => {
       core.setFailed(`Found ${error_messages.length} problems with this issue.`);
 
       let issue_body = `
-      :octocat: @${context.actor} there were ${error_messages.length} problems with your issue:
+      @${context.actor} there were ${error_messages.length} problems with your issue:
       `;
 
       core.startGroup(`Outputting context...`);
@@ -129,7 +129,7 @@ module.exports = async ({github, context, core}) => {
       core.endGroup();
 
       issue_body += `
-      See [run id ${{ context.run_id }}](https://github.com/${{ context.payload.repository.full_name }}/actions/runs/${{ context.run_id }}) for details.
+      :octocat: See [run id ${context.run_id}](https://github.com/${context.payload.repository.full_name}/actions/runs/${context.run_id}) for details.
       `
 
       // attempt to modify issue
