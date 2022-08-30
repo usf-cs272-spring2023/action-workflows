@@ -52,19 +52,37 @@ module.exports = async ({github, context, core}) => {
     }
 
     // check if issue labels are valid
-    const invalid = labels.filter(x => !allowed.labels.has(x));
+    if (labels.length > 0) {
+      // find invalid labels  
+      const invalid = labels.filter(x => !allowed.labels.has(x));
 
-    if (invalid.length > 0) {
-      error_messages.push(`Found unexpected labels: ${invalid}`);
-      core.info(`❌ Labels: ${invalid}`);
+      if (invalid.length > 0) {
+        error_messages.push(`Found unexpected labels: ${invalid.join(', ')}`);
+        core.info(`❌ Labels: ${invalid}`);
+      }
+
+      // check for exactly 1 project label
+      const projects = labels.filter(x => x.startsWith('project'));
+
+      if (projects.length !== 1) {
+        error_messages.push(`Found ${projects.length} project labels; must be 1 exactly.`);
+        core.info(`❌ Project Labels: ${projects.length}`);
+      }
+      else if (labels.length !== 2) {
+        error_messages.push(`Found ${labels.length} labels; must be 2 exactly.`);
+        core.info(`❌ Labels: ${labels.join(', ')}`);
+      }
+      else {
+        core.info(`✅ Labels: ${labels.join(', ')}`);
+      }
     }
     else {
-      core.info(`✅ Labels: ${labels}`);
+      core.info(`✅ Labels: *N/A*`);
     }
 
     // check to see if this issue was previously marked with an error
     if (invalid.includes('error')) {
-      error_messages.push(`Remove the "error" label before re-opening this issue.`);
+      error_messages.push(`Remove the \`error\` label before re-opening this issue.`);
     }
 
     // check if valid event type
@@ -106,7 +124,7 @@ module.exports = async ({github, context, core}) => {
         break;
 
       default:
-        error_messages.push(`Unexpected event type: ${action}`);
+        error_messages.push(`Unexpected event type: \`${action}\``);
         core.info(`❌ Action: ${action}, Sender: ${sender}`);
     }
   }
@@ -129,14 +147,13 @@ module.exports = async ({github, context, core}) => {
       core.endGroup();
 
       core.startGroup(`Outputting errors...`);
-      core.info(error_messages);
-      for (const message in error_messages) {
+      for (const message of error_messages) {
         core.error(message);
       }
       core.endGroup();
 
       const formatted = error_messages.map(x => `  1. ${x}`);
-      const issue_body = `@${context.actor} there were ${error_messages.length} problem(s) with your issue:
+      const issue_body = `@${context.actor} there are ${error_messages.length} problem(s) with your issue:
 
 ${formatted.join('\n')}
 
