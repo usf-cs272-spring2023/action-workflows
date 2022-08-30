@@ -4,7 +4,7 @@ module.exports = async ({github, context, core}) => {
   const allowed = {
     // allowed issue titles
     titles: new Set([
-      'Request Project Test Grade',
+      'Request Project Tests Grade',
       'Request Project Review Grade',
       'Request Project Design Grade',
       'Request Project Code Review'
@@ -38,18 +38,10 @@ module.exports = async ({github, context, core}) => {
     const action = context.payload.action;
     const sender = context.payload.sender.login;
 
-    core.info(`Event Type:   ${action}`);
-    core.info(`Event Sender: ${sender}`);
-    core.info('');
-
     // get issue information
     const title = context.payload.issue.title;
     const labels = context.payload.issue.labels.map(x => x.name);
-    const assignees = context.payload.issue.assignees.map(x => x.login);
     
-    core.info(`Issue Assignees: ${JSON.stringify(assignees)}`);
-    core.info('');
-
     // check if issue title is valid
     if (!allowed.titles.has(title)) {
       error_messages.push(`Unexpected issue title: ${title}`);
@@ -82,10 +74,13 @@ module.exports = async ({github, context, core}) => {
         if (!allowed.users.has(sender)) {
           error_messages.push(`Only approved users may modify issue labels!`);
 
-          core.setGroup(`Removing any existing labels...`);
+          core.setGroup(`❌ Action: ${action}, Sender: ${sender}`);
           const response = await github.rest.issues.removeAllLabels(params);
           core.info(JSON.stringify(response));
           core.endGroup();
+        }
+        else {
+          core.info(`✅ Action: ${action}, Sender: ${sender}`);
         }
         break;
 
@@ -93,32 +88,41 @@ module.exports = async ({github, context, core}) => {
         // check if valid event sender
         if (!allowed.users.has(sender)) {
           error_messages.push(`Only approved users may modify issue assignees!`);
-          
-          core.setGroup(`Removing any existing assignees...`);
+         
+          core.setGroup(`❌ Action: ${action}, Sender: ${sender}`);
+          const assignees = context.payload.issue.assignees.map(x => x.login);
           const response = await github.rest.issues.removeAssignees({...params, assignees: assignees});
           core.info(JSON.stringify(response));
           core.endGroup();
+        }
+        else {
+          core.info(`✅ Action: ${action}, Sender: ${sender}`);
         }
         break;
 
       case 'opened':
       case 'reopened':
+        core.info(`✅ Action: ${action}, Sender: ${sender}`);
         break;
 
       default:
         error_messages.push(`Unexpected event type: ${action}`);
+        core.info(`❌ Action: ${action}, Sender: ${sender}`);
     }
   }
   catch (error) {
     error_messages.push(`Unexpected error: ${error.message}`);
-
-    core.startGroup(`Outputting stack trace...`);
+    core.startGroup(`❌ Unexpected Error: ${error.message}`);
     console.trace(error);
     core.endGroup(``);
   }
   finally {
-    if (error_messages.length > 0) {
-      core.setFailed(`Found ${error_messages.length} problem(s) with this issue.`);
+    if (error_messages.length === 0) {
+      core.info(`✅ Found ${error_messages.length} problem(s) with this issue.`);
+    }
+    else {
+      core.setFailed(`❌ Found ${error_messages.length} problem(s) with this issue.`);
+      core.info('');
 
       core.startGroup(`Outputting context...`);
       core.info(JSON.stringify(context, null, "  "));
@@ -131,8 +135,10 @@ module.exports = async ({github, context, core}) => {
       }
       core.endGroup();
 
-      const issue_body = `
-@${context.actor} there were ${error_messages.length} problem(s) with your issue:
+      const formatted = error_messages.map(x => `  1. ${x}`);
+      const issue_body = `@${context.actor} there were ${error_messages.length} problem(s) with your issue:
+
+${formatted.join('\n')}
 
 :octocat: See [run id ${context.runId}](https://github.com/${context.payload.repository.full_name}/actions/runs/${context.runId}) for details.
       `;
