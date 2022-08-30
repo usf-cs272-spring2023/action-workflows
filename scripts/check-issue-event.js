@@ -162,8 +162,7 @@ ${formatted.join('\n')}
 
       // attempt to modify issue
       Promise.allSettled([
-        github.rest.issues.addLabels({...params, labels: ['error']}),
-        github.rest.issues.addAssignees({...params, assignees: [context.actor]}),
+        github.rest.issues.update({...params, labels: ['error'], assignees: [context.actor], state: 'closed'}),
         github.rest.issues.createComment({...params, body: issue_body})
       ]).then((results) => {
         core.startGroup(`Outputting status...`);
