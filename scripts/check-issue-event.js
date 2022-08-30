@@ -59,6 +59,11 @@ module.exports = async ({github, context, core}) => {
       if (invalid.length > 0) {
         error_messages.push(`Found unexpected labels: ${invalid.join(', ')}`);
         core.info(`❌ Labels: ${invalid}`);
+
+        // check to see if this issue was previously marked with an error
+        if (invalid.includes('error')) {
+          error_messages.push(`Remove the \`error\` label before re-opening this issue.`);
+        }
       }
 
       // check for exactly 1 project label
@@ -78,11 +83,6 @@ module.exports = async ({github, context, core}) => {
     }
     else {
       core.info(`✅ Labels: *N/A*`);
-    }
-
-    // check to see if this issue was previously marked with an error
-    if (invalid.includes('error')) {
-      error_messages.push(`Remove the \`error\` label before re-opening this issue.`);
     }
 
     // check if valid event type
