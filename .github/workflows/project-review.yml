@@ -1,10 +1,12 @@
-name: 'Check Project Review'
+name: 'Project Review'
 
 on:
   workflow_call:
 
 jobs:
   main:
-    name: 'Testing'
+    name: 'Check Pull'
+    runs-on: ubuntu-latest
+
     steps:
       - run: echo "Hello"
