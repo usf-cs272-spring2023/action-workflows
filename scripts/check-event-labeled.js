@@ -23,7 +23,7 @@ module.exports = async ({github, context, core}) => {
   // common params used for requests
   const params = {
     owner: context.payload.organization.login,
-    repo: 'hello', // context.payload.repository.name, // TODO Fix
+    repo: context.payload.repository.name,
     issue_number: context.payload.issue.number
   };
 
@@ -65,6 +65,8 @@ module.exports = async ({github, context, core}) => {
   catch(error) {
     // add error and output stack trace
     error_messages.push(`Unexpected error: ${error.message}`);
+
+    core.info('');
     core.startGroup(`Unexpected ${error.name} encountered...`);
     core.info(error.stack);
     core.endGroup();
