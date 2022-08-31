@@ -136,7 +136,7 @@ jobs:
   save_results:
     name: 'Save Results'
     runs-on: ubuntu-latest
-    needs: ['parse_version', 'check_version', 'check_compile', 'check_tests', 'check_warnings', 'check_style']
+    needs: ['parse_version', 'check_version', 'check_compile', 'check_tests', 'check_next', 'check_warnings', 'check_style']
     if: ${{ always() }}
     timeout-minutes: 1
 
@@ -147,7 +147,7 @@ jobs:
   update_release:
     name: 'Update Release'
     runs-on: ubuntu-latest
-    needs: ['parse_version', 'check_version', 'check_compile', 'check_tests', 'check_warnings', 'check_style']
+    needs: ['parse_version', 'check_version', 'check_compile', 'check_tests', 'check_next', 'check_warnings', 'check_style']
     if: ${{ always() }}
     timeout-minutes: 1
 
