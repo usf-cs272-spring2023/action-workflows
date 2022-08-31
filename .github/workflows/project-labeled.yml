@@ -1,22 +1,26 @@
-name: 'Check Project Label C'
+# name is not used (should match caller workflow)
+name: 'Project Label'
 
 on:
   workflow_call:
 
 jobs:
   main:
-    name: 'Check D'
+    # second name used on summary sidebar (should be specific but short)
+    name: 'Check Event'
     runs-on: ubuntu-latest
 
     steps:
-      - name: 'Checkout Workflows'
+      # name used in run log group (use sentence case)
+      - name: 'Checkout workflows'
         id: checkout-workflows
         uses: actions/checkout@v3
         with:
           repository: usf-cs272-fall2022/action-workflows
           path: 'workflows'
 
-      - name: 'Check Event'
+      # name used in run log group (use sentence case)
+      - name: 'Run checks'
         uses: actions/github-script@v6
         with:
           script: |
