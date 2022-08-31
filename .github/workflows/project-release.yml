@@ -58,9 +58,8 @@ jobs:
       - name: 'Compile test code' 
         run: echo "Hello"
 
-  tests:
+  check_tests:
     name: 'Check Current Tests'
-    id: check_tests
     runs-on: ubuntu-latest
     needs: ['parse_version', 'check_compile']
     timeout-minutes: 10
