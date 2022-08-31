@@ -65,9 +65,9 @@ module.exports = async ({github, context, core}) => {
   catch(error) {
     // add error and output stack trace
     error_messages.push(`Unexpected error: ${error.message}`);
-    console.group(`Unexpected ${error.name} encountered...`);
-    console.trace(error);
-    console.groupEnd();
+    core.startGroup(`Unexpected ${error.name} encountered...`);
+    core.info(error.stack);
+    core.endGroup();
   }
   finally {
     core.info('');
