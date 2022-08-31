@@ -1,11 +1,11 @@
-name: 'Check Project Issue'
+name: 'Check Project Label'
 
 on:
   workflow_call:
 
 jobs:
   main:
-    name: 'Check Valid Issue'
+    name: 'Check'
     runs-on: ubuntu-latest
 
     steps:
@@ -16,9 +16,9 @@ jobs:
           repository: usf-cs272-fall2022/action-workflows
           path: 'workflows'
 
-      - name: 'Check Issue Event'
+      - name: 'Check Event'
         uses: actions/github-script@v6
         with:
           script: |
-            const script = require('./workflows/scripts/check-event-issue.js');
+            const script = require('./workflows/scripts/check-event-labeled.js');
             return await script({github, context, core});
