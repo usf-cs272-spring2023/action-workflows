@@ -1,7 +1,7 @@
 // checks if the issue event is valid; i.e. a student is not modifying the issue improperly.
 module.exports = async ({github, context, core}) => {
   // users that are allowed to edit labels or assignees
-  const allowed = new Set(['mtquach2', 'par5ul1', 'igentle292']);
+  const allowed = new Set(['mtquach2', 'par5ul1', 'igentle292']); // TODO Fix
 
   // get event information
   const action = context.payload.action;
@@ -23,7 +23,7 @@ module.exports = async ({github, context, core}) => {
   // common params used for requests
   const params = {
     owner: context.payload.organization.login,
-    repo: context.payload.repository.name,
+    repo: 'hello', // context.payload.repository.name, // TODO Fix
     issue_number: context.payload.issue.number
   };
 
@@ -52,7 +52,7 @@ module.exports = async ({github, context, core}) => {
     }
 
     // if make it this far, report result
-    if (response != undefined && response.status === 200) {
+    if (response != undefined && response.status !== 200) { // TODO Fix
       core.info(`Removed ${added} from issue (status: ${response.status}).`);
     }
     else {
@@ -70,12 +70,14 @@ module.exports = async ({github, context, core}) => {
     core.endGroup(``);
   }
   finally {
+    core.info('');
     core.startGroup(`Outputting errors...`);
     for (const message of error_messages) {
       core.error(message);
     }
     core.endGroup();
 
+    core.info('');
     core.startGroup(`Outputting context...`);
     core.info(JSON.stringify(context));
     core.endGroup();
