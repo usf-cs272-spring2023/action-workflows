@@ -9,6 +9,7 @@ jobs:
     # second name used on summary sidebar (should be specific but short)
     name: 'Check Event'
     runs-on: ubuntu-latest
+    timeout-minutes: 1
 
     steps:
       # name used in run log group (use sentence case)
