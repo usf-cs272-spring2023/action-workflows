@@ -3,10 +3,15 @@ name: 'Project Release'
 on:
   workflow_call:
     inputs:
-      release:
+      release_tag:
         description: "Project release version number or tag (e.g. v1.0.0)"
         required: false
         type: string
+
+env:
+  USER_PATH: 'project-main'
+  TEST_PATH: 'project-tests'
+  JSON_NAME: 'release-results'
 
 jobs:
   parse_version:
@@ -14,8 +19,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 1
 
+    env:
+      RELEASE_TAG: "${{ inputs.release_tag }}"
+
     steps:
-      - run: echo "Hello"
+      - name: 'Parse release tag'
+        id: parse_release
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const script = require('./parse-version.js');
+            return await script({github, context, core});
 
       - name: 'Generate cache keys'
         id: make_keys
@@ -29,9 +43,14 @@ jobs:
           echo "::set-output name=test_cache::${TEST_PATH}-${TEST_SHA}"
 
     outputs:
+      version_major: '${{ steps.parse_release.outputs.version_major }}'
+      version_minor: '${{ steps.parse_release.outputs.version_minor }}'
+      version_patch: '${{ steps.parse_release.outputs.version_patch }}'
+
+      release_tag: '${{ steps.parse_release.outputs.release_tag }}'
+
       user_cache: '${{ steps.make_keys.outputs.user_cache }}'
       test_cache: '${{ steps.make_keys.outputs.test_cache }}'
-      results: ''
 
   check_version:
     name: 'Check Version'

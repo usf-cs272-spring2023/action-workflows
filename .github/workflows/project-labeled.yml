@@ -7,7 +7,7 @@ on:
 jobs:
   main:
     # second name used on summary sidebar (should be specific but short)
-    name: 'Check Event'
+    name: 'Main'
     runs-on: ubuntu-latest
     timeout-minutes: 1
 
@@ -21,7 +21,7 @@ jobs:
           path: 'workflows'
 
       # name used in run log group (use sentence case)
-      - name: 'Run checks'
+      - name: 'Check if event allowed'
         uses: actions/github-script@v6
         with:
           script: |
