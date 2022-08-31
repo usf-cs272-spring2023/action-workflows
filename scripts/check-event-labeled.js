@@ -1,12 +1,12 @@
 // checks if the issue event is valid; i.e. a student is not modifying the issue improperly.
 module.exports = async ({github, context, core}) => {
   // users that are allowed to edit labels or assignees
-  const allowed = new Set(['mtquach2', 'par5ul1', 'igentle292', 'ybsolomon', 'cardi', 'ryscheng']); // TODO Fix
+  const allowed = new Set(['mtquach2', 'par5ul1', 'igentle292', 'ybsolomon', 'sjengle', 'cardi', 'ryscheng']);
 
   // get event information
   const action = context.payload.action;
   const sender = context.payload.sender.login;
-  const output = `Action: ${action}, Sender: ${sender}\n`;
+  const output = `Action: ${action}, Sender: ${sender}`;
 
   // return if allowed
   if (allowed.has(sender)) {
@@ -27,6 +27,7 @@ module.exports = async ({github, context, core}) => {
     issue_number: context.payload.issue.number
   };
 
+  core.info('');
   core.startGroup(`Undoing ${action} action...`);
   core.info(JSON.stringify(params));
   core.endGroup();
@@ -52,11 +53,13 @@ module.exports = async ({github, context, core}) => {
     }
 
     // if make it this far, report result
-    if (response != undefined && response.status !== 200) { // TODO Fix
+    if (response != undefined && response.status === 200) {
       core.info(`Removed ${added} from issue (status: ${response.status}).`);
     }
     else {
       error_messages.push(`Unable to remove ${added}.`);
+
+      core.info('');
       core.startGroup(`Failed to undo ${action} action...`);
       core.info(JSON.stringify(response));
       core.endGroup();
