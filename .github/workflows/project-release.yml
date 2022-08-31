@@ -23,12 +23,19 @@ jobs:
       RELEASE_TAG: "${{ inputs.release_tag }}"
 
     steps:
+      - name: 'Checkout workflows'
+        id: checkout-workflows
+        uses: actions/checkout@v3
+        with:
+          repository: usf-cs272-fall2022/action-workflows
+          path: 'workflows'
+
       - name: 'Parse release tag'
         id: parse_release
         uses: actions/github-script@v6
         with:
           script: |
-            const script = require('./parse-version.js');
+            const script = require('./workflows/scripts/parse-version.js');
             return await script({github, context, core});
 
       - name: 'Generate cache keys'
