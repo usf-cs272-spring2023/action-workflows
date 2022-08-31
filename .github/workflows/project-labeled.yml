@@ -1,11 +1,11 @@
-name: 'Check Project Label'
+name: 'Check Project Label C'
 
 on:
   workflow_call:
 
 jobs:
   main:
-    name: 'Check'
+    name: 'Check D'
     runs-on: ubuntu-latest
 
     steps:
