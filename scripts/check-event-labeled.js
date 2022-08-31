@@ -1,7 +1,7 @@
 // checks if the issue event is valid; i.e. a student is not modifying the issue improperly.
 module.exports = async ({github, context, core}) => {
   // users that are allowed to edit labels or assignees
-  const allowed = new Set(['mtquach2', 'par5ul1', 'igentle292']); // TODO Fix
+  const allowed = new Set(['mtquach2', 'par5ul1', 'igentle292', 'ybsolomon', 'cardi', 'ryscheng']); // TODO Fix
 
   // get event information
   const action = context.payload.action;
