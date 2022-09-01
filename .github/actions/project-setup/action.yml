@@ -106,7 +106,7 @@ runs:
         echo " "
 
     - name: 'Skip Java setup'
-      id: skip_tests
+      id: skip_java
       if: github.event.inputs.setup_java != 'true'
       shell: bash
       run: |
