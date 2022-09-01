@@ -77,7 +77,7 @@ jobs:
         run: echo "Hello"
 
   check_compile:
-    name: ''
+    name: '.'
     uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-compile.yml@main
     needs: ['parse_version']
     with:
@@ -90,7 +90,7 @@ jobs:
 
   check_tests:
     name: 'Check Current Tests'
-    uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-compile.yml@main
+    uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-test.yml@main
     needs: ['parse_version', 'check_compile']
       user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
       test_repo:  '${{ needs.parse_version.outputs.test_repo }}'
