@@ -77,10 +77,6 @@ jobs:
     needs: ['parse_version']
     timeout-minutes: 1
 
-    env:
-      USER_CACHE: '${{ needs.parse_version.outputs.user_cache }}'
-      TEST_CACHE: '${{ needs.parse_version.outputs.test_cache }}'
-
     steps:
       - name: 'Checkout workflows'
         id: checkout-workflows
@@ -91,6 +87,11 @@ jobs:
 
       - name: 'Setup project code'
         uses: ./workflows/.github/actions/project-setup
+        with:
+          user_repo:  '${{ github.repository }}'
+          test_repo:  '${{ github.repository_owner }}/${{ env.TEST_PATH }}'
+          user_cache: '${{ needs.parse_version.outputs.user_cache }}'
+          test_cache: '${{ needs.parse_version.outputs.test_cache }}'
 
       - name: 'Compile source code' 
         run: echo "Hello"
