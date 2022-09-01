@@ -64,7 +64,7 @@ runs:
 
     - name: 'Skip test code'
       id: skip_tests
-      if: ${{ github.event.inputs.test_repo == '' }}
+      if: ${{ inputs.test_repo == '' }}
       shell: bash
       run: |
         # Skip test code
@@ -107,11 +107,11 @@ runs:
 
     - name: 'Skip Java setup'
       id: skip_java
-      if: ${{ github.event.inputs.setup_java != 'true' }}
+      if: ${{ inputs.setup_java != 'true' }}
       shell: bash
       run: |
         # Skip Java setup
-        echo "Skipping Java setup ${INPUTS_SETUP_JAVA}..."
+        echo "Skipping Java setup..."
 
     - name: "Setup Java version"
       id: setup_java
