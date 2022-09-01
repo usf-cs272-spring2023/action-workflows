@@ -10,7 +10,9 @@ module.exports = async ({github, context, core}) => {
       release_ref = `refs/tags/${context.payload.inputs.release_tag}`;
       break;
     default:
-      core.setFailed(`Unexpected event type: ${context.eventName}`);
+      const message = `Unexpected event type for parsing release: ${context.eventName}`;
+      core.exportVariable(`ERROR_MESSAGES`, `${message}\n${process.env.ERROR_MESSAGES}`);
+      core.setFailed(`message`);
       core.startGroup(`Outputting context...`);
       core.info(JSON.stringify(context));
       core.endGroup();
@@ -25,7 +27,9 @@ module.exports = async ({github, context, core}) => {
 
   // cannot continue without a parsable version number
   if (matched === null || matched.length !== 4) {
-    core.setFailed(`Unable to parse "${tag}" into major, minor, and patch version numbers. If a release was made in error, delete the release *and* tag (2 separate steps).`);
+    const message = `Unable to parse "${tag}" into major, minor, and patch version numbers. If a release was made in error, delete the release *and* tag (2 separate steps).`; 
+    core.exportVariable(`ERROR_MESSAGES`, `${message}\n${process.env.ERROR_MESSAGES}`);
+    core.setFailed(message);
     return;
   }
 

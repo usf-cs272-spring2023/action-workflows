@@ -12,6 +12,7 @@ env:
   USER_PATH: 'project-main'
   TEST_PATH: 'project-tests'
   JSON_NAME: 'release-results'
+  ERROR_MESSAGES: ''
 
 jobs:
   parse_version:
