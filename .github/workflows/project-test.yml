@@ -42,7 +42,7 @@ on:
 
 jobs:
   main:
-    name: 'Check Tests'
+    name: '.'
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
