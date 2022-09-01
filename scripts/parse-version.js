@@ -1,41 +1,47 @@
 module.exports = async ({github, context, core}) => {
-  // set the release tag from input or from event
-	let release_tag = undefined;
+  // set the release ref from input or from event
+  let release_ref = undefined;
 
-	core.info(JSON.stringify(context, null, "  "));
+  switch (context.eventName) {
+    case 'release':
+      release_ref = context.ref;
+      break;
+    case 'workflow_dispatch':
+      release_ref = `refs/tags/${context.payload.inputs.release_tag}`;
+      break;
+    default:
+      core.setFailed(`Unexpected event type: ${context.eventName}`);
+      core.startGroup(`Outputting context...`);
+      core.info(JSON.stringify(context));
+      core.endGroup();
+      return;
+  }
 
-	core.info(JSON.stringify(process.env, null, "  "));
+  core.info(`Using release reference: ${release_ref}`);
 
-  // const tag = process.env.RELEASE_TAG;
-  // const out = {};
+  // parse release ref into parts
+  const regex = /^refs\/tags\/v([1-4])\.(\d+)\.(\d+)$/;
+  const matched = tag.match(regex);
 
-  // core.info(`Release Tag: ${tag}`);
+  // cannot continue without a parsable version number
+  if (matched === null || matched.length !== 4) {
+    core.setFailed(`Unable to parse "${tag}" into major, minor, and patch version numbers. If a release was made in error, delete the release *and* tag (2 separate steps).`);
+    return;
+  }
 
-  // // parse release tag into parts
-  // const regex = /^v([1-4])\.(\d+)\.(\d+)$/;
-  // const matched = tag.match(regex);
+  const out = {};
+  out.version_major = parseInt(matched[1]);
+  out.version_minor = parseInt(matched[2]);
+  out.version_patch = parseInt(matched[3]);
+  out.release_tag = `v${out.version_major}.${out.version_minor}.${out.version_patch}`;
 
-  // if (matched === null || matched.length !== 4) {
-  //   // cannot continue without a parsable version number
-  //   const message = `Unable to parse "${tag}" into major, minor, and patch version numbers. If this release was made in error, delete the ${tag} release *and* tag (2 separate steps).`;
-  //   core.setFailed(message);
-  // }
-  // else {
-  //   // save parsed values
-  //   out.version_project = parseInt(matched[1]);
-  //   out.version_review  = parseInt(matched[2]);
-  //   out.version_patch   = parseInt(matched[3]);
-  //   out.version_number  = `v${out.version_project}.${out.version_review}.${out.version_patch}`;
-  // }
+  // output and set result
+  core.startGroup('Setting output...');
+  for (const property in out) {
+    console.log(`${property}: ${out[property]}`);
+    core.setOutput(property, out[property]);
+  }
+  core.endGroup();
 
-  // // set and return results
-  // core.startGroup('Setting output...');
-  // for (const property in out) {
-  //   // output and set result
-  //   console.log(`${property}: ${out[property]}`);
-  //   core.setOutput(property, out[property]);
-  // }
-  // core.endGroup();
-
-  // return out;
-}
+  return out;
+};
