@@ -109,13 +109,14 @@ runs:
       id: check_java
       shell: bash
       run: |
-        echo " "
+        # check Java version
         echo "::group::Check versions"
         java --version
         echo ""
         javac --version
         echo ""
         echo "::endgroup::"
+        echo " "
 
     - name: "Check Maven version"
       id: check_maven

@@ -111,8 +111,20 @@ jobs:
       VERSION_MAJOR: '${{ needs.parse_version.outputs.version_major }}'
 
     steps:
+      - name: 'Checkout workflows'
+        id: checkout-workflows
+        uses: actions/checkout@v3
+        with:
+          repository: usf-cs272-fall2022/action-workflows
+          path: 'workflows'
+
       - name: 'Setup project code'
-        run: echo "Hello"
+        uses: ./workflows/.github/actions/project-setup
+        with:
+          user_repo:  '${{ github.repository }}'
+          test_repo:  '${{ github.repository_owner }}/${{ env.TEST_PATH }}'
+          user_cache: '${{ needs.parse_version.outputs.user_cache }}'
+          test_cache: '${{ needs.parse_version.outputs.test_cache }}'
 
       - name: 'Compile project code' 
         run: echo "Hello"
@@ -132,8 +144,20 @@ jobs:
       VERSION_MAJOR: '${{ needs.parse_version.outputs.version_major }}'
 
     steps:
+      - name: 'Checkout workflows'
+        id: checkout-workflows
+        uses: actions/checkout@v3
+        with:
+          repository: usf-cs272-fall2022/action-workflows
+          path: 'workflows'
+
       - name: 'Setup project code'
-        run: echo "Hello"
+        uses: ./workflows/.github/actions/project-setup
+        with:
+          user_repo:  '${{ github.repository }}'
+          test_repo:  '${{ github.repository_owner }}/${{ env.TEST_PATH }}'
+          user_cache: '${{ needs.parse_version.outputs.user_cache }}'
+          test_cache: '${{ needs.parse_version.outputs.test_cache }}'
 
       - name: 'Compile project code' 
         run: echo "Hello"
@@ -154,8 +178,20 @@ jobs:
       USER_CACHE: '${{ needs.parse_version.outputs.user_cache }}'
 
     steps:
-      - name: 'Fetch source code' 
-        run: echo "Hello"
+      - name: 'Checkout workflows'
+        id: checkout-workflows
+        uses: actions/checkout@v3
+        with:
+          repository: usf-cs272-fall2022/action-workflows
+          path: 'workflows'
+
+      - name: 'Setup project code'
+        uses: ./workflows/.github/actions/project-setup
+        with:
+          user_repo:  '${{ github.repository }}'
+          test_repo:  '${{ github.repository_owner }}/${{ env.TEST_PATH }}'
+          user_cache: '${{ needs.parse_version.outputs.user_cache }}'
+          test_cache: '${{ needs.parse_version.outputs.test_cache }}'
 
       - name: 'Check for compile warnings' 
         run: echo "Hello"
