@@ -77,7 +77,7 @@ jobs:
         run: echo "Hello"
 
   check_compile:
-    name: '.'
+    name: 'Compile'
     uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-compile.yml@main
     needs: ['parse_version']
     with:
@@ -89,7 +89,7 @@ jobs:
       test_cache: '${{ needs.parse_version.outputs.test_cache }}'
 
   check_tests:
-    name: 'Check Current Tests'
+    name: 'Test'
     uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-test.yml@main
     needs: ['parse_version', 'check_compile']
       user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
@@ -99,44 +99,6 @@ jobs:
       user_cache: '${{ needs.parse_version.outputs.user_cache }}'
       test_cache: '${{ needs.parse_version.outputs.test_cache }}'
       test_tag: 'test${{ needs.parse_version.outputs.version_major }}'
-    # timeout-minutes: 10
-    # runs-on: ubuntu-latest
-
-    # env:
-    #   USER_CACHE: '${{ needs.parse_version.outputs.user_cache }}'
-    #   TEST_CACHE: '${{ needs.parse_version.outputs.test_cache }}'
-    #   VERSION_MAJOR: '${{ needs.parse_version.outputs.version_major }}'
-
-    # steps:
-    #   - name: 'Checkout workflows'
-    #     id: checkout-workflows
-    #     uses: actions/checkout@v3
-    #     with:
-    #       repository: usf-cs272-fall2022/action-workflows
-    #       path: 'workflows'
-
-    #   - name: 'Setup project code'
-    #     uses: ./workflows/.github/actions/project-setup
-    #     with:
-    #       user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
-    #       test_repo:  '${{ needs.parse_version.outputs.test_repo }}'
-    #       user_path:  '${{ needs.parse_version.outputs.user_path }}'
-    #       test_path:  '${{ needs.parse_version.outputs.test_path }}'
-    #       user_cache: '${{ needs.parse_version.outputs.user_cache }}'
-    #       test_cache: '${{ needs.parse_version.outputs.test_cache }}'
-
-    #   - name: 'Compile project code' 
-    #     working-directory: '${{ env.USER_PATH }}'
-    #     run: |
-    #       RUN_STATUS=0
-    #       mvn -ntp -DcompileOptionXlint=-Xlint:none -DcompileOptionXdoclint=-Xdoclint:none -Dmaven.compiler.showWarnings=false -DcompileOptionFail=false compile test-compile || RUN_STATUS=$?
-    #       if [[ RUN_STATUS -ne 0 ]]; then
-    #         echo "::error ::Unable to compile your project source code."
-    #         exit 1
-    #       fi
-
-    #   - name: 'Run current project tests' 
-    #     run: echo "Hello"
 
   check_next:
     name: 'Check Other Tests'
