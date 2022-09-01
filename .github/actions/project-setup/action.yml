@@ -47,15 +47,16 @@ runs:
         repository: ${{ inputs.user_repo }}
         path: ${{ inputs.user_path }}
 
-    - name: 'List user code'
+    - name: 'List source code'
       id: check_user
       shell: bash
       run: |
-        echo " "
-        echo "::group::Listing user files"
-        echo "User Code"
+        # List source code
+        echo "::group::Listing source files"
+        echo "Source Code"
         ls -ACGR ${{ inputs.user_path }}/src/
         echo "::endgroup::"
+        echo " "
 
     - name: "Cache test code"
       id: cache_test
@@ -72,30 +73,23 @@ runs:
         repository: ${{ inputs.test_repo }}
         path: ${{ inputs.test_path }}
 
-    - name: "Check test code"
+    - name: "List test code"
       id: check_test
       shell: bash
       run: |
-        echo " "
+        # List test code
         echo "::group::Listing test files"
-        
-        echo "Test Code"
         ls -ACGR ${{ inputs.test_path }}/src
-        
         echo " "
-        echo "Test Input"
         ls -ACGR ${{ inputs.test_path }}/input
-        
         echo " "
-        echo "Test Output"
         ls -ACGR ${{ inputs.test_path }}/expected-nix
-      
         echo "::endgroup::"
-        
-        echo " "
+
         echo "::group::Listing parent directory"
         ls -ACG .
         echo "::endgroup::"
+        echo " "
 
     - name: "Setup Java version"
       id: setup_java
@@ -109,8 +103,8 @@ runs:
       id: check_java
       shell: bash
       run: |
-        # check Java version
-        echo "::group::Check versions"
+        # Check Java version
+        echo "::group::Output Java versions"
         java --version
         echo ""
         javac --version
@@ -123,9 +117,10 @@ runs:
       shell: bash
       working-directory: "${{ inputs.user_path }}"
       run: |
-        echo " "
+        # Check Maven version
+        echo "::group::Output Maven version"
         mvn --version
-        echo " "
+        echo "::endgroup::"
         echo "::group::Resolving dependencies..."
         mvn dependency:go-offline
         echo "::endgroup::"
