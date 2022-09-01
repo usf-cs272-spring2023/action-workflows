@@ -93,11 +93,35 @@ jobs:
           user_cache: '${{ needs.parse_version.outputs.user_cache }}'
           test_cache: '${{ needs.parse_version.outputs.test_cache }}'
 
-      - name: 'Compile source code' 
-        run: echo "Hello"
+      - name: 'Compile project code' 
+        working-directory: '${{ env.USER_PATH }}'
+        run: |
+          RUN_STATUS=0
+          mvn -ntp -DcompileOptionXlint=-Xlint:none -DcompileOptionXdoclint=-Xdoclint:none -Dmaven.compiler.showWarnings=false -DcompileOptionFail=false compile || RUN_STATUS=$?
+          if [[ RUN_STATUS -ne 0 ]]; then
+            echo "::error ::Unable to compile your project source code."
+            exit 1
+          fi
+
+      - name: 'Listing source code'
+        working-directory: '${{ env.USER_PATH }}'
+        run: |
+          ls -ACGR target/classes
 
       - name: 'Compile test code' 
-        run: echo "Hello"
+        working-directory: '${{ env.USER_PATH }}'
+        run: |
+          RUN_STATUS=0
+          mvn -ntp -DcompileOptionXlint=-Xlint:none -DcompileOptionXdoclint=-Xdoclint:none -Dmaven.compiler.showWarnings=false -DcompileOptionFail=false test-compile || RUN_STATUS=$?
+          if [[ RUN_STATUS -ne 0 ]]; then
+            echo "::error ::Unable to compile the project test code."
+            exit 1
+          fi
+
+      - name: 'Listing test code'
+        working-directory: '${{ env.USER_PATH }}'
+        run: |
+          ls -ACGR target/test-classes
 
   check_tests:
     name: 'Check Current Tests'
@@ -127,7 +151,14 @@ jobs:
           test_cache: '${{ needs.parse_version.outputs.test_cache }}'
 
       - name: 'Compile project code' 
-        run: echo "Hello"
+        working-directory: '${{ env.USER_PATH }}'
+        run: |
+          RUN_STATUS=0
+          mvn -ntp -DcompileOptionXlint=-Xlint:none -DcompileOptionXdoclint=-Xdoclint:none -Dmaven.compiler.showWarnings=false -DcompileOptionFail=false compile test-compile || RUN_STATUS=$?
+          if [[ RUN_STATUS -ne 0 ]]; then
+            echo "::error ::Unable to compile your project source code."
+            exit 1
+          fi
 
       - name: 'Run current project tests' 
         run: echo "Hello"
@@ -160,7 +191,14 @@ jobs:
           test_cache: '${{ needs.parse_version.outputs.test_cache }}'
 
       - name: 'Compile project code' 
-        run: echo "Hello"
+        working-directory: '${{ env.USER_PATH }}'
+        run: |
+          RUN_STATUS=0
+          mvn -ntp -DcompileOptionXlint=-Xlint:none -DcompileOptionXdoclint=-Xdoclint:none -Dmaven.compiler.showWarnings=false -DcompileOptionFail=false compile test-compile || RUN_STATUS=$?
+          if [[ RUN_STATUS -ne 0 ]]; then
+            echo "::error ::Unable to compile your project source code."
+            exit 1
+          fi
 
       - name: 'Run previous project tests' 
         run: echo "Hello"
