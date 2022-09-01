@@ -82,5 +82,7 @@ jobs:
           RUN_STATUS=0
           mvn -ntp -Dgroups="${TEST_TAG}" test || RUN_STATUS=$?
           if [[ RUN_STATUS -ne 0 ]]; then
-            echo "::error ::One or more tests did not pass." && exit 1
+            echo "::error ::One or more tests did not pass."
+            echo "::set-failed ::One or more tests did not pass."
+            exit 1
           fi
