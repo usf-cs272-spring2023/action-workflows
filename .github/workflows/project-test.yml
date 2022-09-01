@@ -35,11 +35,16 @@ on:
         type: string
         default: "project-tests"
 
+      test_tag:
+        description: "Tag for which tests to run"
+        required: true
+        type: string
+
 jobs:
   main:
-    name: 'Check Compiles'
+    name: 'Check Tests'
     runs-on: ubuntu-latest
-    timeout-minutes: 1
+    timeout-minutes: 10
 
     steps:
       - name: 'Checkout workflows'
@@ -63,28 +68,20 @@ jobs:
         working-directory: '${{ inputs.user_path }}'
         run: |
           RUN_STATUS=0
-          mvn -ntp -DcompileOptionXlint=-Xlint:none -DcompileOptionXdoclint=-Xdoclint:none -Dmaven.compiler.showWarnings=false -DcompileOptionFail=false compile || RUN_STATUS=$?
+          mvn -ntp -DcompileOptionXlint=-Xlint:none -DcompileOptionXdoclint=-Xdoclint:none -Dmaven.compiler.showWarnings=false -DcompileOptionFail=false compile test-compile || RUN_STATUS=$?
           if [[ RUN_STATUS -ne 0 ]]; then
             echo "::error ::Unable to compile your project source code."
             exit 1
           fi
 
-      - name: 'Listing source code'
+      - name: 'Run project tests'
         working-directory: '${{ inputs.user_path }}'
-        run: |
-          ls -ACGR target/classes
-
-      - name: 'Compile test code' 
-        working-directory: '${{ inputs.user_path }}'
+        env:
+          TEST_TAG: ${{ inputs.test_tag }}
         run: |
           RUN_STATUS=0
-          mvn -ntp -DcompileOptionXlint=-Xlint:none -DcompileOptionXdoclint=-Xdoclint:none -Dmaven.compiler.showWarnings=false -DcompileOptionFail=false test-compile || RUN_STATUS=$?
+          mvn -ntp -Dgroups="${TEST_TAG}" test || RUN_STATUS=$?
           if [[ RUN_STATUS -ne 0 ]]; then
-            echo "::error ::Unable to compile the project test code."
+            echo "::error ::One or more tests did not pass."
             exit 1
           fi
-
-      - name: 'Listing test code'
-        working-directory: '${{ inputs.user_path }}'
-        run: |
-          ls -ACGR target/test-classes
