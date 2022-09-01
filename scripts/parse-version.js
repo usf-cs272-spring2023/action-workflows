@@ -21,7 +21,7 @@ module.exports = async ({github, context, core}) => {
 
   // parse release ref into parts
   const regex = /^refs\/tags\/v([1-4])\.(\d+)\.(\d+)$/;
-  const matched = tag.match(regex);
+  const matched = release_ref.match(regex);
 
   // cannot continue without a parsable version number
   if (matched === null || matched.length !== 4) {
