@@ -82,8 +82,15 @@ jobs:
       TEST_CACHE: '${{ needs.parse_version.outputs.test_cache }}'
 
     steps:
-      - name: 'Setup project code '
-        uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-setup.yml@main
+      - name: 'Checkout workflows'
+        id: checkout-workflows
+        uses: actions/checkout@v3
+        with:
+          repository: usf-cs272-fall2022/action-workflows
+          path: 'workflows'
+
+      - name: 'Setup project code'
+        uses: workflows/.github/actions/project-setup@main
 
       - name: 'Compile source code' 
         run: echo "Hello"
