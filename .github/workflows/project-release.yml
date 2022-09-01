@@ -92,6 +92,7 @@ jobs:
     name: 'Test'
     uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-test.yml@main
     needs: ['parse_version', 'check_compile']
+    with:
       user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
       test_repo:  '${{ needs.parse_version.outputs.test_repo }}'
       user_path:  '${{ needs.parse_version.outputs.user_path }}'
