@@ -101,8 +101,9 @@ jobs:
         id: step_status
         uses: actions/github-script@v6
         if: ${{ always() }}
+        env:
+          STEP_STATUS: ${{ toJSON(steps) }}
         with:
           script: |
-            const status = JSON.stringify(steps);
-            core.setOutput('status', status);
-            core.info(status);
+            core.setOutput('status', process.env.STEP_STATUS);
+            core.info(process.env.STEP_STATUS);
