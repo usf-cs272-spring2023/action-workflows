@@ -79,7 +79,6 @@ jobs:
   check_compile:
     name: 'Check Compiles'
     uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-compile.yml@main
-    timeout-minutes: 1
     needs: ['parse_version']
     with:
       user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
