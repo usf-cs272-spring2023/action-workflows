@@ -6,26 +6,30 @@ inputs:
     description: "Repository with user project code"
     required: true
   
-  test_repo:
-    description: "Repository with test project code"
-    required: true
-  
   user_cache:
     description: "Commit SHA of project code"
-    required: true
-  
-  test_cache:
-    description: "Commit SHA of test code"
     required: true
 
   user_path:
     description: "Path to user project code"
     required: true
-    default: "project-main"
+
+  setup_java:
+    description: "Set to 'true' if should setup Java and Maven"
+    required: true
+    default: "true"
+
+  test_repo:
+    description: "Repository with test project code"
+    required: false
+
+  test_cache:
+    description: "Commit SHA of test code"
+    required: false
   
   test_path:
     description: "Path to test project code"
-    required: true
+    required: false
     default: "project-tests"
 
 runs:
@@ -60,6 +64,7 @@ runs:
 
     - name: "Cache test code"
       id: cache_test
+      if: github.event.inputs.test_repo != ''
       uses: actions/cache@v3
       with:
         path: ${{ inputs.test_path }}
@@ -67,7 +72,7 @@ runs:
 
     - name: "Clone test code"
       id: clone_test
-      if: steps.cache-test.outputs.cache-hit != 'true'
+      if: steps.cache_test.outcome == 'success' && steps.cache-test.outputs.cache-hit != 'true'
       uses: actions/checkout@v3
       with:
         repository: ${{ inputs.test_repo }}
@@ -75,6 +80,7 @@ runs:
 
     - name: "List test code"
       id: check_test
+      if: steps.cache_test.outcome == 'success'
       shell: bash
       run: |
         # List test code
@@ -93,6 +99,7 @@ runs:
 
     - name: "Setup Java version"
       id: setup_java
+      if: github.event.inputs.setup_java == 'true'
       uses: actions/setup-java@v2
       with:
         distribution: 'temurin'
@@ -101,6 +108,7 @@ runs:
 
     - name: "Check Java version"
       id: check_java
+      if: steps.setup_java.outcome == 'success'
       shell: bash
       run: |
         # Check Java version
@@ -113,6 +121,7 @@ runs:
 
     - name: "Check Maven version"
       id: check_maven
+      if: steps.setup_java.outcome == 'success'
       shell: bash
       working-directory: "${{ inputs.user_path }}"
       run: |

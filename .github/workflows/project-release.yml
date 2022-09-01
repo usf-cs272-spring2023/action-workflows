@@ -115,7 +115,7 @@ jobs:
       test_tag: 'past${{ needs.parse_version.outputs.version_major }}'
 
   check_next:
-    name: 'Next'
+    name: '.'
     uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-test.yml@main
     needs: ['parse_version', 'check_compile']
     with:

@@ -1,4 +1,4 @@
-name: 'Check Compile'
+name: 'Check Warnings'
 
 on:
   workflow_call:
@@ -37,7 +37,7 @@ on:
 
 jobs:
   main:
-    name: 'Compile'
+    name: 'Warn'
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
