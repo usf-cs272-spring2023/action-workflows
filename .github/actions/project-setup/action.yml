@@ -110,7 +110,6 @@ runs:
         javac --version
         echo ""
         echo "::endgroup::"
-        echo " "
 
     - name: "Check Maven version"
       id: check_maven
