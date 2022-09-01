@@ -89,7 +89,7 @@ jobs:
       test_cache: '${{ needs.parse_version.outputs.test_cache }}'
 
   check_tests:
-    name: 'Test'
+    name: 'This'
     uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-test.yml@main
     needs: ['parse_version', 'check_compile']
     with:
@@ -101,48 +101,31 @@ jobs:
       test_cache: '${{ needs.parse_version.outputs.test_cache }}'
       test_tag: 'test${{ needs.parse_version.outputs.version_major }}'
 
-  check_next:
-    name: 'Check Other Tests'
-    runs-on: ubuntu-latest
+  check_past:
+    name: 'Past'
+    uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-test.yml@main
     needs: ['parse_version', 'check_compile']
-    timeout-minutes: 10
+    with:
+      user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
+      test_repo:  '${{ needs.parse_version.outputs.test_repo }}'
+      user_path:  '${{ needs.parse_version.outputs.user_path }}'
+      test_path:  '${{ needs.parse_version.outputs.test_path }}'
+      user_cache: '${{ needs.parse_version.outputs.user_cache }}'
+      test_cache: '${{ needs.parse_version.outputs.test_cache }}'
+      test_tag: 'past${{ needs.parse_version.outputs.version_major }}'
 
-    env:
-      USER_CACHE: '${{ needs.parse_version.outputs.user_cache }}'
-      TEST_CACHE: '${{ needs.parse_version.outputs.test_cache }}'
-      VERSION_MAJOR: '${{ needs.parse_version.outputs.version_major }}'
-
-    steps:
-      - name: 'Checkout workflows'
-        id: checkout-workflows
-        uses: actions/checkout@v3
-        with:
-          repository: usf-cs272-fall2022/action-workflows
-          path: 'workflows'
-
-      - name: 'Setup project code'
-        uses: ./workflows/.github/actions/project-setup
-        with:
-          user_repo:  '${{ github.repository }}'
-          test_repo:  '${{ github.repository_owner }}/${{ env.TEST_PATH }}'
-          user_cache: '${{ needs.parse_version.outputs.user_cache }}'
-          test_cache: '${{ needs.parse_version.outputs.test_cache }}'
-
-      - name: 'Compile project code' 
-        working-directory: '${{ env.USER_PATH }}'
-        run: |
-          RUN_STATUS=0
-          mvn -ntp -DcompileOptionXlint=-Xlint:none -DcompileOptionXdoclint=-Xdoclint:none -Dmaven.compiler.showWarnings=false -DcompileOptionFail=false compile test-compile || RUN_STATUS=$?
-          if [[ RUN_STATUS -ne 0 ]]; then
-            echo "::error ::Unable to compile your project source code."
-            exit 1
-          fi
-
-      - name: 'Run previous project tests' 
-        run: echo "Hello"
-
-      - name: 'Run next project tests' 
-        run: echo "Hello"
+  check_next:
+    name: 'Next'
+    uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-test.yml@main
+    needs: ['parse_version', 'check_compile']
+    with:
+      user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
+      test_repo:  '${{ needs.parse_version.outputs.test_repo }}'
+      user_path:  '${{ needs.parse_version.outputs.user_path }}'
+      test_path:  '${{ needs.parse_version.outputs.test_path }}'
+      user_cache: '${{ needs.parse_version.outputs.user_cache }}'
+      test_cache: '${{ needs.parse_version.outputs.test_cache }}'
+      test_tag: 'next${{ needs.parse_version.outputs.version_major }}'
 
   check_warnings:
     name: 'Check Warnings'
@@ -200,7 +183,7 @@ jobs:
   save_results:
     name: 'Save Results'
     runs-on: ubuntu-latest
-    needs: ['parse_version', 'check_version', 'check_compile', 'check_tests', 'check_next', 'check_warnings', 'check_style']
+    needs: ['parse_version', 'check_version', 'check_compile', 'check_tests', 'check_past', 'check_next', 'check_warnings', 'check_style']
     if: ${{ always() }}
     timeout-minutes: 1
 
@@ -211,7 +194,7 @@ jobs:
   update_release:
     name: 'Update Release'
     runs-on: ubuntu-latest
-    needs: ['parse_version', 'check_version', 'check_compile', 'check_tests', 'check_next', 'check_warnings', 'check_style']
+    needs: ['parse_version', 'check_version', 'check_compile', 'check_tests', 'check_past', 'check_next', 'check_warnings', 'check_style']
     if: ${{ always() }}
     timeout-minutes: 1
 
