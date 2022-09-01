@@ -63,7 +63,8 @@ jobs:
           test_path:  '${{ inputs.test_path }}'
           user_cache: '${{ inputs.user_cache }}'
           test_cache: '${{ inputs.test_cache }}'
-
+          setup_java: 'true'
+          
       - name: 'Compile project code' 
         working-directory: '${{ inputs.user_path }}'
         run: |

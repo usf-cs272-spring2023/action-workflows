@@ -156,7 +156,8 @@ jobs:
       - name: 'Setup project code'
         uses: ./workflows/.github/actions/project-setup
         with:
-          user_repo:  '${{ github.repository }}'
+          user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
+          user_path:  '${{ needs.parse_version.outputs.user_path }}'
           user_cache: '${{ needs.parse_version.outputs.user_cache }}'
           setup_java: 'false'
 

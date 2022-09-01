@@ -29,7 +29,7 @@ on:
         required: true
         type: string
         default: "project-tests"
-        
+
       test_cache:
         description: "Commit SHA of test code"
         required: true
@@ -58,6 +58,7 @@ jobs:
           test_repo:  '${{ inputs.test_repo }}'
           test_path:  '${{ inputs.test_path }}'
           test_cache: '${{ inputs.test_cache }}'
+          setup_java: 'true'
 
       - name: 'Compile project code' 
         working-directory: '${{ inputs.user_path }}'

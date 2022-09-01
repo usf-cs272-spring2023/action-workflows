@@ -39,7 +39,8 @@ jobs:
           user_repo:  '${{ inputs.user_repo }}'
           user_path:  '${{ inputs.user_path }}'
           user_cache: '${{ inputs.user_cache }}'
-
+          setup_java: 'true'
+          
       - name: 'Compile source code'
         working-directory: '${{ inputs.user_path }}'
         run: |
