@@ -62,6 +62,14 @@ runs:
         echo "::endgroup::"
         echo " "
 
+    - name: 'Skip test code'
+      id: skip_tests
+      if: github.event.inputs.test_repo == ''
+      shell: bash
+      run: |
+        # Skip test code
+        echo "Skipping test code..."
+
     - name: "Cache test code"
       id: cache_test
       if: github.event.inputs.test_repo != ''
@@ -96,6 +104,14 @@ runs:
         ls -ACG .
         echo "::endgroup::"
         echo " "
+
+    - name: 'Skip Java setup'
+      id: skip_tests
+      if: github.event.inputs.setup_java != 'true'
+      shell: bash
+      run: |
+        # Skip test code
+        echo "Skipping Java setup ${INPUTS_SETUP_JAVA}..."
 
     - name: "Setup Java version"
       id: setup_java
