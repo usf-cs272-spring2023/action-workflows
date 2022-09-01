@@ -42,7 +42,7 @@ on:
 
 jobs:
   main:
-    name: 'Tests ${{ inputs.user_path }}'
+    name: 'Tests'
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
