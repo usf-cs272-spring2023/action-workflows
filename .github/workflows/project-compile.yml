@@ -8,32 +8,32 @@ on:
         required: true
         type: string
       
-      test_repo:
-        description: "Repository with test project code"
-        required: true
-        type: string
-      
-      user_cache:
-        description: "Commit SHA of project code"
-        required: true
-        type: string
-      
-      test_cache:
-        description: "Commit SHA of test code"
-        required: true
-        type: string
-
       user_path:
         description: "Path to user project code"
         required: true
         type: string
         default: "project-main"
+
+      user_cache:
+        description: "Commit SHA of project code"
+        required: true
+        type: string
+      
+      test_repo:
+        description: "Repository with test project code"
+        required: true
+        type: string
       
       test_path:
         description: "Path to test project code"
         required: true
         type: string
         default: "project-tests"
+        
+      test_cache:
+        description: "Commit SHA of test code"
+        required: true
+        type: string
 
 jobs:
   main:
@@ -53,10 +53,10 @@ jobs:
         uses: ./workflows/.github/actions/project-setup
         with:
           user_repo:  '${{ inputs.user_repo }}'
-          test_repo:  '${{ inputs.test_repo }}'
           user_path:  '${{ inputs.user_path }}'
-          test_path:  '${{ inputs.test_path }}'
           user_cache: '${{ inputs.user_cache }}'
+          test_repo:  '${{ inputs.test_repo }}'
+          test_path:  '${{ inputs.test_path }}'
           test_cache: '${{ inputs.test_cache }}'
 
       - name: 'Compile project code' 

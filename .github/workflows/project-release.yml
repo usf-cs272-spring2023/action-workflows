@@ -77,16 +77,25 @@ jobs:
         run: echo "Hello"
 
   check_compile:
-    name: 'Compile'
+    name: 'Check'
     uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-compile.yml@main
     needs: ['parse_version']
     with:
       user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
-      test_repo:  '${{ needs.parse_version.outputs.test_repo }}'
       user_path:  '${{ needs.parse_version.outputs.user_path }}'
-      test_path:  '${{ needs.parse_version.outputs.test_path }}'
       user_cache: '${{ needs.parse_version.outputs.user_cache }}'
+      test_repo:  '${{ needs.parse_version.outputs.test_repo }}'
+      test_path:  '${{ needs.parse_version.outputs.test_path }}'
       test_cache: '${{ needs.parse_version.outputs.test_cache }}'
+
+  check_warnings:
+    name: 'Check'
+    uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-warning.yml@main
+    needs: ['parse_version', 'check_compile']
+    with:
+      user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
+      user_path:  '${{ needs.parse_version.outputs.user_path }}'
+      user_cache: '${{ needs.parse_version.outputs.user_cache }}'
 
   check_tests:
     name: 'This'
@@ -94,10 +103,10 @@ jobs:
     needs: ['parse_version', 'check_compile']
     with:
       user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
-      test_repo:  '${{ needs.parse_version.outputs.test_repo }}'
       user_path:  '${{ needs.parse_version.outputs.user_path }}'
-      test_path:  '${{ needs.parse_version.outputs.test_path }}'
       user_cache: '${{ needs.parse_version.outputs.user_cache }}'
+      test_repo:  '${{ needs.parse_version.outputs.test_repo }}'
+      test_path:  '${{ needs.parse_version.outputs.test_path }}'
       test_cache: '${{ needs.parse_version.outputs.test_cache }}'
       test_tag: 'test${{ needs.parse_version.outputs.version_major }}'
 
@@ -107,30 +116,30 @@ jobs:
     needs: ['parse_version', 'check_compile']
     with:
       user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
-      test_repo:  '${{ needs.parse_version.outputs.test_repo }}'
       user_path:  '${{ needs.parse_version.outputs.user_path }}'
-      test_path:  '${{ needs.parse_version.outputs.test_path }}'
       user_cache: '${{ needs.parse_version.outputs.user_cache }}'
+      test_repo:  '${{ needs.parse_version.outputs.test_repo }}'
+      test_path:  '${{ needs.parse_version.outputs.test_path }}'
       test_cache: '${{ needs.parse_version.outputs.test_cache }}'
       test_tag: 'past${{ needs.parse_version.outputs.version_major }}'
 
   check_next:
-    name: '.'
+    name: 'Next'
     uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-test.yml@main
     needs: ['parse_version', 'check_compile']
     with:
       user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
-      test_repo:  '${{ needs.parse_version.outputs.test_repo }}'
       user_path:  '${{ needs.parse_version.outputs.user_path }}'
-      test_path:  '${{ needs.parse_version.outputs.test_path }}'
       user_cache: '${{ needs.parse_version.outputs.user_cache }}'
+      test_repo:  '${{ needs.parse_version.outputs.test_repo }}'
+      test_path:  '${{ needs.parse_version.outputs.test_path }}'
       test_cache: '${{ needs.parse_version.outputs.test_cache }}'
       test_tag: 'next${{ needs.parse_version.outputs.version_major }}'
 
-  check_warnings:
-    name: 'Check Warnings'
+  check_style:
+    name: 'Check Style'
     runs-on: ubuntu-latest
-    needs: ['parse_version', 'check_compile']
+    needs: ['parse_version']
     timeout-minutes: 1
 
     env:
@@ -148,28 +157,8 @@ jobs:
         uses: ./workflows/.github/actions/project-setup
         with:
           user_repo:  '${{ github.repository }}'
-          test_repo:  '${{ github.repository_owner }}/${{ env.TEST_PATH }}'
           user_cache: '${{ needs.parse_version.outputs.user_cache }}'
-          test_cache: '${{ needs.parse_version.outputs.test_cache }}'
-
-      - name: 'Check for compile warnings' 
-        run: echo "Hello"
-
-      - name: 'Check for Javadoc warnings' 
-        run: echo "Hello"
-
-  check_style:
-    name: 'Check Style'
-    runs-on: ubuntu-latest
-    needs: ['parse_version']
-    timeout-minutes: 1
-
-    env:
-      USER_CACHE: '${{ needs.parse_version.outputs.user_cache }}'
-
-    steps:
-      - name: 'Fetch source code' 
-        run: echo "Hello"
+          setup_java: 'false'
 
       - name: 'Check for TODO comments' 
         run: echo "Hello"

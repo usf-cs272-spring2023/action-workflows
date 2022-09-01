@@ -8,36 +8,20 @@ on:
         required: true
         type: string
       
-      test_repo:
-        description: "Repository with test project code"
-        required: true
-        type: string
-      
-      user_cache:
-        description: "Commit SHA of project code"
-        required: true
-        type: string
-      
-      test_cache:
-        description: "Commit SHA of test code"
-        required: true
-        type: string
-
       user_path:
         description: "Path to user project code"
         required: true
         type: string
         default: "project-main"
-      
-      test_path:
-        description: "Path to test project code"
+
+      user_cache:
+        description: "Commit SHA of project code"
         required: true
         type: string
-        default: "project-tests"
 
 jobs:
   main:
-    name: 'Warn'
+    name: 'Warnings'
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -53,38 +37,25 @@ jobs:
         uses: ./workflows/.github/actions/project-setup
         with:
           user_repo:  '${{ inputs.user_repo }}'
-          test_repo:  '${{ inputs.test_repo }}'
           user_path:  '${{ inputs.user_path }}'
-          test_path:  '${{ inputs.test_path }}'
           user_cache: '${{ inputs.user_cache }}'
-          test_cache: '${{ inputs.test_cache }}'
 
-      - name: 'Compile project code' 
+      - name: 'Compile source code'
         working-directory: '${{ inputs.user_path }}'
         run: |
           RUN_STATUS=0
-          mvn -ntp -DcompileOptionXlint=-Xlint:none -DcompileOptionXdoclint=-Xdoclint:none -Dmaven.compiler.showWarnings=false -DcompileOptionFail=false compile || RUN_STATUS=$?
+          mvn -ntp -DcompileOptionXlint=-Xlint:all,-processing -DcompileOptionXdoclint=-Xdoclint:none -Dmaven.compiler.showWarnings=true -DcompileOptionFail=true clean compile || RUN_STATUS=$?
           if [[ RUN_STATUS -ne 0 ]]; then
-            echo "::error ::Unable to compile your project source code."
+            echo "::error ::Unable to compile the project source code without warnings."
             exit 1
           fi
 
-      - name: 'Listing source code'
-        working-directory: '${{ inputs.user_path }}'
-        run: |
-          ls -ACGR target/classes
-
-      - name: 'Compile test code' 
+      - name: 'Compile Javadoc comments'
         working-directory: '${{ inputs.user_path }}'
         run: |
           RUN_STATUS=0
-          mvn -ntp -DcompileOptionXlint=-Xlint:none -DcompileOptionXdoclint=-Xdoclint:none -Dmaven.compiler.showWarnings=false -DcompileOptionFail=false test-compile || RUN_STATUS=$?
+          mvn -ntp -DcompileOptionXlint=-Xlint:preview -DcompileOptionXdoclint=-Xdoclint:all/private -Dmaven.compiler.showWarnings=true -DcompileOptionFail=true clean compile || RUN_STATUS=$?
           if [[ RUN_STATUS -ne 0 ]]; then
-            echo "::error ::Unable to compile the project test code."
+            echo "::error ::Unable to compile the project source code without Javadoc warnings."
             exit 1
           fi
-
-      - name: 'Listing test code'
-        working-directory: '${{ inputs.user_path }}'
-        run: |
-          ls -ACGR target/test-classes
