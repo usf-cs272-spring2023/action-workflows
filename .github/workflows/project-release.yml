@@ -90,7 +90,7 @@ jobs:
           path: 'workflows'
 
       - name: 'Setup project code'
-        uses: workflows/.github/actions/project-setup@main
+        uses: ./workflows/.github/actions/project-setup@main
 
       - name: 'Compile source code' 
         run: echo "Hello"
