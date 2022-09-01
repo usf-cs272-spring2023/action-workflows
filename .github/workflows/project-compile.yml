@@ -37,7 +37,7 @@ on:
 
 jobs:
   main:
-    name: 'Main'
+    name: 'Compiles'
     runs-on: ubuntu-latest
     timeout-minutes: 1
 
@@ -49,42 +49,42 @@ jobs:
           repository: usf-cs272-fall2022/action-workflows
           path: 'workflows'
 
-      # - name: 'Setup project code'
-      #   uses: ./workflows/.github/actions/project-setup
-      #   with:
-      #     user_repo:  '${{ inputs.user_repo }}'
-      #     test_repo:  '${{ inputs.test_repo }}'
-      #     user_path:  '${{ inputs.user_path }}'
-      #     test_path:  '${{ inputs.test_path }}'
-      #     user_cache: '${{ inputs.user_cache }}'
-      #     test_cache: '${{ inputs.test_cache }}'
+      - name: 'Setup project code'
+        uses: ./workflows/.github/actions/project-setup
+        with:
+          user_repo:  '${{ inputs.user_repo }}'
+          test_repo:  '${{ inputs.test_repo }}'
+          user_path:  '${{ inputs.user_path }}'
+          test_path:  '${{ inputs.test_path }}'
+          user_cache: '${{ inputs.user_cache }}'
+          test_cache: '${{ inputs.test_cache }}'
 
-      # - name: 'Compile project code' 
-      #   working-directory: '${{ inputs.user_path }}'
-      #   run: |
-      #     RUN_STATUS=0
-      #     mvn -ntp -DcompileOptionXlint=-Xlint:none -DcompileOptionXdoclint=-Xdoclint:none -Dmaven.compiler.showWarnings=false -DcompileOptionFail=false compile || RUN_STATUS=$?
-      #     if [[ RUN_STATUS -ne 0 ]]; then
-      #       echo "::error ::Unable to compile your project source code."
-      #       exit 1
-      #     fi
+      - name: 'Compile project code' 
+        working-directory: '${{ inputs.user_path }}'
+        run: |
+          RUN_STATUS=0
+          mvn -ntp -DcompileOptionXlint=-Xlint:none -DcompileOptionXdoclint=-Xdoclint:none -Dmaven.compiler.showWarnings=false -DcompileOptionFail=false compile || RUN_STATUS=$?
+          if [[ RUN_STATUS -ne 0 ]]; then
+            echo "::error ::Unable to compile your project source code."
+            exit 1
+          fi
 
-      # - name: 'Listing source code'
-      #   working-directory: '${{ inputs.user_path }}'
-      #   run: |
-      #     ls -ACGR target/classes
+      - name: 'Listing source code'
+        working-directory: '${{ inputs.user_path }}'
+        run: |
+          ls -ACGR target/classes
 
-      # - name: 'Compile test code' 
-      #   working-directory: '${{ inputs.user_path }}'
-      #   run: |
-      #     RUN_STATUS=0
-      #     mvn -ntp -DcompileOptionXlint=-Xlint:none -DcompileOptionXdoclint=-Xdoclint:none -Dmaven.compiler.showWarnings=false -DcompileOptionFail=false test-compile || RUN_STATUS=$?
-      #     if [[ RUN_STATUS -ne 0 ]]; then
-      #       echo "::error ::Unable to compile the project test code."
-      #       exit 1
-      #     fi
+      - name: 'Compile test code' 
+        working-directory: '${{ inputs.user_path }}'
+        run: |
+          RUN_STATUS=0
+          mvn -ntp -DcompileOptionXlint=-Xlint:none -DcompileOptionXdoclint=-Xdoclint:none -Dmaven.compiler.showWarnings=false -DcompileOptionFail=false test-compile || RUN_STATUS=$?
+          if [[ RUN_STATUS -ne 0 ]]; then
+            echo "::error ::Unable to compile the project test code."
+            exit 1
+          fi
 
-      # - name: 'Listing test code'
-      #   working-directory: '${{ inputs.user_path }}'
-      #   run: |
-      #     ls -ACGR target/test-classes
+      - name: 'Listing test code'
+        working-directory: '${{ inputs.user_path }}'
+        run: |
+          ls -ACGR target/test-classes

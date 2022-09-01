@@ -77,7 +77,7 @@ jobs:
         run: echo "Hello"
 
   check_compile:
-    name: 'Check Compiles'
+    name: 'Check'
     uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-compile.yml@main
     needs: ['parse_version']
     with:
