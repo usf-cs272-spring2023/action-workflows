@@ -55,6 +55,9 @@ jobs:
       user_cache: '${{ steps.make_keys.outputs.user_cache }}'
       test_cache: '${{ steps.make_keys.outputs.test_cache }}'
 
+      user_path: 'project-main'
+      test_path: 'project-tests'
+
   check_version:
     name: 'Check Version'
     runs-on: ubuntu-latest
@@ -77,9 +80,9 @@ jobs:
     needs: ['parse_version']
     with:
       user_repo:  '${{ github.repository }}'
-      test_repo:  '${{ github.repository_owner }}/${{ env.TEST_PATH }}'
-      user_path:  '${{ env.USER_PATH }}'
-      test_path:  '${{ env.TEST_PATH }}'
+      test_repo:  '${{ github.repository_owner }}/${{ needs.parse_version.outputs.test_path }}'
+      user_path:  '${{ needs.parse_version.outputs.user_path }}'
+      test_path:  '${{ needs.parse_version.outputs.test_path }}'
       user_cache: '${{ needs.parse_version.outputs.user_cache }}'
       test_cache: '${{ needs.parse_version.outputs.test_cache }}'
     # timeout-minutes: 1
