@@ -27,7 +27,7 @@ module.exports = async ({github, context, core}) => {
 
   // cannot continue without a parsable version number
   if (matched === null || matched.length !== 4) {
-    const message = `Unable to parse "${tag}" into major, minor, and patch version numbers. If a release was made in error, delete the release *and* tag (2 separate steps).`; 
+    const message = `Unable to parse "${release_ref}" into major, minor, and patch version numbers. If a release was made in error, delete the release *and* tag (2 separate steps).`; 
     core.exportVariable(`ERROR_MESSAGES`, `${message}\n${process.env.ERROR_MESSAGES}`);
     core.setFailed(message);
     return;
