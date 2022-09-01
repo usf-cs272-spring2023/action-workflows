@@ -57,6 +57,8 @@ jobs:
 
       user_path: 'project-main'
       test_path: 'project-tests'
+      user_repo: '${{ github.repository }}'
+      test_repo: '${{ github.repository_owner }}/project-tests'
 
   check_version:
     name: 'Check Version'
@@ -77,16 +79,16 @@ jobs:
   check_compile:
     name: 'Check Compiles'
     uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-compile.yml@main
+    timeout-minutes: 1
     needs: ['parse_version']
     with:
-      user_repo:  '${{ github.repository }}'
-      test_repo:  '${{ github.repository_owner }}/${{ needs.parse_version.outputs.test_path }}'
+      user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
+      test_repo:  '${{ needs.parse_version.outputs.test_repo }}'
       user_path:  '${{ needs.parse_version.outputs.user_path }}'
       test_path:  '${{ needs.parse_version.outputs.test_path }}'
       user_cache: '${{ needs.parse_version.outputs.user_cache }}'
       test_cache: '${{ needs.parse_version.outputs.test_cache }}'
-    # timeout-minutes: 1
-
+    
     # steps:
     #   - name: 'Checkout workflows'
     #     id: checkout-workflows
