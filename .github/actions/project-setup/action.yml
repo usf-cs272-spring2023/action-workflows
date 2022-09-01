@@ -45,7 +45,7 @@ runs:
 
     - name: 'Clone user code'
       id: clone_user
-      if: steps.cache-user.outputs.cache-hit != 'true'
+      if: ${{ steps.cache-user.outputs.cache-hit != 'true' }}
       uses: actions/checkout@v3
       with:
         repository: ${{ inputs.user_repo }}
@@ -64,7 +64,7 @@ runs:
 
     - name: 'Skip test code'
       id: skip_tests
-      if: github.event.inputs.test_repo == ''
+      if: ${{ github.event.inputs.test_repo == '' }}
       shell: bash
       run: |
         # Skip test code
@@ -72,7 +72,7 @@ runs:
 
     - name: "Cache test code"
       id: cache_test
-      if: github.event.inputs.test_repo != ''
+      if: ${{ steps.skip_tests.outcome == 'skipped' }}
       uses: actions/cache@v3
       with:
         path: ${{ inputs.test_path }}
@@ -80,7 +80,7 @@ runs:
 
     - name: "Clone test code"
       id: clone_test
-      if: steps.cache_test.outcome == 'success' && steps.cache-test.outputs.cache-hit != 'true'
+      if: ${{ steps.skip_tests.outcome == 'skipped' && steps.cache-test.outputs.cache-hit != 'true' }}
       uses: actions/checkout@v3
       with:
         repository: ${{ inputs.test_repo }}
@@ -88,7 +88,7 @@ runs:
 
     - name: "List test code"
       id: check_test
-      if: steps.cache_test.outcome == 'success'
+      if: ${{ steps.skip_tests.outcome == 'skipped' }}
       shell: bash
       run: |
         # List test code
@@ -107,15 +107,15 @@ runs:
 
     - name: 'Skip Java setup'
       id: skip_java
-      if: github.event.inputs.setup_java != 'true'
+      if: ${{ github.event.inputs.setup_java != 'true' }}
       shell: bash
       run: |
-        # Skip test code
+        # Skip Java setup
         echo "Skipping Java setup ${INPUTS_SETUP_JAVA}..."
 
     - name: "Setup Java version"
       id: setup_java
-      if: github.event.inputs.setup_java == 'true'
+      if: ${{ steps.skip_java.outcome == 'skipped' }}
       uses: actions/setup-java@v2
       with:
         distribution: 'temurin'
@@ -124,7 +124,7 @@ runs:
 
     - name: "Check Java version"
       id: check_java
-      if: steps.setup_java.outcome == 'success'
+      if: ${{ steps.setup_java.outcome == 'success' }}
       shell: bash
       run: |
         # Check Java version
@@ -137,7 +137,7 @@ runs:
 
     - name: "Check Maven version"
       id: check_maven
-      if: steps.setup_java.outcome == 'success'
+      if: ${{ steps.setup_java.outcome == 'success' }}
       shell: bash
       working-directory: "${{ inputs.user_path }}"
       run: |
