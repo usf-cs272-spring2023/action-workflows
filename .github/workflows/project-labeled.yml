@@ -25,5 +25,5 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const script = require('./workflows/scripts/check-event-labeled.js');
+            const script = require('./workflows/.github/scripts/check-event-labeled.js');
             return await script({github, context, core});

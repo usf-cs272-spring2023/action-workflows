@@ -40,15 +40,22 @@ on:
         required: true
         type: string
 
+    outputs:
+      status:
+        description: "Status of each step in this workflow"
+        value: ${{ jobs.main.outputs.status }}
+
 jobs:
   main:
     name: 'Tests'
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
+    outputs:
+      status: ${{ steps.step_status.outputs.status }}
+
     steps:
       - name: 'Checkout workflows'
-        id: checkout-workflows
         uses: actions/checkout@v3
         with:
           repository: usf-cs272-fall2022/action-workflows
@@ -68,20 +75,30 @@ jobs:
       - name: 'Compile project code' 
         working-directory: '${{ inputs.user_path }}'
         run: |
-          RUN_STATUS=0
-          mvn -ntp -DcompileOptionXlint=-Xlint:none -DcompileOptionXdoclint=-Xdoclint:none -Dmaven.compiler.showWarnings=false -DcompileOptionFail=false compile test-compile || RUN_STATUS=$?
-          if [[ RUN_STATUS -ne 0 ]]; then
-            echo "::error ::Unable to compile your project source code."
-            exit 1
-          fi
+          # RUN_STATUS=0
+          mvn -ntp -DcompileOptionXlint=-Xlint:none -DcompileOptionXdoclint=-Xdoclint:none -Dmaven.compiler.showWarnings=false -DcompileOptionFail=false compile test-compile #|| RUN_STATUS=$?
+          # if [[ RUN_STATUS -ne 0 ]]; then
+          #   echo "::error ::Unable to compile your project source code."
+          #   exit 1
+          # fi
 
       - name: 'Run project tests'
         working-directory: '${{ inputs.user_path }}'
         env:
           TEST_TAG: ${{ inputs.test_tag }}
         run: |
-          RUN_STATUS=0
-          mvn -ntp -Dgroups="${TEST_TAG}" test || RUN_STATUS=$?
-          if [[ RUN_STATUS -ne 0 ]]; then
-            echo "::error ::One or more tests did not pass." && exit 1
-          fi
+          # RUN_STATUS=0
+          mvn -ntp -Dgroups="${TEST_TAG}" test #|| RUN_STATUS=$?
+          # if [[ RUN_STATUS -ne 0 ]]; then
+          #   echo "::error ::One or more tests did not pass." && exit 1
+          # fi
+
+      - name: 'Save step status'
+        id: step_status
+        uses: actions/github-script@v6
+        if: ${{ always() }}
+        with:
+          script: |
+            const status = JSON.stringify(steps);
+            core.setOutput('status', status);
+            core.info(status);

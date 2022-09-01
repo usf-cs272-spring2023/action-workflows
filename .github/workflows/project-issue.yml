@@ -16,9 +16,9 @@ jobs:
           repository: usf-cs272-fall2022/action-workflows
           path: 'workflows'
 
-      - name: 'Check Issue Event'
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const script = require('./workflows/scripts/check-event-issue.js');
-            return await script({github, context, core});
+      # - name: 'Check Issue Event'
+      #   uses: actions/github-script@v6
+      #   with:
+      #     script: |
+      #       const script = require('./workflows/scripts/check-event-issue.js');
+      #       return await script({github, context, core});

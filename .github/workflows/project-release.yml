@@ -181,6 +181,14 @@ jobs:
       - name: 'Save results to JSON'
         run: echo "Hello"
 
+      - name: 'Output job status'
+        id: step_status
+        uses: actions/github-script@v6
+        if: ${{ always() }}
+        with:
+          script: |
+            core.info(JSON.stringify(jobs, null, "  "));
+
   update_release:
     name: 'Update Release'
     runs-on: ubuntu-latest
