@@ -12,7 +12,6 @@ env:
   USER_PATH: 'project-main'
   TEST_PATH: 'project-tests'
   JSON_NAME: 'release-results'
-  ERROR_MESSAGES: ''
 
 jobs:
   parse_version:
@@ -48,11 +47,10 @@ jobs:
           echo "::set-output name=test_cache::${TEST_PATH}-${TEST_SHA}"
 
     outputs:
+      release_tag:   '${{ steps.parse_release.outputs.release_tag }}'
       version_major: '${{ steps.parse_release.outputs.version_major }}'
       version_minor: '${{ steps.parse_release.outputs.version_minor }}'
       version_patch: '${{ steps.parse_release.outputs.version_patch }}'
-
-      release_tag: '${{ steps.parse_release.outputs.release_tag }}'
 
       user_cache: '${{ steps.make_keys.outputs.user_cache }}'
       test_cache: '${{ steps.make_keys.outputs.test_cache }}'
@@ -84,8 +82,8 @@ jobs:
       TEST_CACHE: '${{ needs.parse_version.outputs.test_cache }}'
 
     steps:
-      - name: 'Setup project code'
-        run: echo "Hello"
+      - name: 'Setup project code '
+        uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-setup.yml@main
 
       - name: 'Compile source code' 
         run: echo "Hello"

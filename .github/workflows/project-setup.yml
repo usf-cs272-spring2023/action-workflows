@@ -1,135 +1,134 @@
-# TODO Convert to workflow
+name: "Project Setup"
 
-name: "Project Setup Action"
-description: "Reusable action for setting up project main and test code"
+on:
+  workflow_call:
+    inputs:
+      user_repo:
+        description: "Repository with user project code"
+        required: true
+      
+      test_repo:
+        description: "Repository with test project code"
+        required: true
+      
+      user_cache:
+        description: "Commit SHA of project code"
+        required: true
+      
+      test_cache:
+        description: "Commit SHA of test code"
+        required: true
 
-inputs:
-  user_repo:
-    description: "Repository with user project code"
-    required: true
-  
-  test_repo:
-    description: "Repository with test project code"
-    required: true
-  
-  user_cache:
-    description: "Commit SHA of project code"
-    required: true
-  
-  test_cache:
-    description: "Commit SHA of test code"
-    required: true
+      user_path:
+        description: "Path to user project code"
+        required: true
+        default: "project-main"
+      
+      test_path:
+        description: "Path to test project code"
+        required: true
+        default: "project-tests"
 
-  user_path:
-    description: "Path to user project code"
-    required: true
-    default: "project-main"
-  
-  test_path:
-    description: "Path to test project code"
-    required: true
-    default: "project-tests"
+jobs:
+  main:
+    name: 'Setup'
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
 
-runs:
-  using: "composite"
-  steps:
-    - name: "Cache User Code"
-      id: cache_user
-      uses: actions/cache@v3
-      with:
-        path: project-user
-        key: ${{ inputs.user_cache }}
+    steps:
+      - name: 'Cache user code'
+        id: cache_user
+        uses: actions/cache@v3
+        with:
+          path: project-user
+          key: ${{ inputs.user_cache }}
 
-    - name: "Clone User Code"
-      id: clone_user
-      if: steps.cache-user.outputs.cache-hit != 'true'
-      uses: actions/checkout@v3
-      with:
-        repository: ${{ inputs.user_repo }}
-        path: ${{ inputs.user_path }}
+      - name: 'Clone user code'
+        id: clone_user
+        if: steps.cache-user.outputs.cache-hit != 'true'
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ inputs.user_repo }}
+          path: ${{ inputs.user_path }}
 
-    - name: "Check User Code"
-      id: check_user
-      shell: bash
-      run: |
-        echo " "
-        echo "::group::Listing user files"
-        echo "User Code"
-        ls -ACGR ${{ inputs.user_path }}/src/
-        echo "::endgroup::"
+      - name: 'List user code'
+        id: check_user
+        shell: bash
+        run: |
+          echo " "
+          echo "::group::Listing user files"
+          echo "User Code"
+          ls -ACGR ${{ inputs.user_path }}/src/
+          echo "::endgroup::"
 
-    - name: "Cache Test Code"
-      id: cache_test
-      uses: actions/cache@v3
-      with:
-        path: ${{ inputs.test_path }}
-        key: ${{ inputs.test_cache }}
+      - name: "Cache test code"
+        id: cache_test
+        uses: actions/cache@v3
+        with:
+          path: ${{ inputs.test_path }}
+          key: ${{ inputs.test_cache }}
 
-    - name: "Clone Test Code"
-      id: clone_test
-      if: steps.cache-test.outputs.cache-hit != 'true'
-      uses: actions/checkout@v3
-      with:
-        repository: ${{ inputs.test_repo }}
-        path: ${{ inputs.test_path }}
+      - name: "Clone test code"
+        id: clone_test
+        if: steps.cache-test.outputs.cache-hit != 'true'
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ inputs.test_repo }}
+          path: ${{ inputs.test_path }}
 
-    - name: "Check Test Code"
-      id: check_test
-      shell: bash
-      run: |
-        echo " "
-        echo "::group::Listing test files"
+      - name: "Check test code"
+        id: check_test
+        shell: bash
+        run: |
+          echo " "
+          echo "::group::Listing test files"
+          
+          echo "Test Code"
+          ls -ACGR ${{ inputs.test_path }}/src
+          
+          echo " "
+          echo "Test Input"
+          ls -ACGR ${{ inputs.test_path }}/input
+          
+          echo " "
+          echo "Test Output"
+          ls -ACGR ${{ inputs.test_path }}/expected-nix
         
-        echo "Test Code"
-        ls -ACGR ${{ inputs.test_path }}/src
-        
-        echo " "
-        echo "Test Input"
-        ls -ACGR ${{ inputs.test_path }}/input
-        
-        echo " "
-        echo "Test Output"
-        ls -ACGR ${{ inputs.test_path }}/expected-nix
-       
-        echo "::endgroup::"
-        
-        echo " "
-        echo "::group::Listing parent directory"
-        ls -ACG .
-        echo "::endgroup::"
+          echo "::endgroup::"
+          
+          echo " "
+          echo "::group::Listing parent directory"
+          ls -ACG .
+          echo "::endgroup::"
 
-    - name: "Setup Java"
-      id: setup_java
-      uses: actions/setup-java@v2
-      with:
-        distribution: 'temurin'
-        java-version: '17'
-        cache: 'maven'
+      - name: "Setup Java version"
+        id: setup_java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
 
-    - name: "Check Java"
-      id: check_java
-      shell: bash
-      run: |
-        echo " "
-        echo "::group::Check versions"
-        java --version
-        echo ""
+      - name: "Check Java version"
+        id: check_java
+        shell: bash
+        run: |
+          echo " "
+          echo "::group::Check versions"
+          java --version
+          echo ""
+          javac --version
+          echo ""
+          echo "::endgroup::"
 
-        javac --version
-        echo ""
-
-        echo "::endgroup::"
-
-    - name: "Check Maven"
-      id: check_maven
-      shell: bash
-      working-directory: "${{ inputs.user_path }}"
-      run: |
-        echo " "
-        mvn --version
-        echo " "
-
-        echo "::group::Resolving dependencies..."
-        mvn dependency:go-offline
-        
-        echo "::endgroup::"
+      - name: "Check Maven version"
+        id: check_maven
+        shell: bash
+        working-directory: "${{ inputs.user_path }}"
+        run: |
+          echo " "
+          mvn --version
+          echo " "
+          echo "::group::Resolving dependencies..."
+          mvn dependency:go-offline
+          echo "::endgroup::"
