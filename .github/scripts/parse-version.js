@@ -1,10 +1,12 @@
 module.exports = async ({github, context, core}) => {
   // set the release ref from input or from event
   let release_ref = undefined;
+  let release_id = undefined;
 
   switch (context.eventName) {
     case 'release':
       release_ref = context.ref;
+      release_id = context.payload.release.id;
       break;
     case 'workflow_dispatch':
       release_ref = `refs/tags/${context.payload.inputs.release_tag}`;
@@ -16,7 +18,7 @@ module.exports = async ({github, context, core}) => {
       return;
   }
 
-  core.info(`Using release reference: ${release_ref}`);
+  core.info(`Using release reference: ${release_ref} (id ${release_id})`);
 
   // parse release ref into parts
   const regex = /^refs\/tags\/v([1-4])\.(\d+)\.(\d+)$/;
@@ -34,7 +36,9 @@ module.exports = async ({github, context, core}) => {
   out.version_major = parseInt(matched[1]);
   out.version_minor = parseInt(matched[2]);
   out.version_patch = parseInt(matched[3]);
+  
   out.release_tag = `v${out.version_major}.${out.version_minor}.${out.version_patch}`;
+  out.release_id  = release_id;
 
   // output and set result
   core.startGroup('Setting output...');

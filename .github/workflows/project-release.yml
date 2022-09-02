@@ -100,34 +100,11 @@ jobs:
       user_path:  '${{ needs.parse_version.outputs.user_path }}'
       user_cache: '${{ needs.parse_version.outputs.user_cache }}'
 
-  # save_results:
-  #   name: 'Save Results'
-  #   runs-on: ubuntu-latest
-  #   needs: ['parse_version', 'check_version', 'check_compile', 'check_tests', 'check_past', 'check_next', 'check_warnings', 'check_style']
-  #   if: ${{ always() }}
-  #   timeout-minutes: 1
-
-  #   steps:
-  #     - name: 'Save results to JSON'
-  #       run: echo "Hello"
-
-  #     - name: 'Output job status'
-  #       id: step_status
-  #       uses: actions/github-script@v6
-  #       if: ${{ always() }}
-  #       env:
-  #         JOB_STATUS: ${{ toJSON(needs) }}
-  #       with:
-  #         script: |
-  #           core.info(JSON.stringify(process.env.JOB_STATUS, null, "  "));
-
-  # update_release:
-  #   name: 'Update Release'
-  #   runs-on: ubuntu-latest
-  #   needs: ['parse_version', 'check_version', 'check_compile', 'check_tests', 'check_past', 'check_next', 'check_warnings', 'check_style']
-  #   if: ${{ always() }}
-  #   timeout-minutes: 1
-
-  #   steps:
-  #     - name: 'Update release description'
-  #       run: echo "Hello"
+  save_results:
+    name: 'Save'
+    uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-results.yml@main
+    needs: ['parse_version', 'check_version', 'check_compile', 'check_tests', 'check_past', 'check_next', 'check_warnings', 'check_style']
+    if: ${{ always() }}
+    with:
+      results: ${{ toJSON(needs) }}
+      release_id: '${{ needs.parse_version.outputs.release_id }}'
