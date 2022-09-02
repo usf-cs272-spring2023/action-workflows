@@ -104,7 +104,7 @@ jobs:
           script: |
             const major = parseInt(process.env.VERSION_MAJOR);
 
-            if (major !== 0) {
+            if (major !== 1) {
               core.setFailed(`Creating a v${major} release for project ${major} is not yet supported.`);
             }
 
