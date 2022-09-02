@@ -94,6 +94,8 @@ jobs:
 
       - name: 'Generate cache keys'
         id: generate_keys
+        env:
+          TEST_PATH: ${{ inputs.test_path }}
         run: |
           # USER_SHA=${{ github.sha }}
           USER_KEY=${{ steps.parse_release.outputs.release_tag }}_${{ steps.parse_release.outputs.release_id }}
