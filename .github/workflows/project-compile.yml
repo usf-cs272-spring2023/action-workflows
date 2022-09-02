@@ -102,10 +102,24 @@ jobs:
           ls -ACGR target/classes
 
       - name: 'Compile test code' 
-        working-directory: '${{ inputs.user_path }}'
         id: compile_test_code
-        run: |
-          mvn -ntp -DcompileOptionXlint=-Xlint:none -DcompileOptionXdoclint=-Xdoclint:none -Dmaven.compiler.showWarnings=false -DcompileOptionFail=false test-compile
+        uses: actions/github-script@v6
+        env:
+          USER_PATH: '${{ inputs.user_path }}'
+        with:
+          script: |
+            const command = 'mvn'
+            const args = ['-ntp', '-DcompileOptionXlint=-Xlint:none', '-DcompileOptionXdoclint=-Xdoclint:none', '-Dmaven.compiler.showWarnings=false', '-DcompileOptionFail=false', 'test-compile'];
+            const cwd = `${process.env.USER_PATH}`;
+            const message = `Unable to compile project source code using Maven.`;
+            const expected = 0;
+
+            const options = {ignoreReturnCode: true, cwd: cwd};
+            const result = await exec.exec(command, args, options);
+
+            if (result !== expected) {
+              core.setFailed(message);
+            }
 
       - name: 'Listing test code'
         id: list_test_code
