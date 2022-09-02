@@ -50,6 +50,8 @@ jobs:
           user_cache: '${{ inputs.user_cache }}'
           setup_java: 'false'
 
+      # Uses github-script and exec instead of bash for better output than "Process returned exit code 1."
+
       - name: 'Check extra main methods'
         uses: actions/github-script@v6
         id: check_main_methods
@@ -59,9 +61,11 @@ jobs:
           script: |
             const command = 'grep'
             const args = ['-rnoE', '--exclude=Driver.java', "'\\s*public\\s+static\\s+void\\s+main\\s*\\('"];
-            const options = {
-              ignoreReturnCode: true,
-              cwd: `${process.env.USER_PATH}/src/main/java`,
+            const cwd = `${process.env.USER_PATH}/src/main/java`;
+            const message = `Except for Driver.java, you should delete old main methods from your code.`;
+
+            const options = {ignoreReturnCode: true, cwd: cwd};
+            options.listeners = {
               stdout: (data: Buffer) => {
                 core.info(data.toString());
               },
@@ -72,7 +76,7 @@ jobs:
             const result = await exec.exec(command, args, options);
 
             if (result !== 0) {
-              core.setFailed(`Except for Driver.java, you should delete old main methods from your code.`);
+              core.setFailed(message);
             }
       
       - name: 'Save step status'
