@@ -5,49 +5,41 @@ on:
     inputs:
       release_tag:
         description: "Project release version number or tag (e.g. v1.0.0)"
-        required: false
+        required: true
         type: string
-
-    outputs:
-      release_tag:
-        description: "The release tag"
-        value: '${{ jobs.main.outputs.release_tag }}'
 
       version_major:
         description: "The major version number (i.e. project number) from the release tag"
-        value: '${{ jobs.main.outputs.version_major }}'
+        required: true
+        type: string
 
       version_minor:
         description: "The minor version number (i.e. code review number) from the release tag"
-        value: '${{ jobs.main.outputs.version_minor }}'
+        required: true
+        type: string
 
       version_patch:
         description: "The patch version number from the release tag"
-        value: '${{ jobs.main.outputs.version_patch }}'
-
-      user_cache:
-        description: "Key to use to cache the source repository"
-        value: '${{ jobs.main.outputs.user_cache }}'
-
-      test_cache:
-        description: "Key to use to cache the test repository"
-        value: '${{ jobs.main.outputs.test_cache }}'
-
-      user_path:
-        description: "Local path to store the project source code"
-        value: 'project-main'
-
-      test_path:
-        description: "Local path to store the project test code"
-        value: 'project-tests'
+        required: true
+        type: string
 
       user_repo:
         description: "Repository to use for the project source code"
-        value: '${{ github.repository }}'
+        required: true
+        type: string
 
-      test_repo:
-        description: "Repository to use for the project test code"
-        value: '${{ github.repository_owner }}/project-tests'
+    outputs:
+      major_status:
+        description: "An warning message if there are problems with the major version number, otherwise an empty string"
+        value: ${{ jobs.main.outputs.major_status }}
+
+      minor_status:
+        description: "An warning message if there are problems with the minor version number, otherwise an empty string"
+        value: ${{ jobs.main.outputs.minor_status }}
+
+      patch_status:
+        description: "An warning message if there are problems with the patch version number, otherwise an empty string"
+        value: ${{ jobs.main.outputs.patch_status }}
 
       status:
         description: "Status of each step in this workflow"
@@ -57,17 +49,12 @@ jobs:
   main:
     name: 'Version'
     runs-on: ubuntu-latest
-    timeout-minutes: 1
+    timeout-minutes: 5
 
     outputs:
-      release_tag:   '${{ steps.parse_release.outputs.release_tag }}'
-      version_major: '${{ steps.parse_release.outputs.version_major }}'
-      version_minor: '${{ steps.parse_release.outputs.version_minor }}'
-      version_patch: '${{ steps.parse_release.outputs.version_patch }}'
-
-      user_cache: '${{ steps.generate_keys.outputs.user_cache }}'
-      test_cache: '${{ steps.generate_keys.outputs.test_cache }}'
-
+      major_status: '${{ steps.fetch_progress.outputs.major_status }}'
+      minor_status: '${{ steps.fetch_progress.outputs.minor_status }}'
+      patch_status: '${{ steps.fetch_progress.outputs.patch_status }}'
       status: ${{ steps.step_status.outputs.status }}
 
     steps:
@@ -78,24 +65,13 @@ jobs:
           repository: usf-cs272-fall2022/action-workflows
           path: 'workflows'
 
-      - name: 'Parse release tag'
-        id: parse_release
+      - name: 'Fetch project progress'
+        id: fetch_progress
         uses: actions/github-script@v6
         with:
           script: |
-            const script = require('./workflows/.github/scripts/parse-version.js');
+            const script = require('./workflows/.github/scripts/fetch-progress.js');
             return await script({github, context, core});
-
-      - name: 'Generate cache keys'
-        id: generate_keys
-        run: |
-          USER_SHA=${{ github.sha }}
-          echo "User SHA: ${USER_SHA}"
-          echo "::set-output name=user_cache::${USER_PATH}-${USER_SHA}"
-
-          TEST_SHA=$(git ls-remote --refs https://github.com/${{ github.repository_owner }}/${TEST_PATH}.git main | head -1 | cut -f 1)
-          echo "Test SHA: ${TEST_SHA}"
-          echo "::set-output name=test_cache::${TEST_PATH}-${TEST_SHA}"
       
       - name: 'Save step status'
         id: step_status
