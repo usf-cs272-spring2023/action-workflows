@@ -45,7 +45,7 @@ runs:
 
     - name: 'Clone user code'
       id: clone_user
-      if: ${{ steps.cache-user.outputs.cache-hit != 'true' }}
+      if: ${{ steps.cache_user.outputs.cache-hit != 'true' }}
       uses: actions/checkout@v3
       with:
         repository: ${{ inputs.user_repo }}
