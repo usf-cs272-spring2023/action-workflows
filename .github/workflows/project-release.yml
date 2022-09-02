@@ -16,68 +16,19 @@ env:
 jobs:
   parse_version:
     name: 'Parse'
-    uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-version.yml@main
+    uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-parse.yml@main
     with:
       release_tag: '${{ inputs.release_tag }}'
-    # runs-on: ubuntu-latest
-    # timeout-minutes: 1
-
-    # steps:
-    #   - name: 'Checkout workflows'
-    #     id: checkout-workflows
-    #     uses: actions/checkout@v3
-    #     with:
-    #       repository: usf-cs272-fall2022/action-workflows
-    #       path: 'workflows'
-
-    #   - name: 'Parse release tag'
-    #     id: parse_release
-    #     uses: actions/github-script@v6
-    #     with:
-    #       script: |
-    #         const script = require('./workflows/.github/scripts/parse-version.js');
-    #         return await script({github, context, core});
-
-    #   - name: 'Generate cache keys'
-    #     id: make_keys
-    #     run: |
-    #       USER_SHA=${{ github.sha }}
-    #       echo "User SHA: ${USER_SHA}"
-    #       echo "::set-output name=user_cache::${USER_PATH}-${USER_SHA}"
-
-    #       TEST_SHA=$(git ls-remote --refs https://github.com/${{ github.repository_owner }}/${TEST_PATH}.git main | head -1 | cut -f 1)
-    #       echo "Test SHA: ${TEST_SHA}"
-    #       echo "::set-output name=test_cache::${TEST_PATH}-${TEST_SHA}"
-
-    # outputs:
-    #   release_tag:   '${{ steps.parse_release.outputs.release_tag }}'
-    #   version_major: '${{ steps.parse_release.outputs.version_major }}'
-    #   version_minor: '${{ steps.parse_release.outputs.version_minor }}'
-    #   version_patch: '${{ steps.parse_release.outputs.version_patch }}'
-
-    #   user_cache: '${{ steps.make_keys.outputs.user_cache }}'
-    #   test_cache: '${{ steps.make_keys.outputs.test_cache }}'
-
-    #   user_path: 'project-main'
-    #   test_path: 'project-tests'
-    #   user_repo: '${{ github.repository }}'
-    #   test_repo: '${{ github.repository_owner }}/project-tests'
 
   check_version:
-    name: 'Check Version'
-    runs-on: ubuntu-latest
-    needs: ['parse_version']
-    timeout-minutes: 5
-
-    env:
-      RELEASE_TAG: '${{ needs.parse_version.outputs.release_tag }}'
-      VERSION_MAJOR: '${{ needs.parse_version.outputs.version_major }}'
-      VERSION_MINOR: '${{ needs.parse_version.outputs.version_minor }}'
-      VERSION_PATCH: '${{ needs.parse_version.outputs.version_patch }}'
-
-    steps:
-      - name: 'Check version'
-        run: echo "Hello"
+    name: 'Check'
+    uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-version.yml@main
+    with:
+      user_repo:     '${{ needs.parse_version.outputs.user_repo }}'
+      release_tag:   '${{ needs.parse_version.outputs.release_tag }}'
+      version_major: '${{ needs.parse_version.outputs.version_major }}'
+      version_minor: '${{ needs.parse_version.outputs.version_minor }}'
+      version_patch: '${{ needs.parse_version.outputs.version_patch }}'
 
   check_compile:
     name: 'Check'
