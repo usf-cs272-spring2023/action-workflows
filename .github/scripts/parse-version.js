@@ -8,14 +8,30 @@ module.exports = async ({github, context, core}) => {
       release_ref = context.ref;
       release_id = context.payload.release.id;
       break;
+
     case 'workflow_dispatch':
-      release_ref = `refs/tags/${context.payload.inputs.release_tag}`;
-      // TODO Set release id here!
+      try {
+        const response = await github.rest.repos.getReleaseByTag({
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          tag: context.payload.inputs.release_tag
+        });
+
+        if (response.status !== 200) {
+          throw new Error(`Status ${response.status}`);
+        }
+
+        release_ref = `refs/tags/${response.data.tag_name}`;
+        release_id = response.data.id;
+      }
+      catch (error) {
+        core.setFailed(`Unable to fetch release ${release_ref} (${error.message}).`);
+      }
+
       break;
+
     default:
-      const message = `Unexpected event type for parsing release: ${context.eventName}`;
-      core.setFailed(message);
-      core.setOutput('ERROR_MESSAGES', message);
+      core.setFailed(`Unexpected event type for parsing release: ${context.eventName}`);
       return;
   }
 
@@ -27,9 +43,7 @@ module.exports = async ({github, context, core}) => {
 
   // cannot continue without a parsable version number
   if (matched === null || matched.length !== 4) {
-    const message = `Unable to parse "${release_ref}" into major, minor, and patch version numbers. If a release was made in error, delete the release *and* tag (2 separate steps).`; 
-    core.setFailed(message);
-    core.setOutput('ERROR_MESSAGES', message);
+    core.setFailed(`Unable to parse "${release_ref}" into major, minor, and patch version numbers. If a release was made in error, delete the release *and* tag (2 separate steps).`);
     return;
   }
 
