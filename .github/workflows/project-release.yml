@@ -185,9 +185,11 @@ jobs:
         id: step_status
         uses: actions/github-script@v6
         if: ${{ always() }}
+        env:
+          JOB_STATUS: ${{ toJSON(jobs) }}
         with:
           script: |
-            core.info(JSON.stringify(jobs, null, "  "));
+            core.info(JSON.stringify(process.env.STEP_STATUS, null, "  "));
 
   update_release:
     name: 'Update Release'

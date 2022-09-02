@@ -56,12 +56,14 @@ jobs:
 
     steps:
       - name: 'Checkout workflows'
+        id: checkout_workflows
         uses: actions/checkout@v3
         with:
           repository: usf-cs272-fall2022/action-workflows
           path: 'workflows'
 
       - name: 'Setup project code'
+        id: setup_project_code
         uses: ./workflows/.github/actions/project-setup
         with:
           user_repo:  '${{ inputs.user_repo }}'
@@ -72,7 +74,8 @@ jobs:
           test_cache: '${{ inputs.test_cache }}'
           setup_java: 'true'
           
-      - name: 'Compile project code' 
+      - name: 'Compile project code'
+        id: compile_project_code 
         working-directory: '${{ inputs.user_path }}'
         run: |
           # RUN_STATUS=0
@@ -83,6 +86,7 @@ jobs:
           # fi
 
       - name: 'Run project tests'
+        id: run_project_tests
         working-directory: '${{ inputs.user_path }}'
         env:
           TEST_TAG: ${{ inputs.test_tag }}
@@ -97,8 +101,9 @@ jobs:
         id: step_status
         uses: actions/github-script@v6
         if: ${{ always() }}
+        env:
+          STEP_STATUS: ${{ toJSON(steps) }}
         with:
           script: |
-            const status = JSON.stringify(steps);
-            core.setOutput('status', status);
-            core.info(status);
+            core.setOutput('status', process.env.STEP_STATUS);
+            core.info(process.env.STEP_STATUS);
