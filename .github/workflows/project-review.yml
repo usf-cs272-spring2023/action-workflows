@@ -5,8 +5,12 @@ on:
 
 jobs:
   main:
-    name: 'Check Pull'
+    name: 'Run'
     runs-on: ubuntu-latest
 
     steps:
-      - run: echo "Hello"
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            core.setFailed('This action is not yet supported.');
+

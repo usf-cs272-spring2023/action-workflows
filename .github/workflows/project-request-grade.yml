@@ -5,6 +5,11 @@ on:
 
 jobs:
   main:
-    name: 'Testing'
+    name: 'Run'
+
     steps:
-      - run: echo "Hello"
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            core.setFailed('This action is not yet supported.');
+
