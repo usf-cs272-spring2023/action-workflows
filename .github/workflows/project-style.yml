@@ -59,23 +59,8 @@ jobs:
           USER_PATH: '${{ inputs.user_path }}'
         with:
           script: |
-            const command = 'grep'
-            const args = ['-rnoE', '--exclude=Driver.java', "'\\s*public\\s+static\\s+void\\s+main\\s*\\('"];
-            const cwd = `${process.env.USER_PATH}/src/main/java`;
-            const message = `Except for Driver.java, you should delete old main methods from your code.`;
-
-            const options = {ignoreReturnCode: true, cwd: cwd};
-            let output = '';
-            options.listeners = {
-              stdout: (data: Buffer) => {
-                output += data.toString();
-              }
-            };
-            const result = await exec.exec(command, args, options);
-
-            if (result !== 0) {
-              core.setFailed(message);
-            }
+            const script = require('./workflows/.github/scripts/run-exec.js');
+            return await script({exec, core});
       
       - name: 'Save step status'
         id: step_status
