@@ -10,6 +10,7 @@ module.exports = async ({github, context, core}) => {
       break;
     case 'workflow_dispatch':
       release_ref = `refs/tags/${context.payload.inputs.release_tag}`;
+      // TODO Set release id here!
       break;
     default:
       const message = `Unexpected event type for parsing release: ${context.eventName}`;
@@ -36,7 +37,7 @@ module.exports = async ({github, context, core}) => {
   out.version_major = parseInt(matched[1]);
   out.version_minor = parseInt(matched[2]);
   out.version_patch = parseInt(matched[3]);
-  
+
   out.release_tag = `v${out.version_major}.${out.version_minor}.${out.version_patch}`;
   out.release_id  = release_id;
 

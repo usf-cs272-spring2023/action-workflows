@@ -25,3 +25,16 @@ jobs:
           RESULTS: ${{ inputs.results }}
         run: echo ${RESULTS}
 
+      - name: 'Update release'
+        id: update_release
+        uses: actions/github-script@v6
+        env:
+          RELEASE_ID: ${{ inputs.release_id }}
+        with:
+          script: |
+            await github.rest.repos.updateRelease({
+              owner: context.repo.owner,
+              rep: context.repo.repo,
+              release_id: release_id,
+              body: `See [run #${context.runNumber} (id ${context.runId})](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for details.`
+            });
