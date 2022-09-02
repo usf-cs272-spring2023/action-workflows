@@ -3,6 +3,11 @@ name: 'Check Compile'
 on:
   workflow_call:
     inputs:
+      release_ref:
+        description: "The release ref (for checkout)"
+        required: true
+        type: string
+
       user_repo:
         description: "Repository with user project code"
         required: true
@@ -14,12 +19,12 @@ on:
         type: string
       
       user_cache:
-        description: "Commit SHA of project code"
+        description: "Cache key of project code"
         required: true
         type: string
       
       test_cache:
-        description: "Commit SHA of test code"
+        description: "Cache key of test code"
         required: true
         type: string
 
@@ -66,13 +71,14 @@ jobs:
         id: setup_project_code
         uses: ./workflows/.github/actions/project-setup
         with:
-          user_repo:  '${{ inputs.user_repo }}'
-          test_repo:  '${{ inputs.test_repo }}'
-          user_path:  '${{ inputs.user_path }}'
-          test_path:  '${{ inputs.test_path }}'
-          user_cache: '${{ inputs.user_cache }}'
-          test_cache: '${{ inputs.test_cache }}'
-          setup_java: 'true'
+          release_ref: '${{ inputs.release_ref }}'
+          user_repo:   '${{ inputs.user_repo }}'
+          test_repo:   '${{ inputs.test_repo }}'
+          user_path:   '${{ inputs.user_path }}'
+          test_path:   '${{ inputs.test_path }}'
+          user_cache:  '${{ inputs.user_cache }}'
+          test_cache:  '${{ inputs.test_cache }}'
+          setup_java:  'true'
           
       - name: 'Compile project code'
         id: compile_project_code 

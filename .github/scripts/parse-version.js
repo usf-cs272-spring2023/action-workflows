@@ -54,6 +54,7 @@ module.exports = async ({github, context, core}) => {
   out.version_patch = parseInt(matched[3]);
 
   out.release_tag = `v${out.version_major}.${out.version_minor}.${out.version_patch}`;
+  out.release_ref = release_ref;
   out.release_id  = release_id;
 
   // output and set result

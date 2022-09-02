@@ -15,7 +15,7 @@ on:
         default: "project-main"
 
       user_cache:
-        description: "Commit SHA of project code"
+        description: "Cache key of project code"
         required: true
         type: string
 

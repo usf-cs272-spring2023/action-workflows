@@ -13,6 +13,10 @@ on:
         description: "The release tag"
         value: '${{ jobs.main.outputs.release_tag }}'
 
+      release_ref:
+        description: "The release ref (for checkout)"
+        value: '${{ jobs.main.outputs.release_ref }}'
+
       release_id:
         description: "The release id"
         value: '${{ jobs.main.outputs.release_id }}'
@@ -64,8 +68,9 @@ jobs:
     timeout-minutes: 1
 
     outputs:
-      release_tag:   '${{ steps.parse_release.outputs.release_tag }}'
-      release_id:    '${{ steps.parse_release.outputs.release_id }}'
+      release_tag: '${{ steps.parse_release.outputs.release_tag }}'
+      release_ref: '${{ steps.parse_release.outputs.release_ref }}'
+      release_id:  '${{ steps.parse_release.outputs.release_id }}'
 
       version_major: '${{ steps.parse_release.outputs.version_major }}'
       version_minor: '${{ steps.parse_release.outputs.version_minor }}'
