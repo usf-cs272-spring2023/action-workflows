@@ -30,15 +30,15 @@ on:
 
     outputs:
       major_status:
-        description: "An warning message if there are problems with the major version number, otherwise an empty string"
+        description: "Set to 'true' if everything looks okay, or an warning message if there are problems with the major version number"
         value: ${{ jobs.main.outputs.major_status }}
 
       minor_status:
-        description: "An warning message if there are problems with the minor version number, otherwise an empty string"
+        description: "Set to 'true' if everything looks okay, or an warning message if there are problems with the minor version number"
         value: ${{ jobs.main.outputs.minor_status }}
 
       patch_status:
-        description: "An warning message if there are problems with the patch version number, otherwise an empty string"
+        description: "Set to 'true' if everything looks okay, or an warning message if there are problems with the patch version number"
         value: ${{ jobs.main.outputs.patch_status }}
 
       status:
@@ -64,6 +64,19 @@ jobs:
         with:
           repository: usf-cs272-fall2022/action-workflows
           path: 'workflows'
+
+      - name: 'Check patch number'
+        id: fetch_progress
+        uses: actions/github-script@v6
+        env:
+          RELEASE_TAG:   '${{ inputs.release_tag }}'
+          VERSION_MAJOR: '${{ inputs.version_major }}'
+          VERSION_MINOR: '${{ inputs.version_minor }}'
+          VERSION_PATCH: '${{ inputs.version_patch }}'
+        with:
+          script: |
+            const script = require('./workflows/.github/scripts/check-patch.js');
+            return await script({github, context, core});
 
       - name: 'Fetch project progress'
         id: fetch_progress
