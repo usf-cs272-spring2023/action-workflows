@@ -2,5 +2,5 @@
 module.exports = async ({github, context, core}) => {
   core.info(JSON.stringify(context, null, "  "));
 
-  
+  core.info(core.getInput('version_major'));
 };
