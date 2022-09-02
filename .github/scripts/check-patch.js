@@ -40,7 +40,7 @@ module.exports = async ({github, context, core}) => {
 
       const filtered = response.data.filter(x => x.tag_name.startsWith(`v${major}.${minor}`));
 
-      if (filtered === 1 && filtered.shift().tag_name === release) {
+      if (filtered.length === 1 && filtered.shift().tag_name === release) {
         core.info(`Found no v${major}.${minor}.# releases other than ${release}...`);
       }
       else {
