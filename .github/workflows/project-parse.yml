@@ -98,13 +98,13 @@ jobs:
       - name: 'Generate cache keys'
         id: generate_keys
         run: |
-          USER_PATH=project_main
+          USER_PATH=project-main
           USER_KEY=${{ steps.parse_release.outputs.release_tag }}_${{ steps.parse_release.outputs.release_id }}
           echo "User KEY: ${USER_KEY}"
           echo "::set-output name=user_path::${USER_PATH}"
           echo "::set-output name=user_cache::${USER_PATH}-${USER_KEY}"
 
-          TEST_PATH=project_tests
+          TEST_PATH=project-tests
           TEST_KEY=$(git ls-remote --refs https://github-actions:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository_owner }}/${TEST_PATH}.git main | head -1 | cut -f 1)
           echo "Test Key: ${TEST_KEY}"
           echo "::set-output name=test_path::${TEST_PATH}"
