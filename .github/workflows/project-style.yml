@@ -52,28 +52,67 @@ jobs:
 
       # Uses github-script and exec instead of bash for better output than "Process returned exit code 1."
 
-      - name: 'Check extra main methods'
+      - name: 'Check for TODO comments'
         uses: actions/github-script@v6
-        id: check_main_methods
+        id: check_todo_comments
         env:
           USER_PATH: '${{ inputs.user_path }}'
         with:
           script: |
-            const script = require('./workflows/.github/scripts/run-exec.js');
-            return await script({exec, core});
+            const command = 'grep'
+            const args = ['-rnoE', '(//|\\*)?\\s*TODO.*$'];
+            const cwd = `${process.env.USER_PATH}/src/main/java`;
+            const message = `You should delete all TODO comments from your code. See the run logs for details.`;
+            const expected = 1;
+
+            const options = {ignoreReturnCode: true, cwd: cwd};
+            const result = await exec.exec(command, args, options);
+
+            if (result !== expected) {
+              core.setFailed(message);
+            }
+
+      - name: 'Check for stack traces'
+        uses: actions/github-script@v6
+        id: check_stack_traces
+        if: ${{ steps.setup_project_code.outcome == 'success' }}
+        env:
+          USER_PATH: '${{ inputs.user_path }}'
+        with:
+          script: |
+            const command = 'grep'
+            const args = ['-rnoE', '\\w\\.printStackTrace\\([^)]*\\)\\s*;'];
+            const cwd = `${process.env.USER_PATH}/src/main/java`;
+            const message = `Your code should not print exception stack traces. See the run logs for details.`;
+            const expected = 1;
+
+            const options = {ignoreReturnCode: true, cwd: cwd};
+            const result = await exec.exec(command, args, options);
+
+            if (result !== expected) {
+              core.setFailed(message);
+            }
 
       - name: 'Check extra main methods'
-        if: ${{ always() }}
-        working-directory: '${{ inputs.user_path }}/src/main/java'
-        run: |
-          RUN_STATUS=0
-          grep -rnoE --exclude=Driver.java '\s*public\s+static\s+void\s+main\s*\(' || RUN_STATUS=$?
-          if [[ RUN_STATUS -ne 1 ]]; then
-            echo "::error ::Except for Driver.java, you should delete old main methods from your code."
-            exit 1
-          fi
-          echo "Found 0 main methods."
+        uses: actions/github-script@v6
+        id: check_main_methods
+        if: ${{ steps.setup_project_code.outcome == 'success' }}
+        env:
+          USER_PATH: '${{ inputs.user_path }}'
+        with:
+          script: |
+            const command = 'grep'
+            const args = ['-rnoE', '--exclude=Driver.java', '\\s*public\\s+static\\s+void\\s+main\\s*\\('];
+            const cwd = `${process.env.USER_PATH}/src/main/java`;
+            const message = `Except for Driver.java, you should delete old main methods from your code. See the run logs for details.`;
+            const expected = 1;
 
+            const options = {ignoreReturnCode: true, cwd: cwd};
+            const result = await exec.exec(command, args, options);
+
+            if (result !== expected) {
+              core.setFailed(message);
+            }
 
       - name: 'Save step status'
         id: step_status
