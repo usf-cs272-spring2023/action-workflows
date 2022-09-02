@@ -12,13 +12,14 @@ module.exports = async ({exec, core}) => {
 
   options.listeners = {
     stdout: (data) => {
-      output += data.toString();
+      output += Buffer.from(data).toString();
     },
     stderr: (data) => {
-      errors += data.toString();
+      errors += Buffer.from(data).toString();
     }
   };
 
+  core.info('pizza');
   const result = await exec.exec(command, args, options);
 
   core.info(output);
