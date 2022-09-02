@@ -12,10 +12,11 @@ module.exports = async ({exec, core}) => {
 
   options.listeners = {
     stdout: (data) => {
-      output += Buffer.from(data).toString();
+      output += Buffer.from(data).toString('utf8');
+      core.info('muffin');
     },
     stderr: (data) => {
-      errors += Buffer.from(data).toString();
+      errors += Buffer.from(data).toString('utf8');
     }
   };
 
