@@ -38,11 +38,13 @@ module.exports = async ({github, context, core}) => {
         core.error(`Maximum number of releases exceeded. Results may be unreliable.`);
       }
 
-      if (response.data.some(x => x.tag_name.startsWith(`v${major}.${minor}`))) {
-        core.setFailed(`You should not have other v${major}.${minor}.# releases when creating a ${release} release. You may want to delete the ${release} release *and* tag (two separate steps).`);
+      const filtered = response.data.filter(x => x.tag_name.startsWith(`v${major}.${minor}`));
+
+      if (filtered === 1 && filtered.shift().tag_name === release) {
+        core.info(`Found no v${major}.${minor}.# releases other than ${release}...`);
       }
       else {
-        core.info(`Found 0 v${major}.${minor}.# releases...`);
+        core.setFailed(`You should not have other releases that start with v${major}.${minor} when using a 0 patch number. You may want to delete the ${release} release *and* tag (two separate steps).`);
       }
     }
     catch (error) {
