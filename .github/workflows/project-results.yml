@@ -32,6 +32,7 @@ jobs:
           RELEASE_ID: ${{ inputs.release_id }}
         with:
           script: |
+            // TODO Handle when parse fails because can't find release
             await github.rest.repos.updateRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,

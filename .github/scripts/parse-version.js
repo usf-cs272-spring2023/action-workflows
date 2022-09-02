@@ -26,6 +26,7 @@ module.exports = async ({github, context, core}) => {
       }
       catch (error) {
         core.setFailed(`Unable to fetch release ${release_ref} (${error.message}).`);
+        return;
       }
 
       break;
