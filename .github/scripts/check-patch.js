@@ -44,6 +44,7 @@ module.exports = async ({github, context, core}) => {
         core.info(`Found no v${major}.${minor}.# releases other than ${release}...`);
       }
       else {
+        core.info(`Found: ${filtered.map(x => x.tag_name).join(', ')}`);
         core.setFailed(`You should not have other releases that start with v${major}.${minor} when using a 0 patch number. You may want to delete the ${release} release *and* tag (two separate steps).`);
       }
     }
