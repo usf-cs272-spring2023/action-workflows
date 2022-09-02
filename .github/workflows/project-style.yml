@@ -68,7 +68,7 @@ jobs:
             const command = 'grep'
             const args = ['-rnoE', '(//|\\*)?\\s*TODO.*$'];
             const cwd = `${process.env.USER_PATH}/src/main/java`;
-            const message = `You should delete all TODO comments from your code. See the run logs for details.`;
+            const message = `You should delete all TODO comments from your code.`;
             const expected = 1;
 
             const options = {ignoreReturnCode: true, cwd: cwd};
@@ -89,7 +89,7 @@ jobs:
             const command = 'grep'
             const args = ['-rnoE', '\\w\\.printStackTrace\\([^)]*\\)\\s*;'];
             const cwd = `${process.env.USER_PATH}/src/main/java`;
-            const message = `Your code should not print exception stack traces. See the run logs for details.`;
+            const message = `Your code should not print exception stack traces.`;
             const expected = 1;
 
             const options = {ignoreReturnCode: true, cwd: cwd};
@@ -110,7 +110,7 @@ jobs:
             const command = 'grep'
             const args = ['-rnoE', '--exclude=Driver.java', '\\s*public\\s+static\\s+void\\s+main\\s*\\('];
             const cwd = `${process.env.USER_PATH}/src/main/java`;
-            const message = `Except for Driver.java, you should delete old main methods from your code. See the run logs for details.`;
+            const message = `Except for Driver.java, you should delete old main methods from your code.`;
             const expected = 1;
 
             const options = {ignoreReturnCode: true, cwd: cwd};

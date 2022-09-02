@@ -81,18 +81,45 @@ jobs:
           setup_java:  'true'
           
       - name: 'Compile project code'
-        id: compile_project_code 
-        working-directory: '${{ inputs.user_path }}'
-        run: |
-          mvn -ntp -DcompileOptionXlint=-Xlint:none -DcompileOptionXdoclint=-Xdoclint:none -Dmaven.compiler.showWarnings=false -DcompileOptionFail=false compile test-compile
+        id: compile_project_code
+        uses: actions/github-script@v6
+        env:
+          USER_PATH: '${{ inputs.user_path }}'
+        with:
+          script: |
+            const command = 'mvn'
+            const args = ['-ntp', '-DcompileOptionXlint=-Xlint:none', '-DcompileOptionXdoclint=-Xdoclint:none', '-Dmaven.compiler.showWarnings=false', '-DcompileOptionFail=false', 'compile', 'test-compile'];
+            const cwd = `${process.env.USER_PATH}`;
+            const message = `Unable to compile project source and test code using Maven.`;
+            const expected = 0;
+
+            const options = {ignoreReturnCode: true, cwd: cwd};
+            const result = await exec.exec(command, args, options);
+
+            if (result !== expected) {
+              core.setFailed(message);
+            }
 
       - name: 'Run project tests'
         id: run_project_tests
-        working-directory: '${{ inputs.user_path }}'
+        uses: actions/github-script@v6
         env:
           TEST_TAG: ${{ inputs.test_tag }}
-        run: |
-          mvn -ntp -Dgroups="${TEST_TAG}" test
+          USER_PATH: '${{ inputs.user_path }}'
+        with:
+          script: |
+            const command = 'mvn'
+            const args = ['-ntp', `-Dgroups="${process.env.TEST_TAG}"`, 'test'];
+            const cwd = `${process.env.USER_PATH}`;
+            const message = `One or more ${process.env.TEST_TAG} tests failed.`;
+            const expected = 0;
+
+            const options = {ignoreReturnCode: true, cwd: cwd};
+            const result = await exec.exec(command, args, options);
+
+            if (result !== expected) {
+              core.setFailed(message);
+            }
 
       - name: 'Save step status'
         id: step_status
