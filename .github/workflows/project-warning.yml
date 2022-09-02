@@ -78,6 +78,7 @@ jobs:
 
       - name: 'Compile Javadoc comments'
         id: compile_javadoc_comments
+        if: ${{ always() && steps.setup_project_code.outcome == 'success' }}
         uses: actions/github-script@v6
         env:
           USER_PATH: '${{ inputs.user_path }}'
