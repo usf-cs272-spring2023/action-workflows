@@ -111,7 +111,7 @@ jobs:
             const command = 'mvn'
             const args = ['-ntp', '-DcompileOptionXlint=-Xlint:none', '-DcompileOptionXdoclint=-Xdoclint:none', '-Dmaven.compiler.showWarnings=false', '-DcompileOptionFail=false', 'test-compile'];
             const cwd = `${process.env.USER_PATH}`;
-            const message = `Unable to compile project source code using Maven.`;
+            const message = `Unable to compile project test code using Maven.`;
             const expected = 0;
 
             const options = {ignoreReturnCode: true, cwd: cwd};
