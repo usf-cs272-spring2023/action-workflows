@@ -68,6 +68,11 @@ jobs:
       - name: 'Fetch project progress'
         id: fetch_progress
         uses: actions/github-script@v6
+        env:
+          RELEASE_TAG:   '${{ inputs.release_tag }}'
+          VERSION_MAJOR: '${{ inputs.version_major }}'
+          VERSION_MINOR: '${{ inputs.version_minor }}'
+          VERSION_PATCH: '${{ inputs.version_patch }}'
         with:
           script: |
             const script = require('./workflows/.github/scripts/fetch-progress.js');

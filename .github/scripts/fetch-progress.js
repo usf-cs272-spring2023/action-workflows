@@ -1,6 +1,9 @@
 // gets the status of projects from the releases, issues, and pull requests
 module.exports = async ({github, context, core}) => {
-  core.info(JSON.stringify(context, null, "  "));
+  const release = process.env.RELEASE_TAG;
+  const major = parseInt(process.env.VERSION_MAJOR);
+  const minor = parseInt(process.env.VERSION_MINOR);
+  const patch = parseInt(process.env.VERSION_PATCH);
 
-  core.info(core.getInput('version_major'));
+  core.info(`Release: ${release}, Project: ${major}, Review: ${minor}, Patch: ${patch}`);
 };
