@@ -54,23 +54,13 @@ jobs:
         id: compile_source_code
         working-directory: '${{ inputs.user_path }}'
         run: |
-          # RUN_STATUS=0
-          mvn -ntp -DcompileOptionXlint=-Xlint:all,-processing -DcompileOptionXdoclint=-Xdoclint:none -Dmaven.compiler.showWarnings=true -DcompileOptionFail=true clean compile #|| RUN_STATUS=$?
-          # if [[ RUN_STATUS -ne 0 ]]; then
-          #   echo "::error ::Unable to compile the project source code without warnings."
-          #   exit 1
-          # fi
+          mvn -ntp -DcompileOptionXlint=-Xlint:all,-processing -DcompileOptionXdoclint=-Xdoclint:none -Dmaven.compiler.showWarnings=true -DcompileOptionFail=true clean compile
 
       - name: 'Compile Javadoc comments'
         id: compile_javadoc_comments
         working-directory: '${{ inputs.user_path }}'
         run: |
-          # RUN_STATUS=0
-          mvn -ntp -DcompileOptionXlint=-Xlint:preview -DcompileOptionXdoclint=-Xdoclint:all/private -Dmaven.compiler.showWarnings=true -DcompileOptionFail=true clean compile #|| RUN_STATUS=$?
-          # if [[ RUN_STATUS -ne 0 ]]; then
-          #   echo "::error ::Unable to compile the project source code without Javadoc warnings."
-          #   exit 1
-          # fi
+          mvn -ntp -DcompileOptionXlint=-Xlint:preview -DcompileOptionXdoclint=-Xdoclint:all/private -Dmaven.compiler.showWarnings=true -DcompileOptionFail=true clean compile
 
       - name: 'Save step status'
         id: step_status
