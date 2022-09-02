@@ -75,7 +75,7 @@ jobs:
       - name: 'Check for stack traces'
         uses: actions/github-script@v6
         id: check_stack_traces
-        if: ${{ steps.setup_project_code.outcome == 'success' }}
+        if: ${{ always() && steps.setup_project_code.outcome == 'success' }}
         env:
           USER_PATH: '${{ inputs.user_path }}'
         with:
@@ -96,7 +96,7 @@ jobs:
       - name: 'Check extra main methods'
         uses: actions/github-script@v6
         id: check_main_methods
-        if: ${{ steps.setup_project_code.outcome == 'success' }}
+        if: ${{ always() && steps.setup_project_code.outcome == 'success' }}
         env:
           USER_PATH: '${{ inputs.user_path }}'
         with:
