@@ -7,16 +7,22 @@ module.exports = async ({exec, core}) => {
 
   const options = {ignoreReturnCode: true, cwd: cwd};
 
+  let output = '';
+  let errors = '';
+
   options.listeners = {
     stdout: (data) => {
-      core.info(data.toString());
+      output += data.toString();
     },
     stderr: (data) => {
-      core.error(data.toString());
+      errors += data.toString();
     }
   };
 
   const result = await exec.exec(command, args, options);
+
+  core.info(output);
+  core.errors(errors);
 
   if (result !== 0) {
     core.info(result);
