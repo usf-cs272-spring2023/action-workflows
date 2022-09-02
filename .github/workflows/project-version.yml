@@ -78,18 +78,48 @@ jobs:
             const script = require('./workflows/.github/scripts/check-patch.js');
             return await script({github, context, core});
 
-      - name: 'Fetch project progress'
-        id: fetch_progress
+      - name: 'Check minor number'
+        id: check_minor
         uses: actions/github-script@v6
         env:
           RELEASE_TAG:   '${{ inputs.release_tag }}'
           VERSION_MAJOR: '${{ inputs.version_major }}'
           VERSION_MINOR: '${{ inputs.version_minor }}'
-          VERSION_PATCH: '${{ inputs.version_patch }}'
         with:
           script: |
-            const script = require('./workflows/.github/scripts/fetch-progress.js');
-            return await script({github, context, core});
+            const major = parseInt(process.env.VERSION_MAJOR);
+            const minor = parseInt(process.env.VERSION_MINOR);
+
+            if (minor !== 0) {
+              core.setFailed(`Creating a v${major}.${minor} release for code review is not yet supported.`);
+            }
+
+      - name: 'Check review number'
+        id: check_review
+        uses: actions/github-script@v6
+        env:
+          RELEASE_TAG:   '${{ inputs.release_tag }}'
+          VERSION_MAJOR: '${{ inputs.version_major }}'
+        with:
+          script: |
+            const major = parseInt(process.env.VERSION_MAJOR);
+
+            if (major !== 0) {
+              core.setFailed(`Creating a v${major} release for project ${major} is not yet supported.`);
+            }
+
+      # - name: 'Fetch project progress'
+      #   id: fetch_progress
+      #   uses: actions/github-script@v6
+      #   env:
+      #     RELEASE_TAG:   '${{ inputs.release_tag }}'
+      #     VERSION_MAJOR: '${{ inputs.version_major }}'
+      #     VERSION_MINOR: '${{ inputs.version_minor }}'
+      #     VERSION_PATCH: '${{ inputs.version_patch }}'
+      #   with:
+      #     script: |
+      #       const script = require('./workflows/.github/scripts/fetch-progress.js');
+      #       return await script({github, context, core});
       
       - name: 'Save step status'
         id: step_status
