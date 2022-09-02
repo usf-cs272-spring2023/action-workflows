@@ -39,12 +39,12 @@ module.exports = async ({github, context, core}) => {
       }
 
       const filtered = response.data.filter(x => x.tag_name.startsWith(`v${major}.${minor}`));
+      core.info(`Found: ${filtered.map(x => x.tag_name).join(', ')}`);
 
       if (filtered.length === 1 && filtered.shift().tag_name === release) {
         core.info(`Found no v${major}.${minor}.# releases other than ${release}...`);
       }
       else {
-        core.info(`Found: ${filtered.map(x => x.tag_name).join(', ')}`);
         core.setFailed(`You should not have other releases that start with v${major}.${minor} when using a 0 patch number. You may want to delete the ${release} release *and* tag (two separate steps).`);
       }
     }
