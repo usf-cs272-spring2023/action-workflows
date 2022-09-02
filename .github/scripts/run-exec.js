@@ -10,17 +10,18 @@ module.exports = async ({exec, core}) => {
   options.listeners = {
     stdout: (data) => {
       const buffer = Buffer.from(data);
-      core.info(data.toString());
+      core.info(buffer.toString());
     },
     stderr: (data) => {
       const buffer = Buffer.from(data);
-      core.error(data.toString());
+      core.error(buffer.toString());
     }
   };
 
   const result = await exec.exec(command, args, options);
 
   if (result !== 0) {
+    core.info(result);
     core.setFailed(message);
   }
 };
