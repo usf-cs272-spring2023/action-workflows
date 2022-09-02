@@ -1,0 +1,109 @@
+name: 'Parse Version'
+
+on:
+  workflow_call:
+    inputs:
+      release_tag:
+        description: "Project release version number or tag (e.g. v1.0.0)"
+        required: false
+        type: string
+
+    outputs:
+      release_tag:
+        description: "The release tag"
+        value: '${{ jobs.main.outputs.release_tag }}'
+
+      version_major:
+        description: "The major version number (i.e. project number) from the release tag"
+        value: '${{ jobs.main.outputs.version_major }}'
+
+      version_minor:
+        description: "The minor version number (i.e. code review number) from the release tag"
+        value: '${{ jobs.main.outputs.version_minor }}'
+
+      version_patch:
+        description: "The patch version number from the release tag"
+        value: '${{ jobs.main.outputs.version_patch }}'
+
+      user_cache:
+        description: "Key to use to cache the source repository"
+        value: '${{ jobs.main.outputs.user_cache }}'
+
+      test_cache:
+        description: "Key to use to cache the test repository"
+        value: '${{ jobs.main.outputs.test_cache }}'
+
+      user_path:
+        description: "Local path to store the project source code"
+        value: 'project-main'
+
+      test_path:
+        description: "Local path to store the project test code"
+        value: 'project-tests'
+
+      user_repo:
+        description: "Repository to use for the project source code"
+        value: '${{ github.repository }}'
+
+      test_repo:
+        description: "Repository to use for the project test code"
+        value: '${{ github.repository_owner }}/project-tests'
+
+      status:
+        description: "Status of each step in this workflow"
+        value: ${{ jobs.main.outputs.status }}
+
+jobs:
+  main:
+    name: 'Version'
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+
+    outputs:
+      release_tag:   '${{ steps.parse_release.outputs.release_tag }}'
+      version_major: '${{ steps.parse_release.outputs.version_major }}'
+      version_minor: '${{ steps.parse_release.outputs.version_minor }}'
+      version_patch: '${{ steps.parse_release.outputs.version_patch }}'
+
+      user_cache: '${{ steps.generate_keys.outputs.user_cache }}'
+      test_cache: '${{ steps.generate_keys.outputs.test_cache }}'
+
+      status: ${{ steps.step_status.outputs.status }}
+
+    steps:
+      - name: 'Checkout workflows'
+        id: checkout_workflows
+        uses: actions/checkout@v3
+        with:
+          repository: usf-cs272-fall2022/action-workflows
+          path: 'workflows'
+
+      - name: 'Parse release tag'
+        id: parse_release
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const script = require('./workflows/.github/scripts/parse-version.js');
+            return await script({github, context, core});
+
+      - name: 'Generate cache keys'
+        id: generate_keys
+        run: |
+          USER_SHA=${{ github.sha }}
+          echo "User SHA: ${USER_SHA}"
+          echo "::set-output name=user_cache::${USER_PATH}-${USER_SHA}"
+
+          TEST_SHA=$(git ls-remote --refs https://github.com/${{ github.repository_owner }}/${TEST_PATH}.git main | head -1 | cut -f 1)
+          echo "Test SHA: ${TEST_SHA}"
+          echo "::set-output name=test_cache::${TEST_PATH}-${TEST_SHA}"
+      
+      - name: 'Save step status'
+        id: step_status
+        uses: actions/github-script@v6
+        if: ${{ always() }}
+        env:
+          STEP_STATUS: ${{ toJSON(steps) }}
+        with:
+          script: |
+            core.setOutput('status', process.env.STEP_STATUS);
+            core.info(process.env.STEP_STATUS);
