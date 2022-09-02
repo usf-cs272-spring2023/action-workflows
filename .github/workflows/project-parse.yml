@@ -100,7 +100,7 @@ jobs:
         run: |
           USER_PATH=project-main
           USER_KEY=${{ steps.parse_release.outputs.release_tag }}_${{ steps.parse_release.outputs.release_id }}
-          echo "User KEY: ${USER_KEY}"
+          echo "User Key: ${USER_KEY}"
           echo "::set-output name=user_path::${USER_PATH}"
           echo "::set-output name=user_cache::${USER_PATH}-${USER_KEY}"
 
