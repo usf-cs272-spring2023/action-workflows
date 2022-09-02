@@ -7,140 +7,21 @@ on:
         description: "Results from previous jobs"
         required: true
         type: string
-      
-      user_path:
-        description: "Path to user project code"
+
+      release_id:
+        description: "Project release version id (not tag)"
         required: true
         type: string
-        default: "project-main"
-
-      user_cache:
-        description: "Commit SHA of project code"
-        required: true
-        type: string
-
-  #   steps:
-  #     - name: 'Save results to JSON'
-  #       run: echo "Hello"
-
-  #     - name: 'Output job status'
-  #       id: step_status
-  #       uses: actions/github-script@v6
-  #       if: ${{ always() }}
-  #       env:
-  #         JOB_STATUS: ${{ toJSON(needs) }}
-  #       with:
-  #         script: |
-  #           core.info(JSON.stringify(process.env.JOB_STATUS, null, "  "));
-
-  # update_release:
-  #   name: 'Update Release'
-  #   runs-on: ubuntu-latest
-  #   needs: ['parse_version', 'check_version', 'check_compile', 'check_tests', 'check_past', 'check_next', 'check_warnings', 'check_style']
-  #   if: ${{ always() }}
-  #   timeout-minutes: 1
-
-  #   steps:
-  #     - name: 'Update release description'
-  #       run: echo "Hello"
 
 jobs:
   main:
-    name: 'Style'
+    name: 'Results'
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
-    outputs:
-      status: ${{ steps.step_status.outputs.status }}
-
     steps:
-      - name: 'Checkout workflows'
-        id: checkout_workflows
-        uses: actions/checkout@v3
-        with:
-          repository: usf-cs272-fall2022/action-workflows
-          path: 'workflows'
-
-      - name: 'Setup project code'
-        id: setup_project_code
-        uses: ./workflows/.github/actions/project-setup
-        with:
-          user_repo:  '${{ inputs.user_repo }}'
-          user_path:  '${{ inputs.user_path }}'
-          user_cache: '${{ inputs.user_cache }}'
-          setup_java: 'false'
-
-      # Uses github-script and exec instead of bash for better output than "Process returned exit code 1."
-
-      - name: 'Check for TODO comments'
-        uses: actions/github-script@v6
-        id: check_todo_comments
+      - name: 'Output results'
         env:
-          USER_PATH: '${{ inputs.user_path }}'
-        with:
-          script: |
-            const command = 'grep'
-            const args = ['-rnoE', '(//|\\*)?\\s*TODO.*$'];
-            const cwd = `${process.env.USER_PATH}/src/main/java`;
-            const message = `You should delete all TODO comments from your code. See the run logs for details.`;
-            const expected = 1;
+          RESULTS: ${{ inputs.results }}
+        run: echo ${RESULTS}
 
-            const options = {ignoreReturnCode: true, cwd: cwd};
-            const result = await exec.exec(command, args, options);
-
-            if (result !== expected) {
-              core.setFailed(message);
-            }
-
-      - name: 'Check for stack traces'
-        uses: actions/github-script@v6
-        id: check_stack_traces
-        if: ${{ always() && steps.setup_project_code.outcome == 'success' }}
-        env:
-          USER_PATH: '${{ inputs.user_path }}'
-        with:
-          script: |
-            const command = 'grep'
-            const args = ['-rnoE', '\\w\\.printStackTrace\\([^)]*\\)\\s*;'];
-            const cwd = `${process.env.USER_PATH}/src/main/java`;
-            const message = `Your code should not print exception stack traces. See the run logs for details.`;
-            const expected = 1;
-
-            const options = {ignoreReturnCode: true, cwd: cwd};
-            const result = await exec.exec(command, args, options);
-
-            if (result !== expected) {
-              core.setFailed(message);
-            }
-
-      - name: 'Check extra main methods'
-        uses: actions/github-script@v6
-        id: check_main_methods
-        if: ${{ always() && steps.setup_project_code.outcome == 'success' }}
-        env:
-          USER_PATH: '${{ inputs.user_path }}'
-        with:
-          script: |
-            const command = 'grep'
-            const args = ['-rnoE', '--exclude=Driver.java', '\\s*public\\s+static\\s+void\\s+main\\s*\\('];
-            const cwd = `${process.env.USER_PATH}/src/main/java`;
-            const message = `Except for Driver.java, you should delete old main methods from your code. See the run logs for details.`;
-            const expected = 1;
-
-            const options = {ignoreReturnCode: true, cwd: cwd};
-            const result = await exec.exec(command, args, options);
-
-            if (result !== expected) {
-              core.setFailed(message);
-            }
-
-      - name: 'Save step status'
-        id: step_status
-        uses: actions/github-script@v6
-        if: ${{ always() }}
-        env:
-          STEP_STATUS: ${{ toJSON(steps) }}
-        with:
-          script: |
-            core.setOutput('status', process.env.STEP_STATUS);
-            core.info(process.env.STEP_STATUS);
