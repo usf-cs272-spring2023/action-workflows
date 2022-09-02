@@ -23,6 +23,7 @@ jobs:
   check_version:
     name: 'Check'
     uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-version.yml@main
+    needs: ['parse_version']
     with:
       user_repo:     '${{ needs.parse_version.outputs.user_repo }}'
       release_tag:   '${{ needs.parse_version.outputs.release_tag }}'
