@@ -5,7 +5,7 @@ module.exports = async ({exec, core}) => {
   const cwd = `${process.env.USER_PATH}/src/main/java`;
   const message = `Except for Driver.java, you should delete old main methods from your code.`;
 
-  const options = {ignoreReturnCode: true, cwd: cwd, failOnStdErr: false};
+  const options = {ignoreReturnCode: true, cwd: cwd};
 
   let output = [];
   let errors = [];
