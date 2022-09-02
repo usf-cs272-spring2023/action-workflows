@@ -34,7 +34,7 @@ jobs:
           script: |
             await github.rest.repos.updateRelease({
               owner: context.repo.owner,
-              rep: context.repo.repo,
+              repo: context.repo.repo,
               release_id: process.env.RELEASE_ID,
               body: `See [run #${context.runNumber} (id ${context.runId})](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for details.`
             });
