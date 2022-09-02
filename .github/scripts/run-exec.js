@@ -22,7 +22,7 @@ module.exports = async ({exec, core}) => {
   const result = await exec.exec(command, args, options);
 
   core.info(output);
-  core.errors(errors);
+  core.error(errors);
 
   if (result !== 0) {
     core.info(result);
