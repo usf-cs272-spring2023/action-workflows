@@ -9,12 +9,10 @@ module.exports = async ({exec, core}) => {
 
   options.listeners = {
     stdout: (data) => {
-      const buffer = Buffer.from(data);
-      core.info(buffer.toString());
+      core.info(data.toString());
     },
     stderr: (data) => {
-      const buffer = Buffer.from(data);
-      core.error(buffer.toString());
+      core.error(data.toString());
     }
   };
 
