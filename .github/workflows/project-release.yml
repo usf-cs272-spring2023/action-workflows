@@ -15,7 +15,7 @@ env:
 
 jobs:
   parse_version:
-    name: 'Parse'
+    name: 'Version'
     uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-parse.yml@main
     with:
       release_tag: '${{ inputs.release_tag }}'

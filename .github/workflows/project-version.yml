@@ -1,4 +1,4 @@
-name: 'Parse Version'
+name: 'Check Version'
 
 on:
   workflow_call:

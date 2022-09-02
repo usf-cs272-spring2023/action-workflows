@@ -13,6 +13,10 @@ on:
         description: "The release tag"
         value: '${{ jobs.main.outputs.release_tag }}'
 
+      release_id:
+        description: "The release id"
+        value: '${{ jobs.main.outputs.release_id }}'
+
       version_major:
         description: "The major version number (i.e. project number) from the release tag"
         value: '${{ jobs.main.outputs.version_major }}'
@@ -55,12 +59,14 @@ on:
 
 jobs:
   main:
-    name: 'Version'
+    name: 'Parse'
     runs-on: ubuntu-latest
     timeout-minutes: 1
 
     outputs:
       release_tag:   '${{ steps.parse_release.outputs.release_tag }}'
+      release_id:    '${{ steps.parse_release.outputs.release_id }}'
+
       version_major: '${{ steps.parse_release.outputs.version_major }}'
       version_minor: '${{ steps.parse_release.outputs.version_minor }}'
       version_patch: '${{ steps.parse_release.outputs.version_patch }}'
