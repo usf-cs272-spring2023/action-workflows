@@ -66,7 +66,7 @@ jobs:
           path: 'workflows'
 
       - name: 'Check patch number'
-        id: fetch_progress
+        id: check_patch
         uses: actions/github-script@v6
         env:
           RELEASE_TAG:   '${{ inputs.release_tag }}'
