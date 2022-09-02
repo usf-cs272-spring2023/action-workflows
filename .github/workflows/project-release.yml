@@ -30,128 +30,128 @@ jobs:
       version_minor: '${{ needs.parse_version.outputs.version_minor }}'
       version_patch: '${{ needs.parse_version.outputs.version_patch }}'
 
-  check_compile:
-    name: 'Check'
-    uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-compile.yml@main
-    needs: ['parse_version']
-    with:
-      user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
-      user_path:  '${{ needs.parse_version.outputs.user_path }}'
-      user_cache: '${{ needs.parse_version.outputs.user_cache }}'
-      test_repo:  '${{ needs.parse_version.outputs.test_repo }}'
-      test_path:  '${{ needs.parse_version.outputs.test_path }}'
-      test_cache: '${{ needs.parse_version.outputs.test_cache }}'
+  # check_compile:
+  #   name: 'Check'
+  #   uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-compile.yml@main
+  #   needs: ['parse_version']
+  #   with:
+  #     user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
+  #     user_path:  '${{ needs.parse_version.outputs.user_path }}'
+  #     user_cache: '${{ needs.parse_version.outputs.user_cache }}'
+  #     test_repo:  '${{ needs.parse_version.outputs.test_repo }}'
+  #     test_path:  '${{ needs.parse_version.outputs.test_path }}'
+  #     test_cache: '${{ needs.parse_version.outputs.test_cache }}'
 
-  check_warnings:
-    name: 'Check'
-    uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-warning.yml@main
-    needs: ['parse_version', 'check_compile']
-    with:
-      user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
-      user_path:  '${{ needs.parse_version.outputs.user_path }}'
-      user_cache: '${{ needs.parse_version.outputs.user_cache }}'
+  # check_warnings:
+  #   name: 'Check'
+  #   uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-warning.yml@main
+  #   needs: ['parse_version', 'check_compile']
+  #   with:
+  #     user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
+  #     user_path:  '${{ needs.parse_version.outputs.user_path }}'
+  #     user_cache: '${{ needs.parse_version.outputs.user_cache }}'
 
-  check_tests:
-    name: 'This'
-    uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-test.yml@main
-    needs: ['parse_version', 'check_compile']
-    with:
-      user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
-      user_path:  '${{ needs.parse_version.outputs.user_path }}'
-      user_cache: '${{ needs.parse_version.outputs.user_cache }}'
-      test_repo:  '${{ needs.parse_version.outputs.test_repo }}'
-      test_path:  '${{ needs.parse_version.outputs.test_path }}'
-      test_cache: '${{ needs.parse_version.outputs.test_cache }}'
-      test_tag: 'test${{ needs.parse_version.outputs.version_major }}'
+  # check_tests:
+  #   name: 'This'
+  #   uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-test.yml@main
+  #   needs: ['parse_version', 'check_compile']
+  #   with:
+  #     user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
+  #     user_path:  '${{ needs.parse_version.outputs.user_path }}'
+  #     user_cache: '${{ needs.parse_version.outputs.user_cache }}'
+  #     test_repo:  '${{ needs.parse_version.outputs.test_repo }}'
+  #     test_path:  '${{ needs.parse_version.outputs.test_path }}'
+  #     test_cache: '${{ needs.parse_version.outputs.test_cache }}'
+  #     test_tag: 'test${{ needs.parse_version.outputs.version_major }}'
 
-  check_past:
-    name: 'Past'
-    uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-test.yml@main
-    needs: ['parse_version', 'check_compile']
-    with:
-      user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
-      user_path:  '${{ needs.parse_version.outputs.user_path }}'
-      user_cache: '${{ needs.parse_version.outputs.user_cache }}'
-      test_repo:  '${{ needs.parse_version.outputs.test_repo }}'
-      test_path:  '${{ needs.parse_version.outputs.test_path }}'
-      test_cache: '${{ needs.parse_version.outputs.test_cache }}'
-      test_tag: 'past${{ needs.parse_version.outputs.version_major }}'
+  # check_past:
+  #   name: 'Past'
+  #   uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-test.yml@main
+  #   needs: ['parse_version', 'check_compile']
+  #   with:
+  #     user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
+  #     user_path:  '${{ needs.parse_version.outputs.user_path }}'
+  #     user_cache: '${{ needs.parse_version.outputs.user_cache }}'
+  #     test_repo:  '${{ needs.parse_version.outputs.test_repo }}'
+  #     test_path:  '${{ needs.parse_version.outputs.test_path }}'
+  #     test_cache: '${{ needs.parse_version.outputs.test_cache }}'
+  #     test_tag: 'past${{ needs.parse_version.outputs.version_major }}'
 
-  check_next:
-    name: 'Next'
-    uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-test.yml@main
-    needs: ['parse_version', 'check_compile']
-    with:
-      user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
-      user_path:  '${{ needs.parse_version.outputs.user_path }}'
-      user_cache: '${{ needs.parse_version.outputs.user_cache }}'
-      test_repo:  '${{ needs.parse_version.outputs.test_repo }}'
-      test_path:  '${{ needs.parse_version.outputs.test_path }}'
-      test_cache: '${{ needs.parse_version.outputs.test_cache }}'
-      test_tag: 'next${{ needs.parse_version.outputs.version_major }}'
+  # check_next:
+  #   name: 'Next'
+  #   uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-test.yml@main
+  #   needs: ['parse_version', 'check_compile']
+  #   with:
+  #     user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
+  #     user_path:  '${{ needs.parse_version.outputs.user_path }}'
+  #     user_cache: '${{ needs.parse_version.outputs.user_cache }}'
+  #     test_repo:  '${{ needs.parse_version.outputs.test_repo }}'
+  #     test_path:  '${{ needs.parse_version.outputs.test_path }}'
+  #     test_cache: '${{ needs.parse_version.outputs.test_cache }}'
+  #     test_tag: 'next${{ needs.parse_version.outputs.version_major }}'
 
-  check_style:
-    name: 'Check Style'
-    runs-on: ubuntu-latest
-    needs: ['parse_version']
-    timeout-minutes: 1
+  # check_style:
+  #   name: 'Check Style'
+  #   runs-on: ubuntu-latest
+  #   needs: ['parse_version']
+  #   timeout-minutes: 1
 
-    env:
-      USER_CACHE: '${{ needs.parse_version.outputs.user_cache }}'
+  #   env:
+  #     USER_CACHE: '${{ needs.parse_version.outputs.user_cache }}'
 
-    steps:
-      - name: 'Checkout workflows'
-        id: checkout-workflows
-        uses: actions/checkout@v3
-        with:
-          repository: usf-cs272-fall2022/action-workflows
-          path: 'workflows'
+  #   steps:
+  #     - name: 'Checkout workflows'
+  #       id: checkout-workflows
+  #       uses: actions/checkout@v3
+  #       with:
+  #         repository: usf-cs272-fall2022/action-workflows
+  #         path: 'workflows'
 
-      - name: 'Setup project code'
-        uses: ./workflows/.github/actions/project-setup
-        with:
-          user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
-          user_path:  '${{ needs.parse_version.outputs.user_path }}'
-          user_cache: '${{ needs.parse_version.outputs.user_cache }}'
-          setup_java: 'false'
+  #     - name: 'Setup project code'
+  #       uses: ./workflows/.github/actions/project-setup
+  #       with:
+  #         user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
+  #         user_path:  '${{ needs.parse_version.outputs.user_path }}'
+  #         user_cache: '${{ needs.parse_version.outputs.user_cache }}'
+  #         setup_java: 'false'
 
-      - name: 'Check for TODO comments' 
-        run: echo "Hello"
+  #     - name: 'Check for TODO comments' 
+  #       run: echo "Hello"
 
-      - name: 'Check for stack traces' 
-        run: echo "Hello"
+  #     - name: 'Check for stack traces' 
+  #       run: echo "Hello"
 
-      - name: 'Check for extra main methods' 
-        run: echo "Hello"
+  #     - name: 'Check for extra main methods' 
+  #       run: echo "Hello"
 
-  save_results:
-    name: 'Save Results'
-    runs-on: ubuntu-latest
-    needs: ['parse_version', 'check_version', 'check_compile', 'check_tests', 'check_past', 'check_next', 'check_warnings', 'check_style']
-    if: ${{ always() }}
-    timeout-minutes: 1
+  # save_results:
+  #   name: 'Save Results'
+  #   runs-on: ubuntu-latest
+  #   needs: ['parse_version', 'check_version', 'check_compile', 'check_tests', 'check_past', 'check_next', 'check_warnings', 'check_style']
+  #   if: ${{ always() }}
+  #   timeout-minutes: 1
 
-    steps:
-      - name: 'Save results to JSON'
-        run: echo "Hello"
+  #   steps:
+  #     - name: 'Save results to JSON'
+  #       run: echo "Hello"
 
-      - name: 'Output job status'
-        id: step_status
-        uses: actions/github-script@v6
-        if: ${{ always() }}
-        env:
-          JOB_STATUS: ${{ toJSON(needs) }}
-        with:
-          script: |
-            core.info(JSON.stringify(process.env.JOB_STATUS, null, "  "));
+  #     - name: 'Output job status'
+  #       id: step_status
+  #       uses: actions/github-script@v6
+  #       if: ${{ always() }}
+  #       env:
+  #         JOB_STATUS: ${{ toJSON(needs) }}
+  #       with:
+  #         script: |
+  #           core.info(JSON.stringify(process.env.JOB_STATUS, null, "  "));
 
-  update_release:
-    name: 'Update Release'
-    runs-on: ubuntu-latest
-    needs: ['parse_version', 'check_version', 'check_compile', 'check_tests', 'check_past', 'check_next', 'check_warnings', 'check_style']
-    if: ${{ always() }}
-    timeout-minutes: 1
+  # update_release:
+  #   name: 'Update Release'
+  #   runs-on: ubuntu-latest
+  #   needs: ['parse_version', 'check_version', 'check_compile', 'check_tests', 'check_past', 'check_next', 'check_warnings', 'check_style']
+  #   if: ${{ always() }}
+  #   timeout-minutes: 1
 
-    steps:
-      - name: 'Update release description'
-        run: echo "Hello"
+  #   steps:
+  #     - name: 'Update release description'
+  #       run: echo "Hello"
