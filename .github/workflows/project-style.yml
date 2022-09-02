@@ -65,14 +65,7 @@ jobs:
             const message = `Except for Driver.java, you should delete old main methods from your code.`;
 
             const options = {ignoreReturnCode: true, cwd: cwd};
-            options.listeners = {
-              stdout: (data: Buffer) => {
-                core.info(data.toString());
-              },
-              stderr: (data: Buffer) => {
-                core.error(data.toString());
-              }
-            };
+
             const result = await exec.exec(command, args, options);
 
             if (result !== 0) {
