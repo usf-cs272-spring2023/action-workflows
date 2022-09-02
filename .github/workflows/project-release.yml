@@ -14,11 +14,11 @@ env:
   JSON_NAME: 'release-results'
 
 jobs:
-  # parse_version:
-  #   name: 'Parse'
-  #   uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-parse.yml@main
-  #   with:
-  #     release_tag: '${{ inputs.release_tag }}'
+  parse_version:
+    name: 'Parse'
+    uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-parse.yml@main
+    with:
+      release_tag: '${{ inputs.release_tag }}'
 
   # check_version:
   #   name: 'Check'
@@ -94,13 +94,11 @@ jobs:
   check_style:
     name: 'Check'
     uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-style.yml@main
+    needs: ['parse_version']
     with:
       user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
       user_path:  '${{ needs.parse_version.outputs.user_path }}'
       user_cache: '${{ needs.parse_version.outputs.user_cache }}'
-
-    # needs: ['parse_version']
-
 
   # save_results:
   #   name: 'Save Results'
