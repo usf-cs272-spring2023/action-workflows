@@ -14,17 +14,6 @@ env:
   JSON_NAME: 'release-results'
 
 jobs:
-    name: 'Check'
-    uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-compile.yml@main
-    needs: ['parse_version']
-    with:
-      user_repo:  '${{ needs.parse_version.outputs.user_repo }}'
-      user_path:  '${{ needs.parse_version.outputs.user_path }}'
-      user_cache: '${{ needs.parse_version.outputs.user_cache }}'
-      test_repo:  '${{ needs.parse_version.outputs.test_repo }}'
-      test_path:  '${{ needs.parse_version.outputs.test_path }}'
-      test_cache: '${{ needs.parse_version.outputs.test_cache }}'
-
   parse_version:
     name: 'Parse'
     uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-version.yml@main
