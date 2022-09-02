@@ -78,7 +78,7 @@ jobs:
         id: compile_project_code 
         working-directory: '${{ inputs.user_path }}'
         run: |
-          mvn -ntp -DcompileOptionXlint=-Xlint:none -DcompileOptionXdoclint=-Xdoclint:none -Dmaven.compiler.showWarnings=false -DcompileOptionFail=false compile test-compile #|| RUN_STATUS=$?
+          mvn -ntp -DcompileOptionXlint=-Xlint:none -DcompileOptionXdoclint=-Xdoclint:none -Dmaven.compiler.showWarnings=false -DcompileOptionFail=false compile test-compile
 
       - name: 'Run project tests'
         id: run_project_tests
