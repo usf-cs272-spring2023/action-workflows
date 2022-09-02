@@ -95,13 +95,14 @@ jobs:
       - name: 'Generate cache keys'
         id: generate_keys
         run: |
-          USER_SHA=${{ github.sha }}
-          echo "User SHA: ${USER_SHA}"
-          echo "::set-output name=user_cache::${USER_PATH}-${USER_SHA}"
+          # USER_SHA=${{ github.sha }}
+          USER_KEY=${{ steps.parse_release.outputs.release_tag }}_${{ steps.parse_release.outputs.release_id }}
+          echo "User KEY: ${USER_KEY}"
+          echo "::set-output name=user_cache::${USER_PATH}-${USER_KEY}"
 
-          TEST_SHA=$(git ls-remote --refs https://github.com/${{ github.repository_owner }}/${TEST_PATH}.git main | head -1 | cut -f 1)
-          echo "Test SHA: ${TEST_SHA}"
-          echo "::set-output name=test_cache::${TEST_PATH}-${TEST_SHA}"
+          TEST_KEY=$(git ls-remote --refs https://github.com/${{ github.repository_owner }}/${TEST_PATH}.git main | head -1 | cut -f 1)
+          echo "Test Key: ${TEST_KEY}"
+          echo "::set-output name=test_cache::${TEST_PATH}-${TEST_KEY}"
       
       - name: 'Save step status'
         id: step_status
