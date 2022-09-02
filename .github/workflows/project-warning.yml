@@ -58,15 +58,43 @@ jobs:
           
       - name: 'Compile source code'
         id: compile_source_code
-        working-directory: '${{ inputs.user_path }}'
-        run: |
-          mvn -ntp -DcompileOptionXlint=-Xlint:all,-processing -DcompileOptionXdoclint=-Xdoclint:none -Dmaven.compiler.showWarnings=true -DcompileOptionFail=true clean compile
+        uses: actions/github-script@v6
+        env:
+          USER_PATH: '${{ inputs.user_path }}'
+        with:
+          script: |
+            const command = 'mvn'
+            const args = ['-ntp', '-DcompileOptionXlint=-Xlint:all,-processing', '-DcompileOptionXdoclint=-Xdoclint:none', '-Dmaven.compiler.showWarnings=true', '-DcompileOptionFail=true', 'clean', 'compile'];
+            const cwd = `${process.env.USER_PATH}`;
+            const message = `Unable to compile project source code without warnings.`;
+            const expected = 0;
+
+            const options = {ignoreReturnCode: true, cwd: cwd};
+            const result = await exec.exec(command, args, options);
+
+            if (result !== expected) {
+              core.setFailed(message);
+            }
 
       - name: 'Compile Javadoc comments'
         id: compile_javadoc_comments
-        working-directory: '${{ inputs.user_path }}'
-        run: |
-          mvn -ntp -DcompileOptionXlint=-Xlint:preview -DcompileOptionXdoclint=-Xdoclint:all/private -Dmaven.compiler.showWarnings=true -DcompileOptionFail=true clean compile
+        uses: actions/github-script@v6
+        env:
+          USER_PATH: '${{ inputs.user_path }}'
+        with:
+          script: |
+            const command = 'mvn'
+            const args = ['-ntp', '-DcompileOptionXlint=-Xlint:preview', '-DcompileOptionXdoclint=-Xdoclint:all/private', '-Dmaven.compiler.showWarnings=true', '-DcompileOptionFail=true', 'clean', 'compile'];
+            const cwd = `${process.env.USER_PATH}`;
+            const message = `Unable to compile project source code without Javadoc warnings.`;
+            const expected = 0;
+
+            const options = {ignoreReturnCode: true, cwd: cwd};
+            const result = await exec.exec(command, args, options);
+
+            if (result !== expected) {
+              core.setFailed(message);
+            }
 
       - name: 'Save step status'
         id: step_status
