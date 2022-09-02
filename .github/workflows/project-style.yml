@@ -63,6 +63,7 @@ jobs:
             return await script({exec, core});
 
       - name: 'Check extra main methods'
+        if: ${{ always() }}
         working-directory: '${{ env.USER_PATH }}/src/main/java'
         run: |
           RUN_STATUS=0
