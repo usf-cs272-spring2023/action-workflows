@@ -8,7 +8,7 @@ module.exports = async ({exec, core}) => {
   const options = {ignoreReturnCode: true, cwd: cwd, failOnStdErr: false};
 
   let output = [];
-  let errors = '';
+  let errors = [];
 
   options.listeners = {
     stdout: (data) => {
@@ -22,6 +22,7 @@ module.exports = async ({exec, core}) => {
   core.info('potato');
   const result = await exec.exec(command, args, options);
 
+  core.info('pancake');
   core.info(output);
   core.error(errors);
 
