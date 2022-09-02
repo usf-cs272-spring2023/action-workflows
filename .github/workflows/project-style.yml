@@ -59,8 +59,8 @@ jobs:
       # Uses github-script and exec instead of bash for better output than "Process returned exit code 1."
 
       - name: 'Check for TODO comments'
-        uses: actions/github-script@v6
         id: check_todo_comments
+        uses: actions/github-script@v6
         env:
           USER_PATH: '${{ inputs.user_path }}'
         with:
