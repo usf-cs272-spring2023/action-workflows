@@ -73,10 +73,10 @@ jobs:
         with:
           release_ref: '${{ inputs.release_ref }}'
           user_repo:   '${{ inputs.user_repo }}'
-          test_repo:   '${{ inputs.test_repo }}'
           user_path:   '${{ inputs.user_path }}'
-          test_path:   '${{ inputs.test_path }}'
           user_cache:  '${{ inputs.user_cache }}'
+          test_repo:   '${{ inputs.test_repo }}'
+          test_path:   '${{ inputs.test_path }}'
           test_cache:  '${{ inputs.test_cache }}'
           setup_java:  'true'
           
