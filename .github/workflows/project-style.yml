@@ -58,7 +58,7 @@ jobs:
         with:
           script: |
             const command = 'grep'
-            const args = ['-rnoE', '--exclude=Driver.java', "'\s*public\s+static\s+void\s+main\s*\('"];
+            const args = ['-rnoE', '--exclude=Driver.java', `'\s*public\s+static\s+void\s+main\s*\('`];
             const options = {
               ignoreReturnCode: true,
               cwd: `${process.env.USER_PATH}/src/main/java`
