@@ -14,6 +14,28 @@ env:
   JSON_NAME: 'release-results'
 
 jobs:
+  debugging:
+    name: 'Debug'
+    runs-on: ubuntu-latest
+
+    steps:
+      - shell: bash
+        run: |
+          echo "action ${{ github.action }}"
+          echo "action_path ${{ github.action_path }}"
+          echo "action_ref ${{ github.action_ref }}"
+          echo "action_repository ${{ github.action_repository }}"
+          echo "event_name ${{ github.event_name }}"
+          echo "event_path ${{ github.event_path }}"
+          echo "ref ${{ github.ref }}"
+          echo "ref_name ${{ github.ref_name }}"
+          echo "ref_type ${{ github.ref_type }}"
+          echo "path ${{ github.path }}"
+          echo "sha ${{ github.sha }}"
+          echo "workflow ${{ github.workflow }}"
+          echo "workspace ${{ github.workspace }}"
+          echo "input ${{ inputs.action_ref }}"    
+
   parse_version:
     name: 'Version'
     uses: ./.github/workflows/project-parse.yml
