@@ -28,11 +28,6 @@ on:
         required: true
         type: string
 
-      action_ref:
-        description: ""
-        required: false
-        type: string
-
     outputs:
       major_status:
         description: "Set to 'true' if everything looks okay, or an warning message if there are problems with the major version number"

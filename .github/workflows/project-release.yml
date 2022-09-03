@@ -31,6 +31,8 @@ jobs:
   parse_version:
     name: 'Version'
     uses: ./.github/workflows/project-parse.yml
+    env:
+      DEV_MODE: '${{ inputs.dev_mode }}'
     with:
       release_tag: '${{ inputs.release_tag }}'
 
@@ -38,6 +40,8 @@ jobs:
     name: 'Check'
     uses: ./.github/workflows/project-version.yml
     needs: ['parse_version']
+    env:
+      DEV_MODE: '${{ inputs.dev_mode }}'
     with:
       user_repo:     '${{ needs.parse_version.outputs.user_repo }}'
       release_tag:   '${{ needs.parse_version.outputs.release_tag }}'
