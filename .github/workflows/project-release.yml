@@ -34,7 +34,11 @@ jobs:
           echo "sha ${{ github.sha }}"
           echo "workflow ${{ github.workflow }}"
           echo "workspace ${{ github.workspace }}"
-          echo "input ${{ inputs.action_ref }}"    
+          echo "input ${{ inputs.action_ref }}"
+
+          cat ${{ github.event_path }}
+
+          ls -laR ${{ github.path }}
 
   parse_version:
     name: 'Version'

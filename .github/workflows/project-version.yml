@@ -74,11 +74,14 @@ jobs:
           echo "ref ${{ github.ref }}"
           echo "ref_name ${{ github.ref_name }}"
           echo "ref_type ${{ github.ref_type }}"
+          echo "repository ${{ github.repository }}"
           echo "path ${{ github.path }}"
           echo "sha ${{ github.sha }}"
           echo "workflow ${{ github.workflow }}"
           echo "workspace ${{ github.workspace }}"
           echo "input ${{ inputs.action_ref }}"
+
+          cat ${{ github.event_path }}
 
       - name: 'Checkout workflows'
         id: checkout_workflows
