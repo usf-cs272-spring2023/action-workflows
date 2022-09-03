@@ -16,13 +16,13 @@ env:
 jobs:
   parse_version:
     name: 'Version'
-    uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-parse.yml
+    uses: .github/workflows/project-parse.yml
     with:
       release_tag: '${{ inputs.release_tag }}'
 
   check_version:
     name: 'Check'
-    uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-version.yml
+    uses: .github/workflows/project-version.yml
     needs: ['parse_version']
     with:
       user_repo:     '${{ needs.parse_version.outputs.user_repo }}'
