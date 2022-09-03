@@ -30,6 +30,7 @@ jobs:
       version_major: '${{ needs.parse_version.outputs.version_major }}'
       version_minor: '${{ needs.parse_version.outputs.version_minor }}'
       version_patch: '${{ needs.parse_version.outputs.version_patch }}'
+      action_ref: '${{ github.action_ref }}'
 
   # check_compile:
   #   name: 'Check'

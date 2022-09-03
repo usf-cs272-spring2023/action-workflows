@@ -28,6 +28,11 @@ on:
         required: true
         type: string
 
+      action_ref:
+        description: ""
+        required: false
+        type: string
+
     outputs:
       major_status:
         description: "Set to 'true' if everything looks okay, or an warning message if there are problems with the major version number"
@@ -73,6 +78,7 @@ jobs:
           echo "sha ${{ github.sha }}"
           echo "workflow ${{ github.workflow }}"
           echo "workspace ${{ github.workspace }}"
+          echo "input ${{ inputs.action_ref }}"
 
       - name: 'Checkout workflows'
         id: checkout_workflows
