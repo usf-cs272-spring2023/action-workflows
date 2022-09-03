@@ -3,6 +3,12 @@ name: 'Project Results'
 on:
   workflow_call:
     inputs:
+      action_ref:
+        description: "Ref for workflow or action checkout"
+        required: false
+        default: 'main'
+        type: string
+
       results:
         description: "Results from previous jobs"
         required: true

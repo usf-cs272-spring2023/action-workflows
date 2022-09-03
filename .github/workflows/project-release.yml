@@ -34,86 +34,93 @@ jobs:
       version_minor: '${{ needs.parse_version.outputs.version_minor }}'
       version_patch: '${{ needs.parse_version.outputs.version_patch }}'
 
-  # check_compile:
-  #   name: 'Check'
-  #   uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-compile.yml@main
-  #   needs: ['parse_version']
-  #   with:
-  #     release_ref: '${{ needs.parse_version.outputs.release_ref }}'
-  #     user_repo:   '${{ needs.parse_version.outputs.user_repo }}'
-  #     user_path:   '${{ needs.parse_version.outputs.user_path }}'
-  #     user_cache:  '${{ needs.parse_version.outputs.user_cache }}'
-  #     test_repo:   '${{ needs.parse_version.outputs.test_repo }}'
-  #     test_path:   '${{ needs.parse_version.outputs.test_path }}'
-  #     test_cache:  '${{ needs.parse_version.outputs.test_cache }}'
+  check_compile:
+    name: 'Check'
+    uses: ./.github/workflows/project-compile.yml
+    needs: ['parse_version']
+    with:
+      action_ref:  '${{ inputs.action_ref }}'
+      release_ref: '${{ needs.parse_version.outputs.release_ref }}'
+      user_repo:   '${{ needs.parse_version.outputs.user_repo }}'
+      user_path:   '${{ needs.parse_version.outputs.user_path }}'
+      user_cache:  '${{ needs.parse_version.outputs.user_cache }}'
+      test_repo:   '${{ needs.parse_version.outputs.test_repo }}'
+      test_path:   '${{ needs.parse_version.outputs.test_path }}'
+      test_cache:  '${{ needs.parse_version.outputs.test_cache }}'
 
-  # check_warnings:
-  #   name: 'Check'
-  #   uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-warning.yml@main
-  #   needs: ['parse_version', 'check_compile']
-  #   with:
-  #     release_ref: '${{ needs.parse_version.outputs.release_ref }}'
-  #     user_repo:   '${{ needs.parse_version.outputs.user_repo }}'
-  #     user_path:   '${{ needs.parse_version.outputs.user_path }}'
-  #     user_cache:  '${{ needs.parse_version.outputs.user_cache }}'
+  check_warnings:
+    name: 'Check'
+    uses: ./.github/workflows/project-warning.yml
+    needs: ['parse_version', 'check_compile']
+    with:
+      action_ref:  '${{ inputs.action_ref }}'
+      release_ref: '${{ needs.parse_version.outputs.release_ref }}'
+      user_repo:   '${{ needs.parse_version.outputs.user_repo }}'
+      user_path:   '${{ needs.parse_version.outputs.user_path }}'
+      user_cache:  '${{ needs.parse_version.outputs.user_cache }}'
 
-  # check_tests:
-  #   name: 'This'
-  #   uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-test.yml@main
-  #   needs: ['parse_version', 'check_compile']
-  #   with:
-  #     release_ref: '${{ needs.parse_version.outputs.release_ref }}'
-  #     user_repo:   '${{ needs.parse_version.outputs.user_repo }}'
-  #     user_path:   '${{ needs.parse_version.outputs.user_path }}'
-  #     user_cache:  '${{ needs.parse_version.outputs.user_cache }}'
-  #     test_repo:   '${{ needs.parse_version.outputs.test_repo }}'
-  #     test_path:   '${{ needs.parse_version.outputs.test_path }}'
-  #     test_cache:  '${{ needs.parse_version.outputs.test_cache }}'
-  #     test_tag:    'test${{ needs.parse_version.outputs.version_major }}'
+  check_tests:
+    name: 'This'
+    uses: ./.github/workflows/project-test.yml
+    needs: ['parse_version', 'check_compile']
+    with:
+      action_ref:  '${{ inputs.action_ref }}'
+      release_ref: '${{ needs.parse_version.outputs.release_ref }}'
+      user_repo:   '${{ needs.parse_version.outputs.user_repo }}'
+      user_path:   '${{ needs.parse_version.outputs.user_path }}'
+      user_cache:  '${{ needs.parse_version.outputs.user_cache }}'
+      test_repo:   '${{ needs.parse_version.outputs.test_repo }}'
+      test_path:   '${{ needs.parse_version.outputs.test_path }}'
+      test_cache:  '${{ needs.parse_version.outputs.test_cache }}'
+      test_tag:    'test${{ needs.parse_version.outputs.version_major }}'
 
-  # check_past:
-  #   name: 'Past'
-  #   uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-test.yml@main
-  #   needs: ['parse_version', 'check_compile']
-  #   with:
-  #     release_ref: '${{ needs.parse_version.outputs.release_ref }}'
-  #     user_repo:   '${{ needs.parse_version.outputs.user_repo }}'
-  #     user_path:   '${{ needs.parse_version.outputs.user_path }}'
-  #     user_cache:  '${{ needs.parse_version.outputs.user_cache }}'
-  #     test_repo:   '${{ needs.parse_version.outputs.test_repo }}'
-  #     test_path:   '${{ needs.parse_version.outputs.test_path }}'
-  #     test_cache:  '${{ needs.parse_version.outputs.test_cache }}'
-  #     test_tag:    'past${{ needs.parse_version.outputs.version_major }}'
+  check_past:
+    name: 'Past'
+    uses: ./.github/workflows/project-test.yml
+    needs: ['parse_version', 'check_compile']
+    with:
+      action_ref:  '${{ inputs.action_ref }}'
+      release_ref: '${{ needs.parse_version.outputs.release_ref }}'
+      user_repo:   '${{ needs.parse_version.outputs.user_repo }}'
+      user_path:   '${{ needs.parse_version.outputs.user_path }}'
+      user_cache:  '${{ needs.parse_version.outputs.user_cache }}'
+      test_repo:   '${{ needs.parse_version.outputs.test_repo }}'
+      test_path:   '${{ needs.parse_version.outputs.test_path }}'
+      test_cache:  '${{ needs.parse_version.outputs.test_cache }}'
+      test_tag:    'past${{ needs.parse_version.outputs.version_major }}'
 
-  # check_next:
-  #   name: 'Next'
-  #   uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-test.yml@main
-  #   needs: ['parse_version', 'check_compile']
-  #   with:
-  #     release_ref: '${{ needs.parse_version.outputs.release_ref }}'
-  #     user_repo:   '${{ needs.parse_version.outputs.user_repo }}'
-  #     user_path:   '${{ needs.parse_version.outputs.user_path }}'
-  #     user_cache:  '${{ needs.parse_version.outputs.user_cache }}'
-  #     test_repo:   '${{ needs.parse_version.outputs.test_repo }}'
-  #     test_path:   '${{ needs.parse_version.outputs.test_path }}'
-  #     test_cache:  '${{ needs.parse_version.outputs.test_cache }}'
-  #     test_tag:    'next${{ needs.parse_version.outputs.version_major }}'
+  check_next:
+    name: 'Next'
+    uses: ./.github/workflows/project-test.yml
+    needs: ['parse_version', 'check_compile']
+    with:
+      action_ref:  '${{ inputs.action_ref }}'
+      release_ref: '${{ needs.parse_version.outputs.release_ref }}'
+      user_repo:   '${{ needs.parse_version.outputs.user_repo }}'
+      user_path:   '${{ needs.parse_version.outputs.user_path }}'
+      user_cache:  '${{ needs.parse_version.outputs.user_cache }}'
+      test_repo:   '${{ needs.parse_version.outputs.test_repo }}'
+      test_path:   '${{ needs.parse_version.outputs.test_path }}'
+      test_cache:  '${{ needs.parse_version.outputs.test_cache }}'
+      test_tag:    'next${{ needs.parse_version.outputs.version_major }}'
 
-  # check_style:
-  #   name: 'Check'
-  #   uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-style.yml@main
-  #   needs: ['parse_version']
-  #   with:
-  #     release_ref: '${{ needs.parse_version.outputs.release_ref }}'
-  #     user_repo:   '${{ needs.parse_version.outputs.user_repo }}'
-  #     user_path:   '${{ needs.parse_version.outputs.user_path }}'
-  #     user_cache:  '${{ needs.parse_version.outputs.user_cache }}'
+  check_style:
+    name: 'Check'
+    uses: ./.github/workflows/project-style.yml
+    needs: ['parse_version']
+    with:
+      action_ref:  '${{ inputs.action_ref }}'
+      release_ref: '${{ needs.parse_version.outputs.release_ref }}'
+      user_repo:   '${{ needs.parse_version.outputs.user_repo }}'
+      user_path:   '${{ needs.parse_version.outputs.user_path }}'
+      user_cache:  '${{ needs.parse_version.outputs.user_cache }}'
 
-  # save_results:
-  #   name: 'Save'
-  #   uses: usf-cs272-fall2022/action-workflows/.github/workflows/project-results.yml@main
-  #   needs: ['parse_version', 'check_version', 'check_compile', 'check_tests', 'check_past', 'check_next', 'check_warnings', 'check_style']
-  #   if: ${{ always() }}
-  #   with:
-  #     results: ${{ toJSON(needs) }}
-  #     release_id: '${{ needs.parse_version.outputs.release_id }}'
+  save_results:
+    name: 'Save'
+    uses: ./.github/workflows/project-results.yml
+    needs: ['parse_version', 'check_version', 'check_compile', 'check_tests', 'check_past', 'check_next', 'check_warnings', 'check_style']
+    if: ${{ always() }}
+    with:
+      action_ref:  '${{ inputs.action_ref }}'
+      results: ${{ toJSON(needs) }}
+      release_id: '${{ needs.parse_version.outputs.release_id }}'
