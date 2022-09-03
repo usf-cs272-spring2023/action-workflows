@@ -7,6 +7,7 @@ on:
         description: "Ref for workflow or action checkout"
         required: false
         default: 'main'
+        type: string
 
       release_tag:
         description: "Project release version number or tag (e.g. v1.0.0)"
