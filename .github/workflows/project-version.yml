@@ -65,23 +65,7 @@ jobs:
     steps:
       - shell: bash
         run: |
-          echo "action ${{ github.action }}"
-          echo "action_path ${{ github.action_path }}"
-          echo "action_ref ${{ github.action_ref }}"
-          echo "action_repository ${{ github.action_repository }}"
-          echo "event_name ${{ github.event_name }}"
-          echo "event_path ${{ github.event_path }}"
-          echo "ref ${{ github.ref }}"
-          echo "ref_name ${{ github.ref_name }}"
-          echo "ref_type ${{ github.ref_type }}"
-          echo "repository ${{ github.repository }}"
-          echo "path ${{ github.path }}"
-          echo "sha ${{ github.sha }}"
-          echo "workflow ${{ github.workflow }}"
-          echo "workspace ${{ github.workspace }}"
-          echo "input ${{ inputs.action_ref }}"
-
-          cat ${{ github.event_path }}
+          echo "${{ env.DEV_MODE }}"
 
       - name: 'Checkout workflows'
         id: checkout_workflows
