@@ -15,6 +15,8 @@ module.exports = async ({github, context, core}) => {
       per_page: 100
     });
 
+    core.info(JSON.stringify(pull_list, null, "  "));
+
     if (pull_list.data.length >= 100) {
       core.error(`Maximum number of pull requests exceeded. Results may be unreliable.`);
     }
