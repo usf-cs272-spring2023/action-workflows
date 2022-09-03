@@ -3,6 +3,11 @@ name: 'Parse Version'
 on:
   workflow_call:
     inputs:
+      action_ref:
+        description: "Ref for workflow or action checkout"
+        required: false
+        default: 'main'
+
       release_tag:
         description: "Project release version number or tag (e.g. v1.0.0)"
         required: true
@@ -91,6 +96,7 @@ jobs:
         with:
           repository: usf-cs272-fall2022/action-workflows
           path: 'workflows'
+          ref: '${{ inputs.action_ref }}'
 
       - name: 'Parse release tag'
         id: parse_release

@@ -8,41 +8,26 @@ on:
         required: false
         type: string
 
-      dev_mode:
-        description: "Enables development mode"
+      action_ref:
+        description: "Ref for workflow or action checkout"
         required: false
-        type: boolean
-        default: false
-
-env:
-  DEV_MODE: '${{ inputs.dev_mode }}'
+        default: 'main'
+        type: string
 
 jobs:
-  debugging:
-    name: 'Debug'
-    runs-on: ubuntu-latest
-
-    steps:
-      - shell: bash
-        run: |
-          echo "${{ inputs.dev_mode }}"
-          echo "${DEV_MODE}"
-
   parse_version:
     name: 'Version'
     uses: ./.github/workflows/project-parse.yml
-    env:
-      DEV_MODE: '${{ inputs.dev_mode }}'
     with:
+      action_ref:  '${{ inputs.action_ref }}'
       release_tag: '${{ inputs.release_tag }}'
 
   check_version:
     name: 'Check'
     uses: ./.github/workflows/project-version.yml
     needs: ['parse_version']
-    env:
-      DEV_MODE: '${{ inputs.dev_mode }}'
     with:
+      action_ref:    '${{ inputs.action_ref }}'
       user_repo:     '${{ needs.parse_version.outputs.user_repo }}'
       release_tag:   '${{ needs.parse_version.outputs.release_tag }}'
       version_major: '${{ needs.parse_version.outputs.version_major }}'
