@@ -59,7 +59,6 @@ jobs:
 
     steps:
       - shell: bash
-        env:
         run: |
           echo "action ${{ github.action }}"
           echo "action_path ${{ github.action_path }}"
