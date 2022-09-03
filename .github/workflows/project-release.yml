@@ -18,6 +18,16 @@ env:
   DEV_MODE: '${{ inputs.dev_mode }}'
 
 jobs:
+  debugging:
+    name: 'Debug'
+    runs-on: ubuntu-latest
+
+    steps:
+      - shell: bash
+        run: |
+          echo "${{ inputs.dev_mode }}"
+          echo "${DEV_MODE}"
+
   parse_version:
     name: 'Version'
     uses: ./.github/workflows/project-parse.yml
