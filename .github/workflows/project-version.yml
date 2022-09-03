@@ -58,6 +58,11 @@ jobs:
       status: ${{ steps.step_status.outputs.status }}
 
     steps:
+      - shell: bash
+        env:
+          ACTION_REF: ${{ github.action_ref }}
+        run: echo " Hello $ACTION_REF World"
+
       - name: 'Checkout workflows'
         id: checkout_workflows
         uses: actions/checkout@v3
