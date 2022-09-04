@@ -13,7 +13,11 @@ module.exports = async ({github, context, core}) => {
       }
     }
 
+    core.startGroup('Outputting job status...');
     core.info(JSON.stringify(json, null, '  '));
+    core.endGroup();
+
+    
 
 
     const titles = [

@@ -35,11 +35,16 @@ jobs:
 
   check_style:
     name: 'Check'
-    uses: ./.github/workflows/project-release-style.yml
     needs: ['check_tests']
+    continue-on-error: true
+    uses: ./.github/workflows/project-release-style.yml
     with:
       action_ref:  '${{ inputs.action_ref }}'
       release_ref: '${{ needs.check_tests.outputs.release_ref }}'
+
+      version_major: '${{ needs.check_tests.outputs.version_major }}'
+      version_minor: '${{ needs.check_tests.outputs.version_major }}'
+      version_patch: '${{ needs.check_tests.outputs.version_patch }}'
 
       user_repo:   '${{ needs.check_tests.outputs.user_repo }}'
       user_path:   '${{ needs.check_tests.outputs.user_path }}'
@@ -47,10 +52,15 @@ jobs:
 
   check_results:
     name: 'Save'
-    uses: ./.github/workflows/project-results.yml
     needs: ['check_tests', 'check_style']
     if: ${{ always() }}
+    uses: ./.github/workflows/project-results.yml
     with:
       action_ref: '${{ inputs.action_ref }}'
+      release_id: '${{ needs.check_tests.outputs.release_id }}'
+
+      version_major: '${{ needs.check_tests.outputs.version_major }}'
+      version_minor: '${{ needs.check_tests.outputs.version_major }}'
+      version_patch: '${{ needs.check_tests.outputs.version_patch }}'
+
       results:    ${{ toJSON(needs) }}
-      release_id: '${{ needs.check_startup.outputs.release_id }}'
