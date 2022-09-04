@@ -31,13 +31,24 @@ jobs:
             const script = require('./workflows/.github/scripts/issue-comment.js');
             return await script({github, context, core});
 
-      - name: 'Update issue with results'
+      - name: 'Update issue with success'
         id: update_issue
-        if: ${{ always() }}
+        if: ${{ success() }}
         uses: actions/github-script@v6
         env:
           COMMENT_ID: '${{ steps.create_comment.outputs.comment_id }}'
         with:
           script: |
-            const script = require('./workflows/.github/scripts/issue-results.js');
+            core.info('Hello world.');
+            core.setFailed('Not yet implemented.');
+
+      - name: 'Update issue with failure'
+        id: update_issue
+        if: ${{ failure() || cancelled() }}
+        uses: actions/github-script@v6
+        env:
+          COMMENT_ID: '${{ steps.create_comment.outputs.comment_id }}'
+        with:
+          script: |
+            const script = require('./workflows/.github/scripts/issue-failure.js');
             return await script({github, context, core});
