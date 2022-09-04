@@ -57,6 +57,18 @@ module.exports = async ({github, context, core}) => {
   out.release_ref = release_ref;
   out.release_id  = release_id;
 
+  // handle project 3 special cases
+  out.test_number = `${out.version_major}`;
+
+  if (out.version_major === 3) {
+    if (out.version_minor === 0) {
+      out.test_number += 'a';
+    }
+    else {
+      out.test_number += 'b';
+    }
+  }
+
   // output and set result
   core.startGroup('Setting output...');
   for (const property in out) {
