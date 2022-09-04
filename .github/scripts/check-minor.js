@@ -45,13 +45,19 @@ module.exports = async ({github, context, core}) => {
         const reviews = github.rest.pulls.listReviews({
           owner: context.repo.owner,
           repo: context.repo.repo,
-          pull_number: pull.id,
+          pull_number: pull.number, // pull.id: issue number, pull.number: pull number
           per_page: 100
         });
 
         // check if the pull request was approved by the professor
         if (reviews.hasOwnProperty('data') && reviews.data.some(review => review.user.login == 'sjengle' && review.state == 'APPROVED')) {
           approved[project].push(pull);
+
+          // check if this pull request passed code review
+          if (pull.labels.some(label => label.name == 'review-passed')) {
+            core.info(`Pull request #${pull.id} passed code review.`);
+            core.setOutput('review_passed', pull.id);
+          }
         }
       }
     }

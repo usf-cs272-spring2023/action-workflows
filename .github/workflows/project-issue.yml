@@ -13,3 +13,6 @@ jobs:
         with:
           script: |
             core.setFailed('This action is not yet supported.');
+
+# https://docs.github.com/en/rest/issues/issues#update-an-issue
+# state_reason now supported! "completed" or "not_planned"
