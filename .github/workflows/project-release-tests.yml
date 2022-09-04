@@ -1,0 +1,211 @@
+name: 'Run Tests'
+
+on:
+  workflow_call:
+    inputs:
+      action_ref:
+        description: "Ref for workflow or action checkout"
+        required: false
+        default: 'main'
+        type: string
+    
+      release_ref:
+        description: "The release ref (for checkout)"
+        required: true
+        type: string
+
+      # version information
+      version_major:
+        description: "The major version number (i.e. project number) from the release tag"
+        required: true
+        type: string
+
+      version_minor:
+        description: "The minor version number (i.e. code review number) from the release tag"
+        required: true
+        type: string
+
+      # user repo information
+      user_path:
+        description: "Path to user project code"
+        required: true
+        type: string
+              
+      user_repo:
+        description: "Repository with user project code"
+        required: true
+        type: string
+
+      user_cache:
+        description: "Cache key of project code"
+        required: true
+        type: string
+
+      # test repo information
+      test_path:
+        description: "Path to test project code"
+        required: true
+        type: string
+
+      test_repo:
+        description: "Repository with test project code"
+        required: true
+        type: string
+      
+      test_cache:
+        description: "Cache key of test code"
+        required: true
+        type: string
+
+    outputs:
+      status:
+        description: "Status of each step in this workflow"
+        value: ${{ jobs.main.outputs.status }}
+
+jobs:
+  main:
+    name: 'Tests'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    outputs:
+      status: ${{ steps.step_status.outputs.status }}
+
+      - name: 'Checkout workflows'
+        id: checkout_workflows
+        uses: actions/checkout@v3
+        with:
+          repository: usf-cs272-fall2022/action-workflows
+          path: 'workflows'
+          ref: '${{ inputs.action_ref }}'
+
+      - name: 'Setup project code'
+        id: setup_project_code
+        uses: ./workflows/.github/actions/project-setup
+        with:
+          release_ref: '${{ inputs.release_ref }}'
+          user_repo:   '${{ inputs.user_repo }}'
+          user_path:   '${{ inputs.user_path }}'
+          user_cache:  '${{ inputs.user_cache }}'
+          test_repo:   '${{ inputs.test_repo }}'
+          test_path:   '${{ inputs.test_path }}'
+          test_cache:  '${{ inputs.test_cache }}'
+          setup_java:  'true'
+          
+      - name: 'Compile project code'
+        id: compile_project_code
+        uses: actions/github-script@v6
+        env:
+          USER_PATH: '${{ inputs.user_path }}'
+        with:
+          script: |
+            const command = 'mvn'
+            const args = ['-ntp', '-DcompileOptionXlint=-Xlint:none', '-DcompileOptionXdoclint=-Xdoclint:none', '-Dmaven.compiler.showWarnings=false', '-DcompileOptionFail=false', 'compile', 'test-compile'];
+            const cwd = `${process.env.USER_PATH}`;
+            const message = `Unable to compile project source and test code using Maven.`;
+            const expected = 0;
+
+            const options = {ignoreReturnCode: true, cwd: cwd};
+            const result = await exec.exec(command, args, options);
+
+            if (result !== expected) {
+              core.setFailed(message);
+            }
+
+      - name: 'Determine project test tag'
+        id: determine_test
+        uses: actions/github-script@v6
+        env:
+          VERSION_MAJOR: '${{ inputs.user_path }}'
+          VERSION_MINOR: '${{ inputs.user_path }}'
+        with:
+          script: |
+            const major = parseInt(process.env.VERSION_MAJOR);
+            const minor = parseInt(process.env.VERSION_MINOR);
+
+            let tag = `${major}`;
+
+            if (major === 3) {
+              if (minor === 0) {
+                tag += 'a';
+              }
+              else {
+                tag += 'b;'
+              }
+            }
+
+            core.setOutput('test_tag', tag);
+
+      - name: 'Run current project tests'
+        id: run_this_tests
+        uses: actions/github-script@v6
+        env:
+          TEST_TAG: 'test${{ steps.determine_test.outputs.test_tag }}'
+          USER_PATH: '${{ inputs.user_path }}'
+        with:
+          script: |
+            const command = 'mvn'
+            const args = ['-ntp', `-Dgroups=${process.env.TEST_TAG}`, 'test'];
+            const cwd = `${process.env.USER_PATH}`;
+            const message = `One or more tests failed for the current project.`;
+            const expected = 0;
+
+            const options = {ignoreReturnCode: true, cwd: cwd};
+            const result = await exec.exec(command, args, options);
+
+            if (result !== expected) {
+              core.setFailed(message);
+            }
+
+      - name: 'Run previous project tests'
+        id: run_past_tests
+        uses: actions/github-script@v6
+        env:
+          TEST_TAG: 'past${{ steps.determine_test.outputs.test_tag }}'
+          USER_PATH: '${{ inputs.user_path }}'
+        with:
+          script: |
+            const command = 'mvn'
+            const args = ['-ntp', `-Dgroups=${process.env.TEST_TAG}`, 'test'];
+            const cwd = `${process.env.USER_PATH}`;
+            const message = `One or more tests failed for the previous project. Those tests must still pass!`;
+            const expected = 0;
+
+            const options = {ignoreReturnCode: true, cwd: cwd};
+            const result = await exec.exec(command, args, options);
+
+            if (result !== expected) {
+              core.setFailed(message);
+            }
+
+      - name: 'Run next project tests'
+        id: run_next_tests
+        uses: actions/github-script@v6
+        env:
+          TEST_TAG: 'next${{ steps.determine_test.outputs.test_tag }}'
+          USER_PATH: '${{ inputs.user_path }}'
+        with:
+          script: |
+            const command = 'mvn'
+            const args = ['-ntp', `-Dgroups=${process.env.TEST_TAG}`, 'test'];
+            const cwd = `${process.env.USER_PATH}`;
+            const message = `One or more tests failed for the next project. Functionality for the next project should be in a different branch!`;
+            const expected = 0;
+
+            const options = {ignoreReturnCode: true, cwd: cwd};
+            const result = await exec.exec(command, args, options);
+
+            if (result !== expected) {
+              core.setFailed(message);
+            }
+
+      - name: 'Save step status'
+        id: step_status
+        uses: actions/github-script@v6
+        if: ${{ always() }}
+        env:
+          STEP_STATUS: ${{ toJSON(steps) }}
+        with:
+          script: |
+            core.setOutput('status', process.env.STEP_STATUS);
+            core.info(process.env.STEP_STATUS);

@@ -30,6 +30,7 @@ jobs:
       action_ref:    '${{ inputs.action_ref }}'
       user_repo:     '${{ needs.check_startup.outputs.user_repo }}'
       release_tag:   '${{ needs.check_startup.outputs.release_tag }}'
+
       version_major: '${{ needs.check_startup.outputs.version_major }}'
       version_minor: '${{ needs.check_startup.outputs.version_minor }}'
       version_patch: '${{ needs.check_startup.outputs.version_patch }}'
@@ -41,54 +42,10 @@ jobs:
     with:
       action_ref:  '${{ inputs.action_ref }}'
       release_ref: '${{ needs.check_startup.outputs.release_ref }}'
-      user_repo:   '${{ needs.check_startup.outputs.user_repo }}'
-      user_path:   '${{ needs.check_startup.outputs.user_path }}'
-      user_cache:  '${{ needs.check_startup.outputs.user_cache }}'
 
-  check_tests:
-    name: 'This'
-    uses: ./.github/workflows/project-test.yml
-    needs: ['check_startup']
-    with:
-      action_ref:  '${{ inputs.action_ref }}'
-      release_ref: '${{ needs.check_startup.outputs.release_ref }}'
       user_repo:   '${{ needs.check_startup.outputs.user_repo }}'
       user_path:   '${{ needs.check_startup.outputs.user_path }}'
       user_cache:  '${{ needs.check_startup.outputs.user_cache }}'
-      test_repo:   '${{ needs.check_startup.outputs.test_repo }}'
-      test_path:   '${{ needs.check_startup.outputs.test_path }}'
-      test_cache:  '${{ needs.check_startup.outputs.test_cache }}'
-      test_tag:    'test${{ needs.check_startup.outputs.version_major }}'
-
-  check_past:
-    name: 'Past'
-    uses: ./.github/workflows/project-test.yml
-    needs: ['check_startup']
-    with:
-      action_ref:  '${{ inputs.action_ref }}'
-      release_ref: '${{ needs.check_startup.outputs.release_ref }}'
-      user_repo:   '${{ needs.check_startup.outputs.user_repo }}'
-      user_path:   '${{ needs.check_startup.outputs.user_path }}'
-      user_cache:  '${{ needs.check_startup.outputs.user_cache }}'
-      test_repo:   '${{ needs.check_startup.outputs.test_repo }}'
-      test_path:   '${{ needs.check_startup.outputs.test_path }}'
-      test_cache:  '${{ needs.check_startup.outputs.test_cache }}'
-      test_tag:    'past${{ needs.check_startup.outputs.version_major }}'
-
-  check_next:
-    name: 'Next'
-    uses: ./.github/workflows/project-test.yml
-    needs: ['check_startup']
-    with:
-      action_ref:  '${{ inputs.action_ref }}'
-      release_ref: '${{ needs.check_startup.outputs.release_ref }}'
-      user_repo:   '${{ needs.check_startup.outputs.user_repo }}'
-      user_path:   '${{ needs.check_startup.outputs.user_path }}'
-      user_cache:  '${{ needs.check_startup.outputs.user_cache }}'
-      test_repo:   '${{ needs.check_startup.outputs.test_repo }}'
-      test_path:   '${{ needs.check_startup.outputs.test_path }}'
-      test_cache:  '${{ needs.check_startup.outputs.test_cache }}'
-      test_tag:    'next${{ needs.check_startup.outputs.version_major }}'
 
   check_style:
     name: 'Check'
@@ -101,10 +58,30 @@ jobs:
       user_path:   '${{ needs.check_startup.outputs.user_path }}'
       user_cache:  '${{ needs.check_startup.outputs.user_cache }}'
 
+  check_tests:
+    name: 'Check'
+    uses: ./.github/workflows/project-release-tests.yml
+    needs: ['check_startup']
+    with:
+      action_ref:  '${{ inputs.action_ref }}'
+      release_ref: '${{ needs.check_startup.outputs.release_ref }}'
+
+      version_major: '${{ needs.check_startup.outputs.version_major }}'
+      version_minor: '${{ needs.check_startup.outputs.version_minor }}'
+      version_patch: '${{ needs.check_startup.outputs.version_patch }}'
+
+      user_repo:   '${{ needs.check_startup.outputs.user_repo }}'
+      user_path:   '${{ needs.check_startup.outputs.user_path }}'
+      user_cache:  '${{ needs.check_startup.outputs.user_cache }}'
+      
+      test_repo:   '${{ needs.check_startup.outputs.test_repo }}'
+      test_path:   '${{ needs.check_startup.outputs.test_path }}'
+      test_cache:  '${{ needs.check_startup.outputs.test_cache }}'
+
   save_results:
     name: 'Save'
     uses: ./.github/workflows/project-results.yml
-    needs: ['check_startup', 'check_version', 'check_tests', 'check_past', 'check_next', 'check_warnings', 'check_style']
+    needs: ['check_startup', 'check_version', 'check_tests', 'check_warnings', 'check_style']
     if: ${{ always() }}
     with:
       action_ref:  '${{ inputs.action_ref }}'
