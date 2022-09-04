@@ -22,13 +22,6 @@ jobs:
       action_ref:  '${{ inputs.action_ref }}'
       release_tag: '${{ inputs.release_tag }}'
 
-  # parse_version:
-  #   name: 'Version'
-  #   uses: ./.github/workflows/project-parse.yml
-  #   with:
-  #     action_ref:  '${{ inputs.action_ref }}'
-  #     release_tag: '${{ inputs.release_tag }}'
-
   check_version:
     name: 'Check'
     uses: ./.github/workflows/project-version.yml
@@ -40,20 +33,6 @@ jobs:
       version_major: '${{ needs.parse_version.outputs.version_major }}'
       version_minor: '${{ needs.parse_version.outputs.version_minor }}'
       version_patch: '${{ needs.parse_version.outputs.version_patch }}'
-
-  # check_compile:
-  #   name: 'Check'
-  #   uses: ./.github/workflows/project-compile.yml
-  #   needs: ['parse_version']
-  #   with:
-  #     action_ref:  '${{ inputs.action_ref }}'
-  #     release_ref: '${{ needs.parse_version.outputs.release_ref }}'
-  #     user_repo:   '${{ needs.parse_version.outputs.user_repo }}'
-  #     user_path:   '${{ needs.parse_version.outputs.user_path }}'
-  #     user_cache:  '${{ needs.parse_version.outputs.user_cache }}'
-  #     test_repo:   '${{ needs.parse_version.outputs.test_repo }}'
-  #     test_path:   '${{ needs.parse_version.outputs.test_path }}'
-  #     test_cache:  '${{ needs.parse_version.outputs.test_cache }}'
 
   check_warnings:
     name: 'Check'
