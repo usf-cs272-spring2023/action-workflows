@@ -52,7 +52,7 @@ jobs:
           ref: '${{ inputs.action_ref }}'
 
       - name: 'Check and save eligibility'
-        id: check_review
+        id: check_results
         uses: actions/github-script@v6
         env:
           RELEASE_TAG:   '${{ inputs.release_tag }}'
@@ -67,3 +67,10 @@ jobs:
             const script = require('./workflows/.github/scripts/release-results.js');
             return await script({github, context, core, fs, artifact});
 
+      - name: 'Upload results'
+        id: upload_results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: '${{ steps.check_results.outputs.artifact }}'
+          path: '${{ steps.check_results.outputs.filename }}'

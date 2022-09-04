@@ -51,12 +51,13 @@ module.exports = async ({github, context, core, fs, artifact}) => {
     core.setFailed(`Could not fully verify results of the ${release} release.`);
   }
   finally {
-    core.startGroup('Uploading artifact...');
     fs.writeFileSync(output.filename, JSON.stringify(output));
-  
-    const client = artifact.create();
-    const response = await client.uploadArtifact(output.basename, [filename], '.');
-    core.info.log(`Uploaded: ${JSON.stringify(response)}`);
+
+    core.startGroup('Setting output...');
+    for (const property in output) {
+      core.info(`${property}: ${output[property]}`);
+      core.setOutput(property, output[property]);
+    }
     core.endGroup();
   }
 };
