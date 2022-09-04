@@ -59,6 +59,7 @@ jobs:
           VERSION_MAJOR: '${{ inputs.version_major }}'
           VERSION_MINOR: '${{ inputs.version_minor }}'
           VERSION_PATCH: '${{ inputs.version_patch }}'
+          RESULTS: ${{ inputs.results }}
         with:
           script: |
             const fs = require('fs');

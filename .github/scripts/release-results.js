@@ -8,24 +8,6 @@ module.exports = async ({github, context, core, fs}) => {
 
   core.info(`Release: ${release}, Project: ${major}, Review: ${minor}, Patch: ${patch}`);
 
-  const results = process.env.RESULTS;
-  core.info(results);
-  
-  const json = JSON.parse(results);
-
-  for (const property in json) {
-    if (json[property].hasOwnProperty('outputs')) {
-      if (json[property]['outputs'].hasOwnProperty('status')) {
-        const parsed = JSON.parse(json[property]['outputs']['status']);
-        json[property]['outputs']['status'] = parsed;
-      }
-    }
-  }
-
-  core.startGroup('Outputting job status...');
-  core.info(JSON.stringify(json, null, '  '));
-  core.endGroup();
-
   const output = {
     artifact: 'check-release-results',
     filename: 'check-release-results.json',
@@ -46,7 +28,24 @@ module.exports = async ({github, context, core, fs}) => {
   };
 
   try {
-
+    const results = process.env.RESULTS;
+    core.info(results);
+    
+    const json = JSON.parse(results);
+  
+    for (const property in json) {
+      if (json[property].hasOwnProperty('outputs')) {
+        if (json[property]['outputs'].hasOwnProperty('status')) {
+          const parsed = JSON.parse(json[property]['outputs']['status']);
+          json[property]['outputs']['status'] = parsed;
+        }
+      }
+    }
+  
+    core.startGroup('Outputting job status...');
+    core.info(JSON.stringify(json, null, '  '));
+    core.endGroup();
+  
   }
   catch (error) {
     core.info(`${error.name}: ${error.message}`);
