@@ -2,11 +2,13 @@ module.exports = async ({github, context, core}) => {
   // set the release ref from input or from event
   let release_ref = undefined;
   let release_id = undefined;
+  let release_date = undefined;
 
   switch (context.eventName) {
     case 'release':
       release_ref = context.ref;
       release_id = context.payload.release.id;
+      release_date = context.payload.release.created_at;
       break;
 
     case 'workflow_dispatch':
@@ -23,6 +25,7 @@ module.exports = async ({github, context, core}) => {
 
         release_ref = `refs/tags/${response.data.tag_name}`;
         release_id = response.data.id;
+        release_date = response.data.created_at;
       }
       catch (error) {
         core.setFailed(`Unable to fetch release ${release_ref} (${error.message}).`);
@@ -53,9 +56,10 @@ module.exports = async ({github, context, core}) => {
   out.version_minor = parseInt(matched[2]);
   out.version_patch = parseInt(matched[3]);
 
-  out.release_tag = `v${out.version_major}.${out.version_minor}.${out.version_patch}`;
-  out.release_ref = release_ref;
-  out.release_id  = release_id;
+  out.release_tag  = `v${out.version_major}.${out.version_minor}.${out.version_patch}`;
+  out.release_ref  = release_ref;
+  out.release_id   = release_id;
+  out.release_date = release_date;
 
   // handle project 3 special cases
   out.test_number = `${out.version_major}`;
