@@ -109,7 +109,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const script = require('./workflows/.github/scripts/parse-version.js');
+            const script = require('./workflows/.github/scripts/release-parse.js');
             return await script({github, context, core});
 
       - name: 'Generate cache keys'

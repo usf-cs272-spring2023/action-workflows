@@ -28,16 +28,16 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const script = require('./workflows/.github/scripts/issue-make-comment.js');
+            const script = require('./workflows/.github/scripts/issue-comment.js');
             return await script({github, context, core});
 
-      - name: 'Update issue comment with results'
-        id: update_comment
+      - name: 'Update issue with results'
+        id: update_issue
         if: ${{ always() }}
         uses: actions/github-script@v6
         env:
           COMMENT_ID: '${{ steps.create_comment.outputs.comment_id }}'
         with:
           script: |
-            const script = require('./workflows/.github/scripts/issue-update-comment.js');
+            const script = require('./workflows/.github/scripts/issue-results.js');
             return await script({github, context, core});

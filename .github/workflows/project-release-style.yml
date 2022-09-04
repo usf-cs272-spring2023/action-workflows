@@ -195,7 +195,7 @@ jobs:
           VERSION_PATCH: '${{ inputs.version_patch }}'
         with:
           script: |
-            const script = require('./workflows/.github/scripts/check-patch.js');
+            const script = require('./workflows/.github/scripts/release-patch.js');
             return await script({github, context, core});
 
       - name: 'Check version minor number'
@@ -209,7 +209,7 @@ jobs:
           VERSION_PATCH: '${{ inputs.version_patch }}'
         with:
           script: |
-            const script = require('./workflows/.github/scripts/check-minor.js');
+            const script = require('./workflows/.github/scripts/release-minor.js');
             return await script({github, context, core});
 
       - name: 'Save step status'
