@@ -2,8 +2,11 @@
 module.exports = async ({github, context, core}) => {
   const results = process.env.RESULTS;
   core.info(results);
+  core.info('');
   
   const json = JSON.parse(results);
-  core.info(json);
+  core.info(JSON.stringify(json, null, "  "));
+
+
 
 };
