@@ -15,7 +15,7 @@ module.exports = async ({github, context, core, fs}) => {
     release: release,
     release_date: undefined,
     
-    project: undefined,
+    project: major,
 
     check_tests: false,
     check_style: false,
@@ -29,8 +29,6 @@ module.exports = async ({github, context, core, fs}) => {
 
   try {
     const results = process.env.RESULTS;
-    core.info(results);
-    
     const json = JSON.parse(results);
   
     for (const property in json) {
@@ -45,7 +43,10 @@ module.exports = async ({github, context, core, fs}) => {
     core.startGroup('Outputting job status...');
     core.info(JSON.stringify(json, null, '  '));
     core.endGroup();
-  
+
+    output.release_date = json?.check_tests?.outputs?.status?.parse_release?.outputs?.release_date;
+    output.check_tests = json?.check_tests?.result === 'success';
+    output.check_style = json?.check_style?.result === 'success';
   }
   catch (error) {
     core.info(`${error.name}: ${error.message}`);
