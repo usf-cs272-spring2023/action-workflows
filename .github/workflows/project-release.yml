@@ -54,7 +54,7 @@ jobs:
     name: 'Save'
     needs: ['check_tests', 'check_style']
     if: ${{ always() }}
-    uses: ./.github/workflows/project-results.yml
+    uses: ./.github/workflows/project-release-results.yml
     with:
       action_ref: '${{ inputs.action_ref }}'
       release_id: '${{ needs.check_tests.outputs.release_id }}'
