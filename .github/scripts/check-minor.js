@@ -15,11 +15,25 @@ module.exports = async ({github, context, core}) => {
       per_page: 100
     });
 
-    core.info(JSON.stringify(pull_list, null, "  "));
+    // check if no pull requests yet in repository
+    if (!pull_list.hasOwnProperty('data') || pull_list.data.length == 0) {
+      core.info('Found 0 pull requests.');
 
+      if (minor != 0) {
+        core.setFailed(`The release version should start with v${major}.0, not with v${major}.${minor}, since you have 0 code reviews.`);
+      }
+
+      return;
+    }
+
+    // otherwise we have pull requests to look through
+
+    // check if exceeding number of pull requests can fetch at once
     if (pull_list.data.length >= 100) {
       core.error(`Maximum number of pull requests exceeded. Results may be unreliable.`);
     }
+
+    // prepare to process the pull requests
 
     const pulls = {
       project1: [],
