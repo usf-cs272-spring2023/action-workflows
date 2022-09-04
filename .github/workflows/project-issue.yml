@@ -41,24 +41,3 @@ jobs:
           script: |
             const script = require('./workflows/.github/scripts/issue-update-comment.js');
             return await script({github, context, core});
-
-
-
-# https://docs.github.com/en/rest/issues/issues#update-an-issue
-# state_reason now supported! "completed" or "not_planned"
-
-# comment on issue with run information and save comment id
-# check json configuration for name, user, release
-# parse release number to determine project 
-# parse title to determine assignment
-# find release action run to get status
-# check if this grade is approved
-# check issues if this grade was already requested
-
-# if tests and project > 1, check that review 1 grade for previous project already requested and closed as completed
-# if review, check that test grade for current project already requested and closed as completed and if project > 1, check that design grade for previous project already requested and closed as completed
-# if design, check that review grades already requested and closed as completed 
-
-# if success add project#, grade-###, and v#.#.# labels and project milestone
-
-# always update issue comment with status
