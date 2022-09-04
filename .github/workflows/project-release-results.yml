@@ -9,8 +9,8 @@ on:
         default: 'main'
         type: string
 
-      release_id:
-        description: "Project release version id (not tag)"
+      release_tag:
+        description: "Project release version number or tag (e.g. v1.0.0)"
         required: true
         type: string
 
