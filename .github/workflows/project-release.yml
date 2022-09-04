@@ -45,25 +45,12 @@ jobs:
       user_path:   '${{ needs.check_tests.outputs.user_path }}'
       user_cache:  '${{ needs.check_tests.outputs.user_cache }}'
 
-  check_version:
-    name: 'Check'
-    uses: ./.github/workflows/project-version.yml
-    needs: ['check_tests']
-    with:
-      action_ref:    '${{ inputs.action_ref }}'
-      user_repo:     '${{ needs.check_tests.outputs.user_repo }}'
-      release_tag:   '${{ needs.check_tests.outputs.release_tag }}'
-
-      version_major: '${{ needs.check_tests.outputs.version_major }}'
-      version_minor: '${{ needs.check_tests.outputs.version_minor }}'
-      version_patch: '${{ needs.check_tests.outputs.version_patch }}'
-
-  save_results:
+  check_results:
     name: 'Save'
     uses: ./.github/workflows/project-results.yml
-    needs: ['check_version', 'check_tests', 'check_warnings', 'check_style']
+    needs: ['check_tests', 'check_style']
     if: ${{ always() }}
     with:
-      action_ref:  '${{ inputs.action_ref }}'
-      results: ${{ toJSON(needs) }}
+      action_ref: '${{ inputs.action_ref }}'
+      results:    ${{ toJSON(needs) }}
       release_id: '${{ needs.check_startup.outputs.release_id }}'
