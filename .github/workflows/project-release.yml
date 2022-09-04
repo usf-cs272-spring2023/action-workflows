@@ -28,11 +28,11 @@ jobs:
     needs: ['check_startup']
     with:
       action_ref:    '${{ inputs.action_ref }}'
-      user_repo:     '${{ needs.parse_version.outputs.user_repo }}'
-      release_tag:   '${{ needs.parse_version.outputs.release_tag }}'
-      version_major: '${{ needs.parse_version.outputs.version_major }}'
-      version_minor: '${{ needs.parse_version.outputs.version_minor }}'
-      version_patch: '${{ needs.parse_version.outputs.version_patch }}'
+      user_repo:     '${{ needs.check_startup.outputs.user_repo }}'
+      release_tag:   '${{ needs.check_startup.outputs.release_tag }}'
+      version_major: '${{ needs.check_startup.outputs.version_major }}'
+      version_minor: '${{ needs.check_startup.outputs.version_minor }}'
+      version_patch: '${{ needs.check_startup.outputs.version_patch }}'
 
   check_warnings:
     name: 'Check'
@@ -40,10 +40,10 @@ jobs:
     needs: ['check_startup']
     with:
       action_ref:  '${{ inputs.action_ref }}'
-      release_ref: '${{ needs.parse_version.outputs.release_ref }}'
-      user_repo:   '${{ needs.parse_version.outputs.user_repo }}'
-      user_path:   '${{ needs.parse_version.outputs.user_path }}'
-      user_cache:  '${{ needs.parse_version.outputs.user_cache }}'
+      release_ref: '${{ needs.check_startup.outputs.release_ref }}'
+      user_repo:   '${{ needs.check_startup.outputs.user_repo }}'
+      user_path:   '${{ needs.check_startup.outputs.user_path }}'
+      user_cache:  '${{ needs.check_startup.outputs.user_cache }}'
 
   check_tests:
     name: 'This'
@@ -51,14 +51,14 @@ jobs:
     needs: ['check_startup']
     with:
       action_ref:  '${{ inputs.action_ref }}'
-      release_ref: '${{ needs.parse_version.outputs.release_ref }}'
-      user_repo:   '${{ needs.parse_version.outputs.user_repo }}'
-      user_path:   '${{ needs.parse_version.outputs.user_path }}'
-      user_cache:  '${{ needs.parse_version.outputs.user_cache }}'
-      test_repo:   '${{ needs.parse_version.outputs.test_repo }}'
-      test_path:   '${{ needs.parse_version.outputs.test_path }}'
-      test_cache:  '${{ needs.parse_version.outputs.test_cache }}'
-      test_tag:    'test${{ needs.parse_version.outputs.version_major }}'
+      release_ref: '${{ needs.check_startup.outputs.release_ref }}'
+      user_repo:   '${{ needs.check_startup.outputs.user_repo }}'
+      user_path:   '${{ needs.check_startup.outputs.user_path }}'
+      user_cache:  '${{ needs.check_startup.outputs.user_cache }}'
+      test_repo:   '${{ needs.check_startup.outputs.test_repo }}'
+      test_path:   '${{ needs.check_startup.outputs.test_path }}'
+      test_cache:  '${{ needs.check_startup.outputs.test_cache }}'
+      test_tag:    'test${{ needs.check_startup.outputs.version_major }}'
 
   check_past:
     name: 'Past'
@@ -66,14 +66,14 @@ jobs:
     needs: ['check_startup']
     with:
       action_ref:  '${{ inputs.action_ref }}'
-      release_ref: '${{ needs.parse_version.outputs.release_ref }}'
-      user_repo:   '${{ needs.parse_version.outputs.user_repo }}'
-      user_path:   '${{ needs.parse_version.outputs.user_path }}'
-      user_cache:  '${{ needs.parse_version.outputs.user_cache }}'
-      test_repo:   '${{ needs.parse_version.outputs.test_repo }}'
-      test_path:   '${{ needs.parse_version.outputs.test_path }}'
-      test_cache:  '${{ needs.parse_version.outputs.test_cache }}'
-      test_tag:    'past${{ needs.parse_version.outputs.version_major }}'
+      release_ref: '${{ needs.check_startup.outputs.release_ref }}'
+      user_repo:   '${{ needs.check_startup.outputs.user_repo }}'
+      user_path:   '${{ needs.check_startup.outputs.user_path }}'
+      user_cache:  '${{ needs.check_startup.outputs.user_cache }}'
+      test_repo:   '${{ needs.check_startup.outputs.test_repo }}'
+      test_path:   '${{ needs.check_startup.outputs.test_path }}'
+      test_cache:  '${{ needs.check_startup.outputs.test_cache }}'
+      test_tag:    'past${{ needs.check_startup.outputs.version_major }}'
 
   check_next:
     name: 'Next'
@@ -81,14 +81,14 @@ jobs:
     needs: ['check_startup']
     with:
       action_ref:  '${{ inputs.action_ref }}'
-      release_ref: '${{ needs.parse_version.outputs.release_ref }}'
-      user_repo:   '${{ needs.parse_version.outputs.user_repo }}'
-      user_path:   '${{ needs.parse_version.outputs.user_path }}'
-      user_cache:  '${{ needs.parse_version.outputs.user_cache }}'
-      test_repo:   '${{ needs.parse_version.outputs.test_repo }}'
-      test_path:   '${{ needs.parse_version.outputs.test_path }}'
-      test_cache:  '${{ needs.parse_version.outputs.test_cache }}'
-      test_tag:    'next${{ needs.parse_version.outputs.version_major }}'
+      release_ref: '${{ needs.check_startup.outputs.release_ref }}'
+      user_repo:   '${{ needs.check_startup.outputs.user_repo }}'
+      user_path:   '${{ needs.check_startup.outputs.user_path }}'
+      user_cache:  '${{ needs.check_startup.outputs.user_cache }}'
+      test_repo:   '${{ needs.check_startup.outputs.test_repo }}'
+      test_path:   '${{ needs.check_startup.outputs.test_path }}'
+      test_cache:  '${{ needs.check_startup.outputs.test_cache }}'
+      test_tag:    'next${{ needs.check_startup.outputs.version_major }}'
 
   check_style:
     name: 'Check'
@@ -96,10 +96,10 @@ jobs:
     needs: ['check_startup']
     with:
       action_ref:  '${{ inputs.action_ref }}'
-      release_ref: '${{ needs.parse_version.outputs.release_ref }}'
-      user_repo:   '${{ needs.parse_version.outputs.user_repo }}'
-      user_path:   '${{ needs.parse_version.outputs.user_path }}'
-      user_cache:  '${{ needs.parse_version.outputs.user_cache }}'
+      release_ref: '${{ needs.check_startup.outputs.release_ref }}'
+      user_repo:   '${{ needs.check_startup.outputs.user_repo }}'
+      user_path:   '${{ needs.check_startup.outputs.user_path }}'
+      user_cache:  '${{ needs.check_startup.outputs.user_cache }}'
 
   save_results:
     name: 'Save'
@@ -109,4 +109,4 @@ jobs:
     with:
       action_ref:  '${{ inputs.action_ref }}'
       results: ${{ toJSON(needs) }}
-      release_id: '${{ needs.parse_version.outputs.release_id }}'
+      release_id: '${{ needs.check_startup.outputs.release_id }}'
