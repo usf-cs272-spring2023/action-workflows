@@ -28,12 +28,12 @@ jobs:
     needs: ['check_tests']
     with:
       action_ref:    '${{ inputs.action_ref }}'
-      user_repo:     '${{ needs.check_startup.outputs.user_repo }}'
-      release_tag:   '${{ needs.check_startup.outputs.release_tag }}'
+      user_repo:     '${{ needs.check_tests.outputs.user_repo }}'
+      release_tag:   '${{ needs.check_tests.outputs.release_tag }}'
 
-      version_major: '${{ needs.check_startup.outputs.version_major }}'
-      version_minor: '${{ needs.check_startup.outputs.version_minor }}'
-      version_patch: '${{ needs.check_startup.outputs.version_patch }}'
+      version_major: '${{ needs.check_tests.outputs.version_major }}'
+      version_minor: '${{ needs.check_tests.outputs.version_minor }}'
+      version_patch: '${{ needs.check_tests.outputs.version_patch }}'
 
   check_warnings:
     name: 'Check'
@@ -41,11 +41,11 @@ jobs:
     needs: ['check_tests']
     with:
       action_ref:  '${{ inputs.action_ref }}'
-      release_ref: '${{ needs.check_startup.outputs.release_ref }}'
+      release_ref: '${{ needs.check_tests.outputs.release_ref }}'
 
-      user_repo:   '${{ needs.check_startup.outputs.user_repo }}'
-      user_path:   '${{ needs.check_startup.outputs.user_path }}'
-      user_cache:  '${{ needs.check_startup.outputs.user_cache }}'
+      user_repo:   '${{ needs.check_tests.outputs.user_repo }}'
+      user_path:   '${{ needs.check_tests.outputs.user_path }}'
+      user_cache:  '${{ needs.check_tests.outputs.user_cache }}'
 
   check_style:
     name: 'Check'
@@ -53,10 +53,10 @@ jobs:
     needs: ['check_tests']
     with:
       action_ref:  '${{ inputs.action_ref }}'
-      release_ref: '${{ needs.check_startup.outputs.release_ref }}'
-      user_repo:   '${{ needs.check_startup.outputs.user_repo }}'
-      user_path:   '${{ needs.check_startup.outputs.user_path }}'
-      user_cache:  '${{ needs.check_startup.outputs.user_cache }}'
+      release_ref: '${{ needs.check_tests.outputs.release_ref }}'
+      user_repo:   '${{ needs.check_tests.outputs.user_repo }}'
+      user_path:   '${{ needs.check_tests.outputs.user_path }}'
+      user_cache:  '${{ needs.check_tests.outputs.user_cache }}'
 
   save_results:
     name: 'Save'
