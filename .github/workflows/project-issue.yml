@@ -32,7 +32,7 @@ jobs:
             return await script({github, context, core});
 
       - name: 'Update issue with success'
-        id: update_issue
+        id: update_success
         if: ${{ success() }}
         uses: actions/github-script@v6
         env:
@@ -43,7 +43,7 @@ jobs:
             core.setFailed('Not yet implemented.');
 
       - name: 'Update issue with failure'
-        id: update_issue
+        id: update_failure
         if: ${{ failure() || cancelled() }}
         uses: actions/github-script@v6
         env:
