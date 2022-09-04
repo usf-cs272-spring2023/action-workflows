@@ -26,6 +26,14 @@ jobs:
     timeout-minutes: 5
 
     steps:
+      - name: 'Checkout workflows'
+        id: checkout_workflows
+        uses: actions/checkout@v3
+        with:
+          repository: usf-cs272-fall2022/action-workflows
+          path: 'workflows'
+          ref: '${{ inputs.action_ref }}'
+    
       - name: 'Output results'
         id: output_results
         uses: actions/github-script@v6
