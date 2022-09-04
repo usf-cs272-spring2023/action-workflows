@@ -20,53 +20,45 @@ module.exports = async ({github, context, core}) => {
       core.info('Found 0 pull requests.');
 
       if (minor != 0) {
-        core.setFailed(`The release version should start with v${major}.0, not with v${major}.${minor}, since you have 0 code reviews.`);
+        core.setFailed(`The release version should start with v${major}.0, not with v${major}.${minor}, since you have 0 code reviews. You may want to delete the ${release} release *and* tag (two separate steps).`);
       }
 
       return;
     }
 
     // otherwise we have pull requests to look through
+    core.info(`Found ${pull_list.data.length} pull requests.`);
 
     // check if exceeding number of pull requests can fetch at once
     if (pull_list.data.length >= 100) {
       core.error(`Maximum number of pull requests exceeded. Results may be unreliable.`);
     }
 
-    // prepare to process the pull requests
+    const approved = []; // stores pull requests approved by professor
+    const project = `project${major}`; // label for this project code reviews
 
-    const pulls = {
-      project1: [],
-      project2: [],
-      project3: [],
-      project4: []
-    };
+    // loop through all of the pull requests
+    for (const pull of pull_list.data) {
+      // check if pull request is for this project
+      if (pull.labels.some(label => label.name == project)) {
+        // get pull request reviews
+        const reviews = github.rest.pulls.listReviews({
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          pull_number: pull.id,
+          per_page: 100
+        });
 
-    let count = 0; // track how many pull requests we looked at
-    const approved = []; // track which pull requests are approved
-
-    // group pulls by their project label
-    pull_list.data.forEach(x => {
-      const key = x.labels.find(x => x.startsWith('project'));
-
-      if (key != undefined && pulls.hasOwnProperty(key)) {
-        pulls[key].push(x);
-        count++;
+        // check if the pull request was approved by the professor
+        if (reviews.hasOwnProperty('data') && reviews.data.some(review => review.user.login == 'sjengle' && review.state == 'APPROVED')) {
+          approved[project].push(pull);
+        }
       }
-    });
-
-    core.info(`Kept ${count} out of ${pull_list.data.length} pull requests.`);
-
-    for (const pull in pulls[`project${major}`]) {
-      const review_list = github.rest.pulls.listReviews({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        pull_number: pull.id,
-        per_page: 100
-      });
-
-      // TODO Check if state == APPROVED and user.login == sjengle
     }
+
+    core.info(`Found ${approved.length} approved code reviews for project ${major}.`);
+
+    // TODO Add output if found passing pull request for this project!
   }
   catch (error) {
     core.info(`${error.name}: ${error.message}`);

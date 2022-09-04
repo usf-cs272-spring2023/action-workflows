@@ -27,6 +27,16 @@ jobs:
 
     steps:
       - name: 'Output results'
+        id: output_results
+        uses: actions/github-script@v6
+        env:
+          RESULTS: ${{ inputs.results }}
+        with:
+          script: |
+            const script = require('./workflows/.github/scripts/release-update.js');
+            return await script({github, context, core});
+
+      - name: 'Output results'
         env:
           RESULTS: ${{ inputs.results }}
         run: echo ${RESULTS}
