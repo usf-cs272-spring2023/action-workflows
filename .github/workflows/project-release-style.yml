@@ -14,6 +14,23 @@ on:
         required: true
         type: string
 
+      # version information
+      version_major:
+        description: "The major version number (i.e. project number) from the release tag"
+        required: true
+        type: string
+
+      version_minor:
+        description: "The minor version number (i.e. code review number) from the release tag"
+        required: true
+        type: string
+
+      version_patch:
+        description: "The patch version number from the release tag"
+        required: true
+        type: string
+
+      # user repo information
       user_repo:
         description: "Repository with user project code"
         required: true
@@ -166,6 +183,34 @@ jobs:
             if (result !== expected) {
               core.setFailed(message);
             }
+
+      - name: 'Check version patch number'
+        id: check_patch
+        if: ${{ always() }}
+        uses: actions/github-script@v6
+        env:
+          RELEASE_TAG:   '${{ inputs.release_tag }}'
+          VERSION_MAJOR: '${{ inputs.version_major }}'
+          VERSION_MINOR: '${{ inputs.version_minor }}'
+          VERSION_PATCH: '${{ inputs.version_patch }}'
+        with:
+          script: |
+            const script = require('./workflows/.github/scripts/check-patch.js');
+            return await script({github, context, core});
+
+      - name: 'Check version minor number'
+        id: check_minor
+        if: ${{ always() }}
+        uses: actions/github-script@v6
+        env:
+          RELEASE_TAG:   '${{ inputs.release_tag }}'
+          VERSION_MAJOR: '${{ inputs.version_major }}'
+          VERSION_MINOR: '${{ inputs.version_minor }}'
+          VERSION_PATCH: '${{ inputs.version_patch }}'
+        with:
+          script: |
+            const script = require('./workflows/.github/scripts/check-minor.js');
+            return await script({github, context, core});
 
       - name: 'Save step status'
         id: step_status
