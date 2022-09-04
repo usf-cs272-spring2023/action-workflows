@@ -42,7 +42,7 @@ jobs:
       release_ref: '${{ needs.check_tests.outputs.release_ref }}'
 
       version_major: '${{ needs.check_tests.outputs.version_major }}'
-      version_minor: '${{ needs.check_tests.outputs.version_major }}'
+      version_minor: '${{ needs.check_tests.outputs.version_minor }}'
       version_patch: '${{ needs.check_tests.outputs.version_patch }}'
 
       user_repo:   '${{ needs.check_tests.outputs.user_repo }}'
@@ -59,7 +59,7 @@ jobs:
       release_id: '${{ needs.check_tests.outputs.release_id }}'
 
       version_major: '${{ needs.check_tests.outputs.version_major }}'
-      version_minor: '${{ needs.check_tests.outputs.version_major }}'
+      version_minor: '${{ needs.check_tests.outputs.version_minor }}'
       version_patch: '${{ needs.check_tests.outputs.version_patch }}'
 
       results:    ${{ toJSON(needs) }}
