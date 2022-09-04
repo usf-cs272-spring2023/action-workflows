@@ -61,11 +61,9 @@ jobs:
           VERSION_PATCH: '${{ inputs.version_patch }}'
         with:
           script: |
-            const artifact = require('@actions/artifact');
             const fs = require('fs');
-
             const script = require('./workflows/.github/scripts/release-results.js');
-            return await script({github, context, core, fs, artifact});
+            return await script({github, context, core, fs});
 
       - name: 'Upload results'
         id: upload_results

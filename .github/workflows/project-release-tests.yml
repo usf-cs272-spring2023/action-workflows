@@ -84,7 +84,7 @@ jobs:
       release_id:  '${{ steps.parse_release.outputs.release_id }}'
 
       version_major: '${{ steps.parse_release.outputs.version_major }}'
-      version_minor: '${{ steps.parse_release.outputs.version_major }}'
+      version_minor: '${{ steps.parse_release.outputs.version_minor }}'
       version_patch: '${{ steps.parse_release.outputs.version_patch }}'
 
       user_path: '${{ steps.generate_keys.outputs.user_path }}'

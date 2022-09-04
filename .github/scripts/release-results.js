@@ -1,6 +1,6 @@
 // checks the releases to determine if the major number makes sense
 // and which requests can be made based on the past results
-module.exports = async ({github, context, core, fs, artifact}) => {
+module.exports = async ({github, context, core, fs}) => {
   const release = process.env.RELEASE_TAG;
   const major = parseInt(process.env.VERSION_MAJOR);
   const minor = parseInt(process.env.VERSION_MINOR);
