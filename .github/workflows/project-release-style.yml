@@ -44,6 +44,7 @@ jobs:
     outputs:
       status: ${{ steps.step_status.outputs.status }}
 
+    steps:
       - name: 'Checkout workflows'
         id: checkout_workflows
         uses: actions/checkout@v3
