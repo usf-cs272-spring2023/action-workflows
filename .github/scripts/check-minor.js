@@ -70,4 +70,4 @@ module.exports = async ({github, context, core}) => {
     core.info(`${error.name}: ${error.message}`);
     core.setFailed(`Unable to check minor version of the ${release} release.`);
   }
-}
+};
