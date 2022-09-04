@@ -9,6 +9,8 @@ module.exports = async ({github, context, core, fs}) => {
   core.info(`Release: ${release}, Project: ${major}, Review: ${minor}, Patch: ${patch}`);
 
   const results = process.env.RESULTS;
+  core.info(results);
+  
   const json = JSON.parse(results);
 
   for (const property in json) {
