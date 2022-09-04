@@ -144,7 +144,7 @@ jobs:
         id: compile_project_code
         uses: actions/github-script@v6
         env:
-          USER_PATH: '${{ inputs.user_path }}'
+          USER_PATH: '${{ steps.generate_keys.outputs.user_path }}'
         with:
           script: |
             const command = 'mvn'
@@ -162,7 +162,7 @@ jobs:
 
       - name: 'Listing project code'
         id: list_project_code
-        working-directory: '${{ inputs.user_path }}'
+        working-directory: '${{ steps.generate_keys.outputs.user_path }}'
         run: |
           ls -ACGR target/classes
 
@@ -170,7 +170,7 @@ jobs:
         id: compile_test_code
         uses: actions/github-script@v6
         env:
-          USER_PATH: '${{ inputs.user_path }}'
+          USER_PATH: '${{ steps.generate_keys.outputs.user_path }}'
         with:
           script: |
             const command = 'mvn'
@@ -188,7 +188,7 @@ jobs:
 
       - name: 'Listing test code'
         id: list_test_code
-        working-directory: '${{ inputs.user_path }}'
+        working-directory: '${{ steps.generate_keys.outputs.user_path }}'
         run: |
           ls -ACGR target/test-classes
       
