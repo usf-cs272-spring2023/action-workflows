@@ -22,3 +22,11 @@ jobs:
           repository: usf-cs272-fall2022/action-workflows
           path: 'workflows'
           ref: '${{ inputs.action_ref }}'
+
+      - name: 'Create initial issue comment'
+        id: create_comment
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const script = require('./workflows/.github/scripts/issue-make-comment.js');
+            return await script({github, context, core});

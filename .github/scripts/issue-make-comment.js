@@ -20,6 +20,6 @@ module.exports = async ({github, context, core}) => {
     core.info(JSON.stringify(context));
     core.endGroup();
 
-    core.setFailed(`Unable to add issue comment.`);
+    core.setFailed(`Unable to add comment to issue #${context?.payload?.issue?.number}.`);
   }
 };
