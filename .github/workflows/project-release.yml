@@ -55,8 +55,8 @@ jobs:
     if: ${{ always() }}
     uses: ./.github/workflows/project-release-results.yml
     with:
-      action_ref: '${{ inputs.action_ref }}'
-      release_id: '${{ needs.check_tests.outputs.release_id }}'
+      action_ref:  '${{ inputs.action_ref }}'
+      release_tag: '${{ needs.check_tests.outputs.release_tag }}'
 
       version_major: '${{ needs.check_tests.outputs.version_major }}'
       version_minor: '${{ needs.check_tests.outputs.version_minor }}'
