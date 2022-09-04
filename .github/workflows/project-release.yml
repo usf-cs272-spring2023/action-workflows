@@ -36,7 +36,6 @@ jobs:
   check_style:
     name: 'Check'
     needs: ['check_tests']
-    continue-on-error: true
     uses: ./.github/workflows/project-release-style.yml
     with:
       action_ref:  '${{ inputs.action_ref }}'
