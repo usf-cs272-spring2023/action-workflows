@@ -77,5 +77,14 @@ module.exports = async ({github, context, core}) => {
   }
   core.endGroup();
 
+  // update release with run information
+  // don't need to wait for result!
+  github.rest.repos.updateRelease({
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    release_id: release_id,
+    body: `See [run #${context.runNumber} (id ${context.runId})](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for details.`
+  });
+
   return out;
 };
