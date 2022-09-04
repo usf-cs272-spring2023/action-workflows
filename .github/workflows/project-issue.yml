@@ -2,6 +2,12 @@ name: 'Check Project Issue'
 
 on:
   workflow_call:
+    inputs:
+      action_ref:
+        description: "Ref for workflow or action checkout"
+        required: false
+        default: 'main'
+        type: string
 
 jobs:
   main:
@@ -9,10 +15,50 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/github-script@v6
+      - name: 'Checkout workflows'
+        id: checkout_workflows
+        uses: actions/checkout@v3
+        with:
+          repository: usf-cs272-fall2022/action-workflows
+          path: 'workflows'
+          ref: '${{ inputs.action_ref }}'
+
+      - name: 'Create initial issue comment'
+        id: create_comment
+        uses: actions/github-script@v6
         with:
           script: |
-            core.setFailed('This action is not yet supported.');
+            const script = require('./workflows/.github/scripts/issue-make-comment.js');
+            return await script({github, context, core});
+
+      - name: 'Update issue comment with results'
+        id: update_comment
+        if: ${{ always() }}
+        uses: actions/github-script@v6
+        env:
+          COMMENT_ID: '${{ steps.create_comment.outputs.comment_id }}';
+        with:
+          script: |
+            const script = require('./workflows/.github/scripts/issue-update-comment.js');
+            return await script({github, context, core});
+
+
 
 # https://docs.github.com/en/rest/issues/issues#update-an-issue
 # state_reason now supported! "completed" or "not_planned"
+
+# comment on issue with run information and save comment id
+# check json configuration for name, user, release
+# parse release number to determine project 
+# parse title to determine assignment
+# find release action run to get status
+# check if this grade is approved
+# check issues if this grade was already requested
+
+# if tests and project > 1, check that review 1 grade for previous project already requested and closed as completed
+# if review, check that test grade for current project already requested and closed as completed and if project > 1, check that design grade for previous project already requested and closed as completed
+# if design, check that review grades already requested and closed as completed 
+
+# if success add project#, grade-###, and v#.#.# labels and project milestone
+
+# always update issue comment with status
