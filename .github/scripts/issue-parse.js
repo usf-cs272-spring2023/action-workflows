@@ -1,0 +1,106 @@
+// adds a comment to the issue to let user know the action is running
+module.exports = async ({github, context, core}) => {
+  const error_messages = [];
+  const output = {};
+
+  try {
+    const title = context.payload.issue.title; 
+    const body = context.payload.issue.body;
+  
+    // parse issue title
+    switch (title) {
+      case 'Request Project Tests Grade':
+        output.request_type = 'grade_tests';
+        break;
+
+      case 'Request Project Review Grade':
+        output.request_type = 'grade_review';
+        break;
+
+      case 'Request Project Design Grade':
+        output.request_type = 'grade_design';
+        break;
+
+      case 'Request Project Code Review':
+        // may need to change label depending on type of review
+        output.request_type = 'request_review';
+
+      default:
+        throw new Error(`Unable to determine request type from issue title: ${title}`);
+    }
+
+    // parse issue body 
+    const json_regex = /```json([^`]+)```/;
+    const json_match = body.match(json_regex);
+
+    if (json_match === null || json_match.length !== 2) {
+      throw new Error(`Unable to locate JSON configuration in issue body.`);
+    }
+
+    const parsed = JSON.parse(json_match[1]);
+    console.log(`Parsed: ${JSON.stringify(parsed)}`);
+
+    // trim all of the values
+    Object.keys(parsed).forEach(key => parsed[key] = parsed[key].trim());
+
+    // check for valid name
+    if (!parsed.hasOwnProperty('name') || parsed.name == "FULL_NAME") {
+      throw new Error(`The "name" property must be present and filled in with your full (first and last) name.`);
+    }
+
+    // check for valid user
+    if (!parsed.hasOwnProperty('user') || parsed.user == "USER_NAME") {
+      throw new Error(`The "user" property must be present and filled in with your USF username.`);
+    }
+
+    // check for valid release
+    if (!parsed.hasOwnProperty('release') || parsed.release == "v0.0.0") {
+      throw new Error(`The "release" property must be present and filled in with a valid release.`);
+    }
+
+    // set output values
+    Object.assign(output, parsed);
+
+    // attempt to parse the release
+    const tag_regex = /^refs\/tags\/v([1-4])\.(\d+)\.(\d+)$/;
+    const tag_match = parsed.release.match(tag_regex);
+
+    if (tag_match === null || tag_match.length !== 4) {
+      throw new Error(`Unable to parse "${parsed.release}" into major, minor, and patch version numbers.`);
+    }
+
+    output.version_major = parseInt(tag_match[1]);
+    output.version_minor = parseInt(tag_match[2]);
+    output.version_patch = parseInt(tag_match[3]);
+  }
+  catch (error) {
+    // add error and output stack trace
+    error_messages.push(`Unexpected error: ${error.message}`);
+
+    core.info('');
+    core.startGroup(`Unexpected ${error.name} encountered...`);
+    core.info(error.stack);
+    core.endGroup();
+  }
+  finally {
+    // output and set results
+    core.startGroup('Setting output...');
+    for (const property in out) {
+      console.log(`${property}: ${out[property]}`);
+      core.setOutput(property, out[property]);
+    }
+    core.endGroup();
+
+    // save and output all errors
+    if (error_messages.length > 0) {
+      const formatted = error_messages.map(x => `  1. ${x}\n`).join('');
+      core.setOutput('error_messages', formatted);
+
+      core.startGroup(`Outputting errors...`);
+      for (const message of error_messages) {
+        core.error(message);
+      }
+      core.endGroup();
+    }
+  }
+};

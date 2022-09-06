@@ -31,6 +31,14 @@ jobs:
             const script = require('./workflows/.github/scripts/issue-comment.js');
             return await script({github, context, core});
 
+      - name: 'Parse request details'
+        id: parse_request
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const script = require('./workflows/.github/scripts/issue-parse.js');
+            return await script({github, context, core});
+
       - name: 'Update issue with success'
         id: update_success
         if: ${{ success() }}
