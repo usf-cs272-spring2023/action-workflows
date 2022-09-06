@@ -56,6 +56,7 @@ jobs:
         uses: actions/github-script@v6
         env:
           COMMENT_ID: '${{ steps.create_comment.outputs.comment_id }}'
+          RESULTS: ${{ toJSON(steps) }}
         with:
           script: |
             const script = require('./workflows/.github/scripts/issue-failure.js');

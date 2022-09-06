@@ -2,8 +2,24 @@
 module.exports = async ({github, context, core}) => {
   try {
     const comment_id = process.env.COMMENT_ID;
-    const message = `:octocat: @${ context.actor }, there are one or more problems with your request. You must address these problems and then re-open this issue. See [run #${context.runNumber} (id ${context.runId})](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for details.`;
+    let message = `:octocat: @${ context.actor }, there are one or more problems with your request: `;
 
+    // try to parse job and step results
+    const results = process.env.RESULTS;
+    const json = JSON.parse(results);
+
+    // add error messages if there are any
+    for (const property in json) {
+      if (json[property]?.outputs?.error_messages != undefined) {
+        message += json[property].outputs.error_messages;
+      }
+    }
+
+    // add message footer
+    message += `
+:warning: You must address these problems and then re-open this issue. See [run #${context.runNumber} (id ${context.runId})](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for details.`;
+
+    // update issue comment
     const updated = await github.rest.issues.updateComment({
       owner: context.repo.owner,
       repo: context.repo.repo,
