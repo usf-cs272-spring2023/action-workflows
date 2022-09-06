@@ -26,7 +26,7 @@ module.exports = async ({github, context, core}) => {
         output.request_type = 'request_review';
 
       default:
-        throw new Error(`Unable to determine request type from issue title: ${title}`);
+        error_messages.push(`Unable to determine request type from issue title: ${title}`);
     }
 
     // parse issue body 
@@ -40,38 +40,38 @@ module.exports = async ({github, context, core}) => {
     const parsed = JSON.parse(json_match[1]);
     console.log(`Parsed: ${JSON.stringify(parsed)}`);
 
-    // trim all of the values
+    // trim all of the values and save as output
     Object.keys(parsed).forEach(key => parsed[key] = parsed[key].trim());
+    Object.assign(output, parsed);
 
     // check for valid name
     if (!parsed.hasOwnProperty('name') || parsed.name == "FULL_NAME") {
-      throw new Error(`The "name" property must be present and filled in with your full (first and last) name.`);
+      error_messages.push(`The "name" property must be present and filled in with your full (first and last) name.`);
     }
 
     // check for valid user
     if (!parsed.hasOwnProperty('user') || parsed.user == "USER_NAME") {
-      throw new Error(`The "user" property must be present and filled in with your USF username.`);
+      error_messages.push(`The "user" property must be present and filled in with your USF username.`);
     }
 
     // check for valid release
     if (!parsed.hasOwnProperty('release') || parsed.release == "v0.0.0") {
-      throw new Error(`The "release" property must be present and filled in with a valid release.`);
+      error_messages.push(`The "release" property must be present and filled in with a valid release.`);
     }
+    else {
+      // attempt to parse the release
+      const tag_regex = /^refs\/tags\/v([1-4])\.(\d+)\.(\d+)$/;
+      const tag_match = parsed.release.match(tag_regex);
 
-    // set output values
-    Object.assign(output, parsed);
-
-    // attempt to parse the release
-    const tag_regex = /^refs\/tags\/v([1-4])\.(\d+)\.(\d+)$/;
-    const tag_match = parsed.release.match(tag_regex);
-
-    if (tag_match === null || tag_match.length !== 4) {
-      throw new Error(`Unable to parse "${parsed.release}" into major, minor, and patch version numbers.`);
+      if (tag_match === null || tag_match.length !== 4) {
+        error_messages.push(`Unable to parse "${parsed.release}" into major, minor, and patch version numbers.`);
+      }
+      else {
+        output.version_major = parseInt(tag_match[1]);
+        output.version_minor = parseInt(tag_match[2]);
+        output.version_patch = parseInt(tag_match[3]);
+      }
     }
-
-    output.version_major = parseInt(tag_match[1]);
-    output.version_minor = parseInt(tag_match[2]);
-    output.version_patch = parseInt(tag_match[3]);
   }
   catch (error) {
     // add error and output stack trace
@@ -101,6 +101,8 @@ module.exports = async ({github, context, core}) => {
         core.error(message);
       }
       core.endGroup();
+
+      core.setFailed(`Found ${error_messages.length} problems while parsing the request.`);
     }
   }
 };
