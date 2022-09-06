@@ -39,6 +39,22 @@ jobs:
             const script = require('./workflows/.github/scripts/issue-parse.js');
             return await script({github, context, core});
 
+      - name: 'Find relevant action run'
+        id: find_action
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const script = require('./workflows/.github/scripts/issue-action.js');
+            return await script({github, context, core});
+
+      - name: 'Verify request is valid'
+        id: find_action
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const script = require('./workflows/.github/scripts/issue-verify.js');
+            return await script({github, context, core});
+
       - name: 'Update issue with success'
         id: update_success
         if: ${{ success() }}

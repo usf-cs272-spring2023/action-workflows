@@ -1,4 +1,4 @@
-// adds a comment to the issue to let user know the action is running
+// parses the issue title and body for request details
 module.exports = async ({github, context, core}) => {
   const error_messages = [];
   const output = {};
