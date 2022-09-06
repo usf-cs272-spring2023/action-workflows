@@ -85,9 +85,9 @@ module.exports = async ({github, context, core}) => {
   finally {
     // output and set results
     core.startGroup('Setting output...');
-    for (const property in out) {
-      console.log(`${property}: ${out[property]}`);
-      core.setOutput(property, out[property]);
+    for (const property in output) {
+      console.log(`${property}: ${output[property]}`);
+      core.setOutput(property, output[property]);
     }
     core.endGroup();
 
