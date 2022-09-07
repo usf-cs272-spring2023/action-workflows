@@ -86,6 +86,16 @@ jobs:
             const script = require('./workflows/.github/scripts/issue-milestone.js');
             return await script({github, context, core});
 
+      - name: 'Get grade information'
+        id: calculate_grade
+        if: ${{ startsWith(steps.parse_request.outputs.request_type, "grade_" }}
+        uses: usf-cs272-fall2022/action-check-deadline@main
+        with:
+          assignment_name: '${{ steps.verify_request.outputs.assignment_name }}'
+          starting_points: '${{ steps.verify_request.outputs.starting_points }}'
+          submitted_date:  '${{ steps.verify_request.outputs.submitted_date }}'
+          extension_hours: '${{ steps.parse_request.outputs.extension_hours }}'
+
       - name: 'Update issue with success'
         id: update_success
         if: ${{ success() }}
