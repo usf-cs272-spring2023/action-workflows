@@ -10,20 +10,19 @@ module.exports = async ({github, context, core}) => {
     // parse issue title
     switch (title) {
       case 'Request Project Tests Grade':
-        output.request_type = 'grade_tests';
+        output.request_type = 'grade-tests';
         break;
 
       case 'Request Project Review Grade':
-        output.request_type = 'grade_review';
+        output.request_type = 'grade-review';
         break;
 
       case 'Request Project Design Grade':
-        output.request_type = 'grade_design';
+        output.request_type = 'grade-design';
         break;
 
       case 'Request Project Code Review':
-        // may need to change label depending on type of review
-        output.request_type = 'request_review';
+        output.request_type = 'request-review';
 
       default:
         error_messages.push(`Unable to determine request type from issue title: ${title}`);

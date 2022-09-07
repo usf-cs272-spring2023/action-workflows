@@ -4,6 +4,106 @@ module.exports = async ({github, context, core}) => {
   const output = {};
 
   try {
+    const results = JSON.parse(process.env.RESULTS_JSON);
+    const request_type = process.env.REQUEST_TYPE;
+
+    const major = parseInt(process.env.VERSION_MAJOR);
+    const minor = parseInt(process.env.VERSION_MINOR);
+    const patch = parseInt(process.env.VERSION_PATCH);    
+
+    if (!results.hasOwnProperty(request_type) || `${results[request_type]}` != 'true') {
+      error_messages.push(`The release ${results.release} is not eligible for this type of request.`);
+      return; // exit out of try block
+    }
+
+    // get all issues and pull requests
+    const response = await github.rest.issues.listForRepo({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      state: 'all',
+      per_page: 100
+    });
+
+    if (response.data.length >= 100) {
+      error_messages.push(`Maximum number of issues exceeded. Results may be unreliable.`);
+    }
+
+    // stores all parsed issues
+    const parsed = {
+      'project1': {},
+      'project2': {},
+      'project3': {},
+      'project4': {}
+    };
+
+    // loop through all found issues
+    issues: for (const issue of response.data) {
+      // loop through all of the issues
+      let project = undefined;
+      let issue_types = [];
+
+      labels: for (const label in issue.labels) {
+        switch (label.name) {
+          case 'error':
+            core.info(`Skipping issue #${issue.number} due to "error" label.`);
+            continue issues;
+          
+          case 'project1':
+          case 'project2':
+          case 'project3':
+          case 'project4':
+            project = label.name;
+            break;
+          
+          case 'grade-tests':
+          case 'grade-review':
+          case 'grade-design':
+          case 'request-code-review':
+          case 'request-quick-review':
+          case 'resubmit-code-review':
+          case 'resubmit-quick-review':
+          case 'review-passed':
+            issue_types.push(label.name);
+            break;
+          
+          default:
+            core.warning(`Issue #${issue.number} has an unexpected "${label.name}" label.`);
+        }
+      }
+
+      // store results
+      for (const issue_type in issue_types) {
+        if (!parsed[project].hasOwnProperty(issue_type)) {
+          parsed[project][issue_type] = [];
+        }
+
+        parsed[project][issue_type].push(issue);
+      }
+    }
+
+    core.startGroup(`Outputting parsed issues...`);
+    core.info(parsed);
+    core.endGroup();
+
+    // check for issues of same type and project
+    // switch (request_type) {
+    //   case 'grade-tests':
+    //   case 'grade-design':
+    //     if (parsed?.[`project${major}`]?.[request_type]?.length > 0) {
+    //       const number = parsed[`project${major}`][request_type][0]['number'];
+    //       error_messages.push(`You already have an issue for this type of request. Use issue #${number} instead.`);
+    //       return; // exit out of try block
+    //     }
+    //     break;
+
+    //   case 'grade-review':
+
+
+    // }
+
+    // check for required issues of previous project
+
+
     // if grade_tests, need release action run and issues
     // if request_review, need release action run and issues
 

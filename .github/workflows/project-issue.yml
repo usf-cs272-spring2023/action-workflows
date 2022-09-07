@@ -39,8 +39,8 @@ jobs:
             const script = require('./workflows/.github/scripts/issue-parse.js');
             return await script({github, context, core});
 
-      - name: 'Find relevant action run'
-        id: find_action
+      - name: 'Find run for release'
+        id: find_release
         uses: actions/github-script@v6
         env:
           RELEASE_TAG:   '${{ steps.parse_request.outputs.release_tag }}'
@@ -52,21 +52,26 @@ jobs:
             const script = require('./workflows/.github/scripts/issue-action.js');
             return await script({github, context, core});
 
-      - name: 'Download run results'
+      - name: 'Download release results'
         id: download_json
         uses: usf-cs272-fall2022/action-check-results@main
         with:
           artifact_name: 'check-release-results'
           artifact_json: 'check-release-results.json'
           workflow_name: 'project-release.yml'
-          workflow_run:  '${{ steps.find_action.outputs.run_id }}'
+          workflow_run:  '${{ steps.find_release.outputs.run_id }}'
           access_token: '${{ secrets.GITHUB_TOKEN }}'
 
-      - name: 'Verify request is valid'
+      - name: 'Verify release results'
         id: verify_request
         uses: actions/github-script@v6
         env:
-          RESULTS_JSON: "${{ steps.download_json.outputs.json_string }}"
+          RELEASE_TAG:   '${{ steps.parse_request.outputs.release_tag }}'
+          VERSION_MAJOR: '${{ steps.parse_request.outputs.version_major }}'
+          VERSION_MINOR: '${{ steps.parse_request.outputs.version_minor }}'
+          VERSION_PATCH: '${{ steps.parse_request.outputs.version_patch }}'
+          REQUEST_TYPE:  '${{ steps.parse_request.outputs.request_type }}'
+          RESULTS_JSON:  '${{ steps.download_json.outputs.json_string }}'
         with:
           script: |
             const script = require('./workflows/.github/scripts/issue-verify.js');
