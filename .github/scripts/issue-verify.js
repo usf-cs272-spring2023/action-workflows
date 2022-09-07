@@ -3,6 +3,9 @@ module.exports = async ({github, context, core}) => {
   const error_messages = [];
   const output = {};
 
+  // most actions use _ underscore in names, e.g. grade_tests
+  // unfortunately the associated labels use - dash in name. e/g/ grade-tests
+
   try {
     const results = JSON.parse(process.env.RESULTS_JSON);
     const request_type = process.env.REQUEST_TYPE;
@@ -90,7 +93,7 @@ module.exports = async ({github, context, core}) => {
     const previous = major > 1 ? parsed[`project${major - 1}`] : undefined;
 
     switch (request_type) {
-      case 'grade-tests':
+      case 'grade_tests':
         // check if there is an issue for this request already
         if (current?.['grade-tests']?.length > 0) {
           const found = current['grade-tests'][0];
@@ -106,6 +109,8 @@ module.exports = async ({github, context, core}) => {
             error_messages.push(`You must request at least one review grade for project ${major - 1} before requesting a tests grade for project ${major}.`);
             return; // exit out of try block
           }
+
+          core.info(`Found ${reviews} review grade requests for project ${major - 1}.`);
         }
 
         output.assignment_name = `Project ${major} Tests`;
@@ -115,9 +120,9 @@ module.exports = async ({github, context, core}) => {
         output.milestone = `Project ${major}`;
         break;
       
-      case 'grade-review':
-      case 'grade-design':
-      case 'request-review':
+      case 'grade_review':
+      case 'grade_design':
+      case 'request_review':
         error_messages.push('This request type is not yet supported.');
         break;
       
