@@ -48,7 +48,7 @@ module.exports = async ({github, context, core}) => {
 
       core.info(JSON.stringify(issue.labels));
 
-      labels: for (const label in issue.labels) {
+      labels: for (const label of issue.labels) {
         core.info(label);
         switch (label.name) {
           case 'error':
