@@ -36,6 +36,10 @@ module.exports = async ({github, context, core}) => {
     const assignees = ['mtquach2', 'par5ul1', 'igentle292'];
     const milestone_id = results.verify_request.outputs.milestone_id;
 
+    core.info(`Labels: ${labels.join(', ')}`);
+    core.info(`Assignees: ${assignees.join(', ')}`);
+    core.info(`Milestone: ${milestone_id}`);
+
     const updated = await github.rest.issues.update({
       owner: context.repo.owner,
       repo: context.repo.repo,
