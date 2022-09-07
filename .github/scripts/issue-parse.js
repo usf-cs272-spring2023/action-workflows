@@ -7,6 +7,28 @@ module.exports = async ({github, context, core}) => {
     const title = context.payload.issue.title; 
     const body = context.payload.issue.body;
   
+    // parse issue title
+    switch (title) {
+      case 'Request Project Tests Grade':
+        output.request_type = 'grade_tests';
+        break;
+
+      case 'Request Project Review Grade':
+        output.request_type = 'grade_review';
+        break;
+
+      case 'Request Project Design Grade':
+        output.request_type = 'grade_design';
+        break;
+
+      case 'Request Project Code Review':
+        // may need to change label depending on type of review
+        output.request_type = 'request_review';
+
+      default:
+        error_messages.push(`Unable to determine request type from issue title: ${title}`);
+    }
+
     // parse issue body 
     const json_regex = /```json([^`]+)```/;
     const json_match = body.match(json_regex);
@@ -34,11 +56,6 @@ module.exports = async ({github, context, core}) => {
     }
 
     // check for valid release
-
-    output.version_major = 0;
-    output.version_minor = 0;
-    output.version_patch = 0;
-
     if (!parsed.hasOwnProperty('release') || parsed.release == "v0.0.0") {
       error_messages.push(`The "release" property must be present and filled in with a valid release.`);
     }
@@ -54,34 +71,8 @@ module.exports = async ({github, context, core}) => {
         output.version_major = parseInt(tag_match[1]);
         output.version_minor = parseInt(tag_match[2]);
         output.version_patch = parseInt(tag_match[3]);
+        output.release_tag  = `v${output.version_major}.${output.version_minor}.${output.version_patch}`;
       }
-    }
-
-    output.release_tag = `v${output.version_major}.${output.version_minor}.${output.version_patch}`;
-
-    // parse issue title
-    switch (title) {
-      case 'Request Project Tests Grade':
-        output.request_type = 'grade_tests';
-        output.assignment_name = `Project ${output.version_major} Tests`;
-        break;
-
-      case 'Request Project Review Grade':
-        output.request_type = 'grade_review';
-        output.assignment_name = `Project ${output.version_major} Review ${output.version_minor + 1}`;
-        break;
-
-      case 'Request Project Design Grade':
-        output.request_type = 'grade_design';
-        output.assignment_name = `Project ${output.version_major} Design`;
-        break;
-
-      case 'Request Project Code Review':
-        // may need to change label depending on type of review
-        output.request_type = 'request_review';
-
-      default:
-        error_messages.push(`Unable to determine request type from issue title: ${title}`);
     }
   }
   catch (error) {
