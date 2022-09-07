@@ -53,7 +53,7 @@ jobs:
             return await script({github, context, core});
 
       - name: 'Verify request is valid'
-        id: find_action
+        id: verify_request
         uses: actions/github-script@v6
         with:
           script: |
