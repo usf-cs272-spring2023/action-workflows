@@ -22,16 +22,23 @@ module.exports = async ({github, context, core}) => {
       error_messages.push(`Maximum number of workflow runs exceeded. Results may be unreliable.`);
     }
 
-    core.info(JSON.stringify(response.data));
+    const filtered = response.data.workflow_runs.filter(run => run.status === 'completed' && run.head_branch === release);
 
+    if (filtered.length < 1) {
+      error_messages.push(`Unable to find workflow run for release ${release}. Double-check the correct release version is entered and all action runs for that release have completed.`);
+    }
+    else {
+      if (filtered.length > 1) {
+        core.warning(`Found ${filtered.length} workflow run(s) for release ${release}. Only the most recent run will be used. To use a different run, delete the other runs before re-triggering this action.`);
+      }
 
+      const found = filtered.shift();
+      core.info(`Found run #${found.run_number} (id ${found.id}) started at ${found.run_started_at} for release ${release}.`);
 
-    // if grade_tests, need release action run and issues
-    // if request_review, need release action run and issues
-
-    // if grade_review, need release action run and pull requests
-    // if grade_design, need release action run and pull requests
-    throw new Error('Not implemented.');
+      output.run_id = found.id;
+      output.run_number = found.run_number;
+      output.run_date = found.run_started_at;
+    }
   }
   catch (error) {
     // add error and output stack trace

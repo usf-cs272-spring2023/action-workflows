@@ -52,9 +52,21 @@ jobs:
             const script = require('./workflows/.github/scripts/issue-action.js');
             return await script({github, context, core});
 
+      - name: 'Download run results'
+        id: download_json
+        uses: usf-cs272-fall2022/action-check-results@main
+        with:
+          artifact_name: 'check-release-results'
+          artifact_json: 'check-release-results.json'
+          workflow_name: 'project-release.yml'
+          workflow_run:  '${{ steps.find_action.outputs.run_id }}'
+          token: '${{ secrets.GITHUB_TOKEN }}'
+
       - name: 'Verify request is valid'
         id: verify_request
         uses: actions/github-script@v6
+        env:
+          RESULTS_JSON: "${{ steps.download_json.outputs.json_string }}"
         with:
           script: |
             const script = require('./workflows/.github/scripts/issue-verify.js');
