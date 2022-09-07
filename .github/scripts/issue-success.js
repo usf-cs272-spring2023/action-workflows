@@ -34,7 +34,7 @@ module.exports = async ({github, context, core}) => {
   try {
     const labels = JSON.parse(results.verify_request.outputs.labels);
     const assignees = ['mtquach2', 'par5ul1', 'igentle292'];
-    const milestone_id = results.verify_request.outputs.milestone_id;
+    const milestone_id = results.get_milestone.outputs.milestone_id;
 
     core.info(`Labels: ${labels.join(', ')}`);
     core.info(`Assignees: ${assignees.join(', ')}`);
