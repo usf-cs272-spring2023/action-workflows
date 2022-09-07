@@ -97,8 +97,12 @@ module.exports = async ({github, context, core}) => {
         // check if there is an issue for this request already
         if (current?.['grade-tests']?.length > 0) {
           const found = current['grade-tests'][0];
-          error_messages.push(`You already requested a project ${major} tests grade in issue ${found.number}. You only need to request this grade ONCE per project. If the issue is closed and you do not see a grade on Canvas yet, please post on Piazza asking for an update.`);
-          return; // exit out of try block
+
+          // if the found issue isn't this one
+          if (found.number != context.issue.number) {
+            error_messages.push(`You already requested a project ${major} tests grade in issue #${found.number}. You only need to request this grade ONCE per project. If the issue is closed and you do not see a grade on Canvas yet, please post on Piazza asking for an update.`);
+            return; // exit out of try block
+          }
         }
 
         // check if there is a previous project
