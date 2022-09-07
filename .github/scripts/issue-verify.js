@@ -40,6 +40,8 @@ module.exports = async ({github, context, core}) => {
       'project4': {}
     };
 
+    core.info(JSON.stringify(response));
+
     // loop through all found issues
     issues: for (const issue of response.data) {
       // loop through all of the issues
@@ -86,7 +88,7 @@ module.exports = async ({github, context, core}) => {
     }
 
     core.startGroup(`Outputting parsed issues...`);
-    core.info(parsed);
+    core.info(JSON.stringify(parsed));
     core.endGroup();
 
     const current  = parsed[`project${major}`];
