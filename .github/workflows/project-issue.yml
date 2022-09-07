@@ -60,7 +60,7 @@ jobs:
           artifact_json: 'check-release-results.json'
           workflow_name: 'project-release.yml'
           workflow_run:  '${{ steps.find_action.outputs.run_id }}'
-          token: '${{ secrets.GITHUB_TOKEN }}'
+          access_token: '${{ secrets.GITHUB_TOKEN }}'
 
       - name: 'Verify request is valid'
         id: verify_request
