@@ -4,6 +4,28 @@ module.exports = async ({github, context, core}) => {
   const output = {};
 
   try {
+    const release = process.env.RELEASE_TAG;
+    const major = parseInt(process.env.VERSION_MAJOR);
+    const minor = parseInt(process.env.VERSION_MINOR);
+    const patch = parseInt(process.env.VERSION_PATCH);
+  
+    core.info(`Release: ${release}, Project: ${major}, Review: ${minor}, Patch: ${patch}`);
+
+    const response = await github.rest.actions.listWorkflowRuns({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      workflow_id: 'project-release.yml',
+      per_page: 100
+    });
+
+    if (response.data.length >= 100) {
+      error_messages.push(`Maximum number of workflow runs exceeded. Results may be unreliable.`);
+    }
+
+    core.info(JSON.stringify(response.data));
+
+
+
     // if grade_tests, need release action run and issues
     // if request_review, need release action run and issues
 

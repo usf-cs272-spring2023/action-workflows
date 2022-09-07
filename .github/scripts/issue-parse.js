@@ -70,6 +70,7 @@ module.exports = async ({github, context, core}) => {
         output.version_major = parseInt(tag_match[1]);
         output.version_minor = parseInt(tag_match[2]);
         output.version_patch = parseInt(tag_match[3]);
+        output.release_tag  = `v${output.version_major}.${output.version_minor}.${output.version_patch}`;
       }
     }
   }

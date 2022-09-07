@@ -42,6 +42,11 @@ jobs:
       - name: 'Find relevant action run'
         id: find_action
         uses: actions/github-script@v6
+        env:
+          RELEASE_TAG:   '${{ steps.parse_request.outputs.release_tag }}'
+          VERSION_MAJOR: '${{ steps.parse_request.outputs.version_major }}'
+          VERSION_MINOR: '${{ steps.parse_request.outputs.version_minor }}'
+          VERSION_PATCH: '${{ steps.parse_request.outputs.version_patch }}'
         with:
           script: |
             const script = require('./workflows/.github/scripts/issue-action.js');
