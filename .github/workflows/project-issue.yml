@@ -43,10 +43,7 @@ jobs:
         id: find_release
         uses: actions/github-script@v6
         env:
-          RELEASE_TAG:   '${{ steps.parse_request.outputs.release_tag }}'
-          VERSION_MAJOR: '${{ steps.parse_request.outputs.version_major }}'
-          VERSION_MINOR: '${{ steps.parse_request.outputs.version_minor }}'
-          VERSION_PATCH: '${{ steps.parse_request.outputs.version_patch }}'
+          RELEASE_TAG: '${{ steps.parse_request.outputs.release_tag }}'
         with:
           script: |
             const script = require('./workflows/.github/scripts/issue-action.js');
@@ -67,14 +64,26 @@ jobs:
         uses: actions/github-script@v6
         env:
           RELEASE_TAG:   '${{ steps.parse_request.outputs.release_tag }}'
+
           VERSION_MAJOR: '${{ steps.parse_request.outputs.version_major }}'
           VERSION_MINOR: '${{ steps.parse_request.outputs.version_minor }}'
           VERSION_PATCH: '${{ steps.parse_request.outputs.version_patch }}'
+
           REQUEST_TYPE:  '${{ steps.parse_request.outputs.request_type }}'
           RESULTS_JSON:  '${{ steps.download_json.outputs.json_string }}'
         with:
           script: |
             const script = require('./workflows/.github/scripts/issue-verify.js');
+            return await script({github, context, core});
+
+      - name: 'Get milestone for request'
+        id: get_milestone
+        uses: actions/github-script@v6
+        env:
+          MILESTONE_NAME: '${{ steps.verify_request.outputs.milestone_name }}'
+        with:
+          script: |
+            const script = require('./workflows/.github/scripts/issue-milestone.js');
             return await script({github, context, core});
 
       - name: 'Update issue with success'
@@ -83,10 +92,11 @@ jobs:
         uses: actions/github-script@v6
         env:
           COMMENT_ID: '${{ steps.create_comment.outputs.comment_id }}'
+          RESULTS: ${{ toJSON(steps) }}
         with:
           script: |
-            core.info('Hello world.');
-            core.setFailed('Not yet implemented.');
+            const script = require('./workflows/.github/scripts/issue-success.js');
+            return await script({github, context, core});
 
       - name: 'Update issue with failure'
         id: update_failure

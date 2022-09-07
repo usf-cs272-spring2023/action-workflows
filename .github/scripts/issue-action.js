@@ -5,11 +5,7 @@ module.exports = async ({github, context, core}) => {
 
   try {
     const release = process.env.RELEASE_TAG;
-    const major = parseInt(process.env.VERSION_MAJOR);
-    const minor = parseInt(process.env.VERSION_MINOR);
-    const patch = parseInt(process.env.VERSION_PATCH);
-  
-    core.info(`Release: ${release}, Project: ${major}, Review: ${minor}, Patch: ${patch}`);
+    core.info(`Release: ${release}`);
 
     const response = await github.rest.actions.listWorkflowRuns({
       owner: context.repo.owner,
@@ -37,7 +33,6 @@ module.exports = async ({github, context, core}) => {
 
       output.run_id = found.id;
       output.run_number = found.run_number;
-      output.run_date = found.run_started_at;
     }
   }
   catch (error) {

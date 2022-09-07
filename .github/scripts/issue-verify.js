@@ -121,7 +121,7 @@ module.exports = async ({github, context, core}) => {
         output.start_points = 100;
         output.submitted_date = results.release_date;
         output.labels = JSON.stringify([`project${major}`, 'grade-tests', release]);
-        output.milestone = `Project ${major}`;
+        output.milestone_name = `Project ${major}`;
         break;
       
       case 'grade_review':
