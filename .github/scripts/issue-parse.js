@@ -60,7 +60,7 @@ module.exports = async ({github, context, core}) => {
     }
     else {
       // attempt to parse the release
-      const tag_regex = /^refs\/tags\/v([1-4])\.(\d+)\.(\d+)$/;
+      const tag_regex = /^v([1-4])\.(\d+)\.(\d+)$/;
       const tag_match = parsed.release.match(tag_regex);
 
       if (tag_match === null || tag_match.length !== 4) {
