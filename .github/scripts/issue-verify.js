@@ -46,10 +46,7 @@ module.exports = async ({github, context, core}) => {
       let project = undefined;
       let issue_types = [];
 
-      core.info(JSON.stringify(issue.labels));
-
       labels: for (const label of issue.labels) {
-        core.info(label);
         switch (label.name) {
           case 'error':
             core.info(`Skipping issue #${issue.number} due to "error" label.`);
@@ -79,7 +76,7 @@ module.exports = async ({github, context, core}) => {
       }
 
       // store results
-      for (const issue_type in issue_types) {
+      for (const issue_type of issue_types) {
         if (!parsed[project].hasOwnProperty(issue_type)) {
           parsed[project][issue_type] = [];
         }
