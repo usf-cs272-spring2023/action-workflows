@@ -40,18 +40,16 @@ module.exports = async ({github, context, core}) => {
       'project4': {}
     };
 
-    core.info(JSON.stringify(response));
-
     // loop through all found issues
     issues: for (const issue of response.data) {
       // loop through all of the issues
       let project = undefined;
       let issue_types = [];
 
-      core.info(JSON.stringify(issue));
       core.info(JSON.stringify(issue.labels));
 
       labels: for (const label in issue.labels) {
+        core.info(label);
         switch (label.name) {
           case 'error':
             core.info(`Skipping issue #${issue.number} due to "error" label.`);
