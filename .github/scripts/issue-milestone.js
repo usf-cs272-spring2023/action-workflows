@@ -17,7 +17,8 @@ module.exports = async ({github, context, core}) => {
 
     // check if needs to be created instead
     if (found == undefined) {
-      found = await github.rest.issues.createMilestone({ owner: context.repo.owner, repo: context.repo.repo, title: milestone_name });
+      const created = await github.rest.issues.createMilestone({ owner: context.repo.owner, repo: context.repo.repo, title: milestone_name });
+      found = created.data;
     }
 
     core.setOutput('milestone_id', found.number);
