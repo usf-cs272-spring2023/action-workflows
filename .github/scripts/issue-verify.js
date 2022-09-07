@@ -7,9 +7,10 @@ module.exports = async ({github, context, core}) => {
     const results = JSON.parse(process.env.RESULTS_JSON);
     const request_type = process.env.REQUEST_TYPE;
 
+    const release = process.env.RELEASE_TAG;
     const major = parseInt(process.env.VERSION_MAJOR);
     const minor = parseInt(process.env.VERSION_MINOR);
-    const patch = parseInt(process.env.VERSION_PATCH);    
+    const patch = parseInt(process.env.VERSION_PATCH);
 
     if (!results.hasOwnProperty(request_type) || `${results[request_type]}` != 'true') {
       error_messages.push(`The release ${results.release} is not eligible for this type of request.`);
@@ -85,31 +86,44 @@ module.exports = async ({github, context, core}) => {
     core.info(parsed);
     core.endGroup();
 
-    // check for issues of same type and project
-    // switch (request_type) {
-    //   case 'grade-tests':
-    //   case 'grade-design':
-    //     if (parsed?.[`project${major}`]?.[request_type]?.length > 0) {
-    //       const number = parsed[`project${major}`][request_type][0]['number'];
-    //       error_messages.push(`You already have an issue for this type of request. Use issue #${number} instead.`);
-    //       return; // exit out of try block
-    //     }
-    //     break;
+    const current  = parsed[`project${major}`];
+    const previous = major > 1 ? parsed[`project${major - 1}`] : undefined;
 
-    //   case 'grade-review':
+    switch (request_type) {
+      case 'grade-tests':
+        // check if there is an issue for this request already
+        if (current?.['grade-tests']?.length > 0) {
+          const found = current['grade-tests'][0];
+          error_messages.push(`You already requested a project ${major} tests grade in issue ${found.number}. You only need to request this grade ONCE per project. If the issue is closed and you do not see a grade on Canvas yet, please post on Piazza asking for an update.`);
+          return; // exit out of try block
+        }
 
+        // check if there is a previous project
+        if (previous != undefined) {
+          // check if there is at least one code review for that project
+          const reviews = previous?.['grade-review']?.length;
+          if (reviews == undefined || reviews < 1) {
+            error_messages.push(`You must request at least one review grade for project ${major - 1} before requesting a tests grade for project ${major}.`);
+            return; // exit out of try block
+          }
+        }
 
-    // }
-
-    // check for required issues of previous project
-
-
-    // if grade_tests, need release action run and issues
-    // if request_review, need release action run and issues
-
-    // if grade_review, need release action run and pull requests
-    // if grade_design, need release action run and pull requests
-    throw new Error('Not implemented.');
+        output.assignment_name = `Project ${major} Tests`;
+        output.start_points = 100;
+        output.submitted_date = results.release_date;
+        output.labels = JSON.stringify([`project${major}`, 'grade-tests', release]);
+        output.milestone = `Project ${major}`;
+        break;
+      
+      case 'grade-review':
+      case 'grade-design':
+      case 'request-review':
+        error_messages.push('This request type is not yet supported.');
+        break;
+      
+      default:
+        error_messages.push(`Unexpected request type: ${request_type}`);
+    }
   }
   catch (error) {
     // add error and output stack trace
@@ -140,7 +154,7 @@ module.exports = async ({github, context, core}) => {
       }
       core.endGroup();
 
-      core.setFailed(`Found ${error_messages.length} problems while fetching action run.`);
+      core.setFailed(`Found ${error_messages.length} problems while verifying this request.`);
     }
   }
 };
