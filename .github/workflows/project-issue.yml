@@ -88,7 +88,7 @@ jobs:
 
       - name: 'Get grade information'
         id: calculate_grade
-        if: ${{ startsWith(steps.parse_request.outputs.request_type, "grade_") }}
+        if: ${{ startsWith(steps.parse_request.outputs.request_type, 'grade_') }}
         uses: usf-cs272-fall2022/action-check-deadline@main
         with:
           assignment_name: '${{ steps.verify_request.outputs.assignment_name }}'
