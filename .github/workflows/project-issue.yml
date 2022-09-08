@@ -99,7 +99,7 @@ jobs:
           extension_hours: '${{ steps.parse_request.outputs.extension_hours }}'
 
       - name: 'Create pull request'
-        id: calculate_grade
+        id: create_pull
         if: ${{ steps.parse_request.outputs.request_type == 'request_review' }}
         uses: actions/github-script@v6
         env:
