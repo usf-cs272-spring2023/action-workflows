@@ -15,11 +15,11 @@ module.exports = async ({github, context, core}) => {
       }
     }
 
-    if (json?.download_json?.outcome != "success") {
+    if (json?.download_json?.outcome == "failure") {
       message += `  1. Unable to download results from the release run (status: ${json?.download_json?.outcome}).\n`;
     }
 
-    if (json?.calculate_grade?.outcome != "success") {
+    if (json?.calculate_grade?.outcome == "failure") {
       message += `  1. Unable to calculate assignment grade (status: ${json?.calculate_grade?.outcome}).\n`;
     }
 
