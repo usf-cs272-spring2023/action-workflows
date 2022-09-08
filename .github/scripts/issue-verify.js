@@ -127,11 +127,36 @@ module.exports = async ({github, context, core}) => {
 
       case 'request_review':
         // make sure there is already a test grade issue
-        if (!(current?.['grade-tests'])?.length > 0)) {
-          error_messages.push(`You must have a passing "Project Tests Grade" issue before requesting your first code review appointment.`);
+        if ((current?.['grade-tests']?.length || 0) < 1) {
+          error_messages.push(`You must have a passing project ${major} tests grade issue before requesting your first code review appointment.`);
           return; // exit out of try block
         }
-        
+
+        // check if there is a design grade issue for that project
+        if ((previous != undefined)  && (previous?.['grade-design']?.length || 0) < 1 ) {
+          error_messages.push(`You must have a passing project ${major - 1} design grade issue before requesting your first project ${major} code review appointment.`);
+          return; // exit out of try block
+        }
+
+        // make sure didn't already pass code review
+        if ((current?.['review-passed']?.length || 0) > 0) {
+          error_messages.push(`You passed code review in #${current['review-passed'][0].number} and do not need any more project ${major} code reviews. Did you mean to request a design grade instead?`);
+          return; // exit out of try block
+        }
+
+        // determine code review type
+        const code_reviews = (current?.['resubmit-code-review']?.length || 0);
+        const quick_reviews = (current?.['resubmit-quick-review']?.length || 0); 
+
+        if (code_reviews == 0) {
+          output.labels = JSON.stringify([`project${major}`, 'request-code-review', release]);
+          output.milestone_name = `Project ${major}`;
+        }
+        else {
+          error_messages.push('This option is not yet supported.');
+          return;
+        }
+
         break;
 
       case 'grade_review':
