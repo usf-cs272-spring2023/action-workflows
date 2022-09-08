@@ -45,7 +45,7 @@ runs:
       id: checkout_repo
       shell: bash
       run: |
-        git clone --depth 1 --no-tags https://github-actions:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} project-main
+        git clone --depth 1 --no-tags https://github-actions:${{ github.token }}@github.com/${{ github.repository }} project-main
 
     - name: 'Listing source code'
       id: listing_source
