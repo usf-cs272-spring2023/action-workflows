@@ -6,7 +6,7 @@ module.exports = async ({github, context, core}) => {
 
   try {
     const comment_id = process.env.COMMENT_ID;
-    const message = undefined;
+    let message = undefined;
 
     if (request_type.startsWith('grade_')) {
       const release_tag = results?.parse_request?.outputs?.release_tag;
