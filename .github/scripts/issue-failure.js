@@ -16,13 +16,12 @@ module.exports = async ({github, context, core}) => {
     }
 
     if (json?.download_json?.outcome != "success") {
-      message += '  1. Unable to download results from the release run. If this issue persists, please reach out on Piazza.\n';
+      message += `  1. Unable to download results from the release run (status: ${json?.download_json?.outcome}).\n`;
     }
 
     if (json?.calculate_grade?.outcome != "success") {
-      message += '  1. Unable to calculate assignment grade. If this issue persists, please reach out on Piazza.\n';
+      message += `  1. Unable to calculate assignment grade (status: ${json?.calculate_grade?.outcome}).\n`;
     }
-
 
     // add message footer
     message += `\n:warning: You must address these problems and then re-open this issue. See [run #${context.runNumber} (id ${context.runId})](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for details.`;
