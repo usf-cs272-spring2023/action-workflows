@@ -4,10 +4,18 @@ module.exports = async ({github, context, core}) => {
   const output = {};
 
   try {
-    const release = process.env.RELEASE_TAG;
-    const major = parseInt(process.env.VERSION_MAJOR);
-    const minor = parseInt(process.env.VERSION_MINOR);
-    const patch = parseInt(process.env.VERSION_PATCH);
+    // const release = process.env.RELEASE_TAG;
+    // const major = parseInt(process.env.VERSION_MAJOR);
+    // const minor = parseInt(process.env.VERSION_MINOR);
+    // const patch = parseInt(process.env.VERSION_PATCH);
+
+    // find most recent code review
+
+    // determine type of code review
+
+    // calculate earliest eligible date
+
+    // 
 
     error_messages.push('Not yet implemented.');
   }

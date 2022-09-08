@@ -13,6 +13,7 @@ jobs:
   main:
     name: 'Check Project Issue'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: 'Checkout workflows'
@@ -101,16 +102,12 @@ jobs:
       - name: 'Create pull request'
         id: create_pull
         if: ${{ steps.parse_request.outputs.request_type == 'request_review' }}
-        uses: actions/github-script@v6
-        env:
-          RELEASE_TAG:   '${{ steps.parse_request.outputs.release_tag }}'
-          VERSION_MAJOR: '${{ steps.parse_request.outputs.version_major }}'
-          VERSION_MINOR: '${{ steps.parse_request.outputs.version_minor }}'
-          VERSION_PATCH: '${{ steps.parse_request.outputs.version_patch }}'
+        uses: ./.github/workflows/project-issue-pull.yml
         with:
-          script: |
-            const script = require('./workflows/.github/scripts/issue-pull.js');
-            return await script({github, context, core});
+          action_ref:   '${{ inputs.action_ref }}'
+          release_tag:  '${{ steps.parse_request.outputs.release_tag }}'
+          review_type:  '${{ steps.verify_request.outputs.review_type }}'
+          milestone_id: '${{ steps.get_milestone.outputs.milestone_id }}'
 
       - name: 'Update issue with success'
         id: update_success
