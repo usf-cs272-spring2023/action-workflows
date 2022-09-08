@@ -71,7 +71,9 @@ module.exports = async ({github, context, core}) => {
             break;
           
           default:
-            core.warning(`Issue #${issue.number} has an unexpected "${label.name}" label.`);
+            if (!label.name.startsWith('v')) {
+              core.info(`Issue #${issue.number} has an unexpected "${label.name}" label.`);
+            }
         }
       }
 
