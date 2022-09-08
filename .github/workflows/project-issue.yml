@@ -102,7 +102,7 @@ jobs:
       - name: 'Create pull request'
         id: create_pull
         if: ${{ steps.parse_request.outputs.request_type == 'request_review' }}
-        uses: ./workflows/.github/actions/project-pull.yml
+        uses: ./workflows/.github/actions/project-pull
         with:
           action_ref:   '${{ inputs.action_ref }}'
           release_tag:  '${{ steps.parse_request.outputs.release_tag }}'
