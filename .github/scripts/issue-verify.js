@@ -3,6 +3,8 @@ module.exports = async ({github, context, core}) => {
   const error_messages = [];
   const output = {};
 
+  const labels = [];
+
   // most actions use _ underscore in names, e.g. grade_tests
   // unfortunately the associated labels use - dash in name. e/g/ grade-tests
 
@@ -19,6 +21,11 @@ module.exports = async ({github, context, core}) => {
       error_messages.push(`The release ${results.release} is not eligible for this type of request.`);
       return; // exit out of try block
     }
+
+    // update labels and milestone
+    labels.push(`project${major}`);
+    labels.push(release);
+    output.milestone_name = `Project ${major}`;
 
     // get all issues and pull requests
     const response = await github.rest.issues.listForRepo({
@@ -52,20 +59,14 @@ module.exports = async ({github, context, core}) => {
             core.info(`Skipping issue #${issue.number} due to "error" label.`);
             continue issues;
           
-          case 'project1':
-          case 'project2':
-          case 'project3':
-          case 'project4':
+          case 'project1': case 'project2': 
+          case 'project3': case 'project4':
             project = label.name;
             break;
           
-          case 'grade-tests':
-          case 'grade-review':
-          case 'grade-design':
-          case 'request-code-review':
-          case 'request-quick-review':
-          case 'resubmit-code-review':
-          case 'resubmit-quick-review':
+          case 'grade-tests': case 'grade-review': case 'grade-design':
+          case 'request-code-review': case 'request-quick-review':
+          case 'resubmit-code-review': case 'resubmit-quick-review':
           case 'review-passed':
             issue_types.push(label.name);
             break;
@@ -119,12 +120,10 @@ module.exports = async ({github, context, core}) => {
           core.info(`Found ${reviews} review grade requests for project ${major - 1}.`);
         }
 
+        labels.push('grade-tests');
         output.assignment_name = `Project ${major} Tests`;
         output.starting_points = 100;
         output.submitted_date  = results.release_date;
-        
-        output.labels = JSON.stringify([`project${major}`, 'grade-tests', release]);
-        output.milestone_name = `Project ${major}`;
         break;
 
       case 'request_review':
@@ -147,14 +146,14 @@ module.exports = async ({github, context, core}) => {
         }
 
         // determine code review type
-        const code_reviews = (current?.['resubmit-code-review']?.length || 0);
+        const code_reviews  = (current?.['resubmit-code-review']?.length  || 0);
         const quick_reviews = (current?.['resubmit-quick-review']?.length || 0); 
 
         if (code_reviews == 0) {
-          output.labels = JSON.stringify([`project${major}`, 'request-code-review', release]);
-          output.milestone_name = `Project ${major}`;
+          labels.push('request-code-review');
         }
         else {
+          // check most recent pull request to determine if should be a code review or quick review
           error_messages.push('This option is not yet supported.');
           return;
         }
@@ -180,6 +179,9 @@ module.exports = async ({github, context, core}) => {
     core.endGroup();
   }
   finally {
+    // convert labels to json
+    output.labels = JSON.stringify(labels);
+
     // output and set results
     core.startGroup('Setting output...');
     for (const property in output) {
