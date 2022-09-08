@@ -52,14 +52,18 @@ runs:
       working-directory: 'project-main'
       shell: bash
       run: |
+        echo "::group::Listing source code..."
         ls -ACGR src/main/java
+        echo "::endgroup::"
 
     - name: 'Fetching commit history and tags'
       id: git_unshallow
       working-directory: 'project-main'
       shell: bash
       run: |
+        echo "::group::Fetching tags..."
         git fetch --unshallow --tags
+        echo "::endgroup::"
 
     - name: 'Comparing release to main branch'
       id: comparing_main
@@ -160,9 +164,9 @@ runs:
           const results = JSON.parse(process.env.STEP_RESULTS);
           let messages = '';
 
-          for (const property in json) {
-            if (json[property]?.outputs?.error_messages != undefined) {
-              message += `  1. ${json[property].outputs.error_messages}\n`;
+          for (const property in results) {
+            if (results[property]?.outputs?.error_messages != undefined) {
+              message += `  1. ${results[property].outputs.error_messages}\n`;
             }
           }
 
