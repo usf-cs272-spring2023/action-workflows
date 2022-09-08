@@ -20,6 +20,15 @@ inputs:
     description: "Milestone ID to use for pull request"
     required: true
 
+outputs:
+  error_messages:
+    description: 'Errors encountered trying to create pull request'
+    value: '${{ steps.output_errors.outputs.error_messages }}'
+  
+  pull_request:
+    description: 'Pull request number'
+    value: '0'
+
 runs:
   using: 'composite'
 
@@ -70,6 +79,7 @@ runs:
           const result = await exec.exec(command, args, options);
 
           if (result !== expected) {
+            core.setOutput('error_messages', message);
             core.setFailed(message);
           }
 
@@ -91,6 +101,7 @@ runs:
           const result = await exec.exec(command, args, options);
 
           if (result !== expected) {
+            core.setOutput('error_messages', message);
             core.setFailed(message);
           }
 
@@ -122,6 +133,7 @@ runs:
           const result = await exec.exec(command, args, options);
 
           if (result !== expected) {
+            core.setOutput('error_messages', message);
             core.setFailed(message);
           }
 
@@ -136,3 +148,22 @@ runs:
         script: |
           const script = require('./workflows/.github/scripts/issue-pull.js');
           return await script({github, context, core});
+
+    - name: 'Output errors'
+      id: output_errors
+      if: ${{ failure() }}
+      uses: actions/github-script@v6
+      env:
+        STEP_RESULTS: '${{ toJSON(steps) }}'
+      with:
+        script: |
+          const results = JSON.parse(process.env.STEP_RESULTS);
+          let messages = '';
+
+          for (const property in json) {
+            if (json[property]?.outputs?.error_messages != undefined) {
+              message += `  1. ${json[property].outputs.error_messages}\n`;
+            }
+          }
+
+          core.setOutput('error_messages', message);
