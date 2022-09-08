@@ -166,8 +166,8 @@ runs:
 
           for (const property in results) {
             if (results[property]?.outputs?.error_messages != undefined) {
-              message += `  1. ${results[property].outputs.error_messages}\n`;
+              messages += `  1. ${results[property].outputs.error_messages}\n`;
             }
           }
 
-          core.setOutput('error_messages', message);
+          core.setOutput('error_messages', messages);
