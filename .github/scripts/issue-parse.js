@@ -23,6 +23,7 @@ module.exports = async ({github, context, core}) => {
 
       case 'Request Project Code Review':
         output.request_type = 'request_review';
+        break;
 
       default:
         error_messages.push(`Unable to determine request type from issue title: ${title}`);
