@@ -32,13 +32,13 @@ module.exports = async ({github, context, core}) => {
 | Username: | \`${results?.parse_request?.outputs?.user}\` |
 | | |
 | Assignment: | ${results?.calculate_grade?.outputs?.assignment_name} |
-|    Release: | \`[${release_tag}](${release_link})\` (verified in [run ${run_id}](${run_link})) |
+|    Release: | [\`${release_tag}\`](${release_link}) (verified in [run ${run_id}](${run_link})) |
 |   Deadline: | ${results?.calculate_grade?.outputs?.deadline_text} |
 |  Submitted: | ${results?.calculate_grade?.outputs?.submitted_text} |
 | | |
-| Late Interval: | ${late_interval} hours (x${late_multiplier} multiplier) |
-| Late Penalty:  | -${late_points} points (-${late_percent}%) |
-| Late Grade:    | **${grade_points}** / ${grade_possible} points (${grade_percent}%) |
+| Late&nbsp;Interval: | ${late_interval} hours (x${late_multiplier} multiplier) |
+| Late&nbsp;Penalty:  | -${late_points} points (-${late_percent}%) |
+| Late&nbsp;Grade:    | **${grade_points}** / ${grade_possible} points (${grade_percent}%) |
 
 :white_check_mark: We will close this issue after updating your grade on Canvas. If your grade is not updated in 2 business days, please reach out on Piazza.
       `;
