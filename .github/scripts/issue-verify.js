@@ -124,10 +124,18 @@ module.exports = async ({github, context, core}) => {
         output.labels = JSON.stringify([`project${major}`, 'grade-tests', release]);
         output.milestone_name = `Project ${major}`;
         break;
-      
+
+      case 'request_review':
+        // make sure there is already a test grade issue
+        if (!(current?.['grade-tests'])?.length > 0)) {
+          error_messages.push(`You must have a passing "Project Tests Grade" issue before requesting your first code review appointment.`);
+          return; // exit out of try block
+        }
+        
+        break;
+
       case 'grade_review':
       case 'grade_design':
-      case 'request_review':
         error_messages.push('This request type is not yet supported.');
         break;
       
