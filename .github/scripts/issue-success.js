@@ -10,6 +10,8 @@ module.exports = async ({github, context, core, DateTime, Settings}) => {
   const eod = 'T23:59:59';
   Settings.defaultZone = zone;
 
+  // TODO Convert to running all three updates at same time
+
   try {
     const comment_id = process.env.COMMENT_ID;
 
@@ -70,7 +72,7 @@ module.exports = async ({github, context, core, DateTime, Settings}) => {
         // TODO
       }
 
-      const release_date = DateTime.fromISO(`${results?.download_json?.outputs?.release_date}`);
+      const release_date = DateTime.fromISO(JSON.parse(results?.download_json?.outputs?.release_date));
       let eligible_date = DateTime.fromISO(`${results?.verify_request?.outputs?.this_date}`);
 
       if (!eligible_date.isValid) {
