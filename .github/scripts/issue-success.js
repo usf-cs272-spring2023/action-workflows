@@ -151,7 +151,7 @@ Make sure to attend your appointment on-time; arriving more than 5 minutes late 
   }
   catch (error) {
     core.info(`${error.name}: ${error.message}`);
-    core.setFailed(`Unable to update pull request #${context?.payload?.issue?.number} with reviewers.`);
+    core.setFailed(`Unable to update pull request #${results?.create_pull?.outputs?.pull_number} with reviewers.`);
   }
 
   // update issue with assignees, labels, and milestone
