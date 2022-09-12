@@ -20,6 +20,9 @@ module.exports = async ({github, context, core, DateTime, Settings}) => {
     const verified_id = results?.find_release?.outputs?.run_id;
     const verified_link = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${verified_id}`;
 
+    const student_name = results?.parse_request?.outputs?.name;
+    const user_name = results?.parse_request?.outputs?.user;
+
     let message = undefined;
 
     if (grade_request) {
@@ -36,8 +39,8 @@ module.exports = async ({github, context, core, DateTime, Settings}) => {
 
 |  |  |
 |----:|:-----|
-|  Student: | ${results?.parse_request?.outputs?.name} |
-| Username: | \`${results?.parse_request?.outputs?.user}\` |
+|  Student: | ${student_name} |
+| Username: | \`${user_name}\` |
 | | |
 | Assignment: | ${results?.calculate_grade?.outputs?.assignment_name} |
 |    Release: | [\`${release_tag}\`](${release_link}) (verified in [run ${verified_id}](${verified_link})) |
@@ -55,35 +58,56 @@ module.exports = async ({github, context, core, DateTime, Settings}) => {
       const review_type = results?.verify_request?.outputs?.this_type;
       const review_text = review_type == 'request-code-review' ? 'Code' : 'Quick';
       const review_time = review_type == 'request-code-review' ? 30 : 15;
-      const release_date = DateTime.fromISO(`${results?.download_json?.outputs?.release_date}`);
 
-      // TODO FILL IN LAST REVIEW, ELIGIBLE DATE
+      const last_review = results?.verify_request?.outputs?.last_pull != undefined;
+
+      let last_pull = '*N/A*';
+      let last_time = '*N/A*';
+      let last_date = '*N/A*';
+
+      // set last review values if appropriate
+      if (last_review) {
+        // TODO
+      }
+
+      const release_date = DateTime.fromISO(`${results?.download_json?.outputs?.release_date}`);
+      let eligible_date = DateTime.fromISO(`${results?.verify_request?.outputs?.this_date}`);
+
+      if (!eligible_date.isValid) {
+        eligible_date = DateTime.now();
+      }
+
+      // create appointment link
+      const autofill = `name=${encodeURIComponent(student_name)}&email=${encodeURIComponent(user_name.concat('@dons.usfca.edu'))}&a1=${encodeURIComponent(context.payload.issue.html_url)}`;
+      const signup_link = `https://calendly.com/sjengle/${review_text.toLowerCase()}-review?month=${eligible_date.toFormat('yyyy-MM')}&date=${eligible_date.toFormat('yyyy-MM-dd')}&${autofill}`;
+      core.info(`Signup Link: ${signup_link}`);
+
       message = `
 :octocat: @${ context.actor }, your [${review_text.toLowerCase()} review request](${request_link}) for [release ${release_tag}](${release_link}) is approved:
 
 |  |  |
 |----:|:-----|
-|  Student: | ${results?.parse_request?.outputs?.name} |
-| Username: | \`${results?.parse_request?.outputs?.user}\` |
+|  Student: | ${student_name} |
+| Username: | \`${user_name}\` |
 | | |
 | Project: | ${results?.verify_request?.outputs?.milestone_name} |
 | Release: | [\`${release_tag}\`](${release_link}) (verified in [run ${verified_id}](${verified_link})) |
 | Created: | ${release_date.toLocaleString(DateTime.DATETIME_FULL)} |
 | | |
-|   Last Review: | Pending |
-|   Review Date: | Pending |
-| Review Length: | Pending |
+|   Last Review: | ${last_pull} |
+|   Review Date: | ${last_date} |
+| Review Length: | ${last_time} |
 | | |
 |   This Review: | ${review_time} min ${review_text} Review |
-| Eligible Date: | Pending |
+| Eligible Date: | ${eligible_date.toLocaleString(DateTime.DATETIME_FULL)} |
 
 ## Instructions 
 
 :eyes: Read the instructions below **carefully** to avoid common issues that will delay your appointment!
 
-  1. :spiral_calendar: Use [this personalized appointment signup link](#) to sign up for a code review appointment. *This link will autofill most of the required information.*
+  1. :spiral_calendar: Use [this personalized appointment signup link](${signup_link}) to sign up for a code review appointment. *This link will autofill most of the required information.*
 
-  2. :warning: Make sure to sign up for a single appointment on or after **DATE**. *If there are no appointments in the next 3 business days, make a **public post** on Piazza to see if more can be added to the schedule.*
+  2. :warning: Make sure to sign up for a single appointment on or after **${eligible_date.toLocaleString(DateTime.DATETIME_FULL)}**. *If there are no appointments in the next 3 business days, make a **public post** on Piazza to see if more can be added to the schedule.*
 
   3. :no_entry_sign: Do not make modifications to the code in your \`main\` branch before your appointment. *If your code is not ready for code review, close this request, cancel your appointment, and re-request a code review when your code is ready.*
 
