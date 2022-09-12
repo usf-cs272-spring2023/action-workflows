@@ -142,16 +142,16 @@ Make sure to attend your appointment on-time; arriving more than 5 minutes late 
       const reviewed = await github.rest.pulls.requestReviewers({
         owner: context.repo.owner,
         repo: context.repo.repo,
-        pull_number: results?.create_pull?.outputs?.pull_number,
+        pull_number: results?.create_pull?.outputs?.pull_request,
         reviewers: ['sjengle']
       });
 
-      core.info(`Updated pull request #${results?.create_pull?.outputs?.pull_number} with reviewers.`);
+      core.info(`Updated pull request #${results?.create_pull?.outputs?.pull_request} with reviewers.`);
     }
   }
   catch (error) {
     core.info(`${error.name}: ${error.message}`);
-    core.setFailed(`Unable to update pull request #${results?.create_pull?.outputs?.pull_number} with reviewers.`);
+    core.setFailed(`Unable to update pull request #${results?.create_pull?.outputs?.pull_request} with reviewers.`);
   }
 
   // update issue with assignees, labels, and milestone
