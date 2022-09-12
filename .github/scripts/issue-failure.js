@@ -16,15 +16,19 @@ module.exports = async ({github, context, core}) => {
     }
 
     if (json?.download_json?.outcome == "failure") {
-      message += `  1. Unable to download results from the release run (status: ${json?.download_json?.outcome}).\n`;
+      message += `  1. Unable to download results from the release run.\n`;
     }
 
     if (json?.calculate_grade?.outcome == "failure") {
-      message += `  1. Unable to calculate assignment grade (status: ${json?.calculate_grade?.outcome}).\n`;
+      message += `  1. Unable to calculate assignment grade.\n`;
     }
 
     if (json?.create_pull?.outcome == "failure") {
-      message += `  1. Unable to create pull request for code review (status: ${json?.create_pull?.outcome}).\n`;
+      message += `  1. Unable to create pull request for code review.\n`;
+    }
+
+    if (json?.update_success?.outcome == "failure") {
+      message += `  1. Unable to update successful request status.\n`;
     }
 
     // add message footer

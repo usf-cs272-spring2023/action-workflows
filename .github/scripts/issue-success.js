@@ -18,7 +18,7 @@ module.exports = async ({github, context, core, DateTime, Settings}) => {
     const request_link = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
 
     const verified_id = results?.find_release?.outputs?.run_id;
-    const verified_link = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${run_id}`;
+    const verified_link = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${verified_id}`;
 
     let message = undefined;
 
@@ -127,7 +127,7 @@ Make sure to attend your appointment on-time; arriving more than 5 minutes late 
   }
   catch (error) {
     core.info(`${error.name}: ${error.message}`);
-    core.setFailed(`Unable to update results for issue #${context?.payload?.issue?.number}.`);
+    core.setFailed(`Unable to update pull request #${context?.payload?.issue?.number} with reviewers.`);
   }
 
   // update issue with assignees, labels, and milestone

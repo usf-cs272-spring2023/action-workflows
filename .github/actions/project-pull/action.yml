@@ -18,7 +18,7 @@ outputs:
   
   pull_request:
     description: 'Pull request number'
-    value: '0'
+    value: '${{ steps.create_pull.outputs.pull_request }}'
 
 runs:
   using: 'composite'
