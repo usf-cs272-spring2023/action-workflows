@@ -3,10 +3,16 @@ module.exports = async ({github, context, core}) => {
   const message = `:octocat: Your request is being processed. See [run #${context.runNumber} (id ${context.runId})](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for details.`;
 
   try {
+    let issue_number = context?.payload?.issue?.number;
+
+    if (issue_number == undefined) {
+      issue_number = context?.payload?.pull_request?.number;
+    }
+
     const response = await github.rest.issues.createComment({
       owner: context.repo.owner,
       repo: context.repo.repo,
-      issue_number: context.payload.issue.number,
+      issue_number: issue_number,
       body: message
     });
 
