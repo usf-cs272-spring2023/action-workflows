@@ -131,7 +131,7 @@ runs:
           const command = 'git';
           const args = ['push', '-u', 'origin', `review/${process.env.RELEASE_TAG}`];
           const cwd = `${process.env.USER_PATH}`;
-          const message = `Unable to push review branch for release ${ process.env.RELEASE_REF } was created. If this branch already exists, please delete it before requesting code review or request code review of a different release.`;
+          const message = `Unable to push review branch for release ${ process.env.RELEASE_TAG } was created. If this branch already exists, please delete it before requesting code review or request code review of a different release.`;
           const expected = 0;
 
           const options = {ignoreReturnCode: true, cwd: cwd};
