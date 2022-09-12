@@ -1,43 +1,22 @@
 // creates pull request for this release
-module.exports = async ({github, context, core, DateTime, Settings}) => {
+module.exports = async ({github, context, core}) => {
   const error_messages = [];
   const output = {};
-
-  const zone = 'America/Los_Angeles';
-  const eod = 'T23:59:59';
-  Settings.defaultZone = zone;
+  const release = process.env.RELEASE_TAG;
 
   try {
-    const review_json = JSON.parse(process.env.REVIEW_JSON);
-    const release = process.env.RELEASE_TAG;
+    const result = await github.rest.pulls.create({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      head: `review/${release}`,
+      base: 'main',
+      issue: context.payload.issue.number
+    });
 
-    core.info(JSON.stringify(review_json, null, '  '));
-    // const major = parseInt(process.env.VERSION_MAJOR);
-
-
-    // const title = `${} Review ${}`;
-
-    // const minor = parseInt(process.env.VERSION_MINOR);
-    // const patch = parseInt(process.env.VERSION_PATCH);
-
-    // find most recent code review
-
-    // determine type of code review
-
-    // calculate earliest eligible date
-
-    // 
-
-    error_messages.push('Not yet implemented.');
+    output.pull_number = result.data.number;
   }
   catch (error) {
-    // add error and output stack trace
-    error_messages.push(`Unexpected error: ${error.message}`);
-
-    core.info('');
-    core.startGroup(`Unexpected ${error.name} encountered...`);
-    core.info(error.stack);
-    core.endGroup();
+    error_messages.push(`Unable to create pull request for release ${release} (${error.name}: ${error.message}).`);
   }
   finally {
     // output and set results

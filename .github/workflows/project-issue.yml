@@ -106,8 +106,10 @@ jobs:
         with:
           action_ref:   '${{ inputs.action_ref }}'
           release_tag:  '${{ steps.parse_request.outputs.release_tag }}'
-          review_json:  '${{ toJSON(steps.verify_request.outputs) }}'
-          milestone_id: '${{ steps.get_milestone.outputs.milestone_id }}'
+
+      - name: 'Install luxon'
+        shell: bash
+        run: npm install luxon
 
       - name: 'Update issue with success'
         id: update_success
@@ -118,8 +120,9 @@ jobs:
           RESULTS: ${{ toJSON(steps) }}
         with:
           script: |
+            const { DateTime, Settings } = require('luxon');
             const script = require('./workflows/.github/scripts/issue-success.js');
-            return await script({github, context, core});
+            return await script({github, context, core, DateTime, Settings});
 
       - name: 'Update issue with failure'
         id: update_failure

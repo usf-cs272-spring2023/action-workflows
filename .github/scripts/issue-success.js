@@ -1,20 +1,28 @@
 // updates the issue comment with the successful request
-module.exports = async ({github, context, core}) => {
+module.exports = async ({github, context, core, DateTime, Settings}) => {
   const results = JSON.parse(process.env.RESULTS);
+
   const request_type = results.parse_request.outputs.request_type;
+  const grade_request = request_type.startsWith('grade_');
   core.info(`Request Type: ${request_type}`);
+
+  const zone = 'America/Los_Angeles';
+  const eod = 'T23:59:59';
+  Settings.defaultZone = zone;
 
   try {
     const comment_id = process.env.COMMENT_ID;
+
+    const release_tag = results?.parse_request?.outputs?.release_tag;
+    const release_link = `https://github.com/${context.repo.owner}/${context.repo.repo}/releases/tag/${release_tag}`;
+    const request_link = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+
+    const verified_id = results?.find_release?.outputs?.run_id;
+    const verified_link = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${run_id}`;
+
     let message = undefined;
 
-    if (request_type.startsWith('grade_')) {
-      const release_tag = results?.parse_request?.outputs?.release_tag;
-      const release_link = `https://github.com/${context.repo.owner}/${context.repo.repo}/releases/tag/${release_tag}`;
-      
-      const run_id = results?.find_release?.outputs?.run_id;
-      const run_link = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${run_id}`;
-
+    if (grade_request) {
       const late_interval   = results?.calculate_grade?.outputs?.late_interval;
       const late_multiplier = results?.calculate_grade?.outputs?.late_multiplier;
       const late_points     = results?.calculate_grade?.outputs?.late_points;
@@ -24,7 +32,7 @@ module.exports = async ({github, context, core}) => {
       const grade_percent   = results?.calculate_grade?.outputs?.grade_percent;
 
       message = `
-:octocat: @${ context.actor }, your [grade request](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) has been processed! See the details below:
+:octocat: @${ context.actor }, your [grade request](${request_link}) has been processed! See the details below:
 
 |  |  |
 |----:|:-----|
@@ -32,7 +40,7 @@ module.exports = async ({github, context, core}) => {
 | Username: | \`${results?.parse_request?.outputs?.user}\` |
 | | |
 | Assignment: | ${results?.calculate_grade?.outputs?.assignment_name} |
-|    Release: | [\`${release_tag}\`](${release_link}) (verified in [run ${run_id}](${run_link})) |
+|    Release: | [\`${release_tag}\`](${release_link}) (verified in [run ${verified_id}](${verified_link})) |
 |   Deadline: | ${results?.calculate_grade?.outputs?.deadline_text} |
 |  Submitted: | ${results?.calculate_grade?.outputs?.submitted_text} |
 | | |
@@ -44,11 +52,48 @@ module.exports = async ({github, context, core}) => {
       `;
     }
     else if (request_type == 'request_review') {
-      message = `:octocat: @${ context.actor }, this is an [unexpected request type](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}). Please reach out to the instructor on Piazza.`;
-      core.warning(`Unexpected request type: ${request_type}`);
+      const review_type = results?.verify_request?.outputs?.this_type;
+      const review_text = review_type == 'request-code-review' ? 'Code' : 'Quick';
+      const review_time = review_type == 'request-code-review' ? 30 : 15;
+      const release_date = DateTime.fromISO(`${results?.download_json?.outputs?.release_date}`);
+
+      // TODO FILL IN LAST REVIEW, ELIGIBLE DATE
+      message = `
+:octocat: @${ context.actor }, your [${review_text.toLowerCase()} review request](${request_link}) for [release ${release_tag}](${release_link}) is approved:
+
+|  |  |
+|----:|:-----|
+|  Student: | ${results?.parse_request?.outputs?.name} |
+| Username: | \`${results?.parse_request?.outputs?.user}\` |
+| | |
+| Project: | ${results?.verify_request?.outputs?.milestone_name} |
+| Release: | [\`${release_tag}\`](${release_link}) (verified in [run ${verified_id}](${verified_link})) |
+| Created: | ${release_date.toLocaleString(DateTime.DATETIME_FULL)} |
+| | |
+|   Last Review: | Pending |
+|   Review Date: | Pending |
+| Review Length: | Pending |
+| | |
+|   This Review: | ${review_time} min ${review_text} Review |
+| Eligible Date: | Pending |
+
+## Instructions 
+
+:eyes: Read the instructions below **carefully** to avoid common issues that will delay your appointment!
+
+  1. :spiral_calendar: Use [this personalized appointment signup link](#) to sign up for a code review appointment. *This link will autofill most of the required information.*
+
+  2. :warning: Make sure to sign up for a single appointment on or after **DATE**. *If there are no appointments in the next 3 business days, make a **public post** on Piazza to see if more can be added to the schedule.*
+
+  3. :no_entry_sign: Do not make modifications to the code in your \`main\` branch before your appointment. *If your code is not ready for code review, close this request, cancel your appointment, and re-request a code review when your code is ready.*
+
+  4. :stop_sign: Do not merge this pull request until **AFTER** the code review appointment. *If you accidentally merge this pull request before your appointment, you will have to close this review request, cancel your appointment, and re-request a code review.*
+
+Make sure to attend your appointment on-time; arriving more than 5 minutes late may result in your appointment being cancelled.
+      `;
     }
     else {
-      message = `:octocat: @${ context.actor }, this is an [unexpected request type](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}). Please reach out to the instructor on Piazza.`;
+      message = `:octocat: @${ context.actor }, this is an [unexpected request type](${request_link}). Please reach out to the instructor on Piazza.`;
       core.warning(`Unexpected request type: ${request_type}`);
     }
 
@@ -59,6 +104,8 @@ module.exports = async ({github, context, core}) => {
       comment_id: comment_id,
       body: message
     });
+
+    core.info(`Updated issue comment id ${comment_id} with request results.`);
   }
   catch (error) {
     core.info(`${error.name}: ${error.message}`);
@@ -66,37 +113,57 @@ module.exports = async ({github, context, core}) => {
   }
 
   try {
-    const labels = JSON.parse(results.verify_request.outputs.labels);
-    const assignees = ['mtquach2', 'par5ul1', 'igentle292'];
-    const milestone_id = results.get_milestone.outputs.milestone_id;
-    const state = request_type.startsWith('grade_') ? 'open' : 'closed';
+    // request code review if necessary
+    if (request_type == 'request_review') {
+      const reviewed = await github.rest.pulls.requestReviewers({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        pull_number: results?.create_pull?.outputs?.pull_number,
+        reviewers: ['sjengle']
+      });
 
-    core.info('');
-    core.info(`   Labels: ${labels.join(', ')}`);
-    core.info(`Assignees: ${assignees.join(', ')}`);
-    core.info(`Milestone: ${milestone_id}`);
-    core.info(`    State: ${state}`);
+      core.info(`Updated pull request #${results?.create_pull?.outputs?.pull_number} with reviewers.`);
+    }
+  }
+  catch (error) {
+    core.info(`${error.name}: ${error.message}`);
+    core.setFailed(`Unable to update results for issue #${context?.payload?.issue?.number}.`);
+  }
 
-    const updated = await github.rest.issues.update({
+  // update issue with assignees, labels, and milestone
+  try {
+    const params = {
       owner: context.repo.owner,
       repo: context.repo.repo,
       issue_number: context.payload.issue.number,
-      labels: labels,
-      assignees: assignees,
-      milestone: milestone_id,
-      state: state
-    });
+      labels: JSON.parse(results?.verify_request?.outputs?.labels),
+      milestone: results?.get_milestone?.outputs?.milestone_id,
+      state: 'open'
+    };
+
+    if (grade_request) {
+      params.assignees = ['mtquach2', 'par5ul1', 'igentle292'];
+    }
+    else if (request_type == 'request_review') {
+      params.assignees = [context.actor];
+    }
+    else {
+      // unexpected type
+      params.labels.push('error');
+      params.state = 'closed';
+    }
+
+    core.startGroup(`Update parameters...`);
+    core.info(JSON.stringify(params, null, '  '));
+    core.endGroup();
+
+    const updated = await github.rest.issues.update(params);
 
     core.info('');
     core.info(`Updated issue #${context?.payload?.issue?.number} with successful request.`);
   }
   catch (error) {
     core.info(`${error.name}: ${error.message}`);
-
-    core.startGroup('Outputting context...');
-    core.info(JSON.stringify(context));
-    core.endGroup();
-
     core.setFailed(`Unable to update results for issue #${context?.payload?.issue?.number}.`);
-  }  
+  }
 };

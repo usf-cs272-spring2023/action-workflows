@@ -11,14 +11,6 @@ inputs:
     description: "Project release version number or tag (e.g. v1.0.0)"
     required: true
 
-  review_json:
-    description: "JSON results with review information"
-    required: true
-
-  milestone_id:
-    description: "Milestone ID to use for pull request"
-    required: true
-
 outputs:
   error_messages:
     description: 'Errors encountered trying to create pull request'
@@ -142,22 +134,15 @@ runs:
             core.setFailed(message);
           }
 
-    - name: 'Install luxon'
-      shell: bash
-      run: npm install luxon
-
     - name: 'Create pull request'
       id: create_pull
       uses: actions/github-script@v6
       env:
         RELEASE_TAG:  '${{ inputs.release_tag }}'
-        REVIEW_JSON:  '${{ inputs.review_json }}'
-        MILESTONE_ID: '${{ inputs.milestone_id }}'
       with:
         script: |
-          const { DateTime, Settings } = require('luxon');
           const script = require('./workflows/.github/scripts/issue-pull.js');
-          return await script({github, context, core, DateTime, Settings});
+          return await script({github, context, core});
 
     - name: 'Output errors'
       id: output_errors

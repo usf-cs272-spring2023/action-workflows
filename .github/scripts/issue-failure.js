@@ -23,6 +23,10 @@ module.exports = async ({github, context, core}) => {
       message += `  1. Unable to calculate assignment grade (status: ${json?.calculate_grade?.outcome}).\n`;
     }
 
+    if (json?.create_pull?.outcome == "failure") {
+      message += `  1. Unable to create pull request for code review (status: ${json?.create_pull?.outcome}).\n`;
+    }
+
     // add message footer
     message += `\n:warning: You must address these problems and then re-open this issue. See [run #${context.runNumber} (id ${context.runId})](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for details.`;
 
