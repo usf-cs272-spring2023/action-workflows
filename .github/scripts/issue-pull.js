@@ -1,5 +1,5 @@
 // creates pull request for this release
-module.exports = async ({github, context, core}) => {
+module.exports = async ({github, context, core, DateTime, Settings}) => {
   const error_messages = [];
   const output = {};
 
