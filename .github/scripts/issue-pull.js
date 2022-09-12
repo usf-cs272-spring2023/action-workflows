@@ -3,9 +3,20 @@ module.exports = async ({github, context, core}) => {
   const error_messages = [];
   const output = {};
 
+  const zone = 'America/Los_Angeles';
+  const eod = 'T23:59:59';
+  Settings.defaultZone = zone;
+
   try {
-    // const release = process.env.RELEASE_TAG;
+    const review_json = JSON.parse(process.env.REVIEW_JSON);
+    const release = process.env.RELEASE_TAG;
+
+    core.info(JSON.stringify(review_json, null, '  '));
     // const major = parseInt(process.env.VERSION_MAJOR);
+
+
+    // const title = `${} Review ${}`;
+
     // const minor = parseInt(process.env.VERSION_MINOR);
     // const patch = parseInt(process.env.VERSION_PATCH);
 

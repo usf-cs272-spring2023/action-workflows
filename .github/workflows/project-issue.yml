@@ -106,7 +106,7 @@ jobs:
         with:
           action_ref:   '${{ inputs.action_ref }}'
           release_tag:  '${{ steps.parse_request.outputs.release_tag }}'
-          review_type:  '${{ steps.verify_request.outputs.review_type }}'
+          review_json:  '${{ toJSON(steps.verify_request.outputs) }}'
           milestone_id: '${{ steps.get_milestone.outputs.milestone_id }}'
 
       - name: 'Update issue with success'

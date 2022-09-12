@@ -7,15 +7,14 @@ inputs:
     required: false
     default: 'main'
 
-  review_type:
-    description: "Type of code review being requested"
-    required: false
-    default: 'request-code-review'
-
   release_tag:
     description: "Project release version number or tag (e.g. v1.0.0)"
     required: true
-  
+
+  review_json:
+    description: "JSON results with review information"
+    required: true
+
   milestone_id:
     description: "Milestone ID to use for pull request"
     required: true
@@ -113,10 +112,12 @@ runs:
       id: committing_branch
       working-directory: 'project-main'
       shell: bash
+      env:
+        RELEASE_TAG: '${{ inputs.release_tag }}'
       run: |
         git config user.name github-actions
         git config user.email github-actions@github.com
-        git commit --allow-empty -m "Creating ${{ inputs.release }} review branch"
+        git commit --allow-empty -m "Creating $RELEASE_TAG review branch"
         git status
 
     - name: 'Pushing review branch'
@@ -141,17 +142,21 @@ runs:
             core.setFailed(message);
           }
 
+    - name: 'Install luxon'
+      run: npm install luxon
+
     - name: 'Create pull request'
       id: create_pull
       uses: actions/github-script@v6
       env:
         RELEASE_TAG:  '${{ inputs.release_tag }}'
-        REVIEW_TYPE:  '${{ inputs.review_type }}'
+        REVIEW_JSON:  '${{ inputs.review_json }}'
         MILESTONE_ID: '${{ inputs.milestone_id }}'
       with:
         script: |
+          const { DateTime, Settings } = require('luxon');
           const script = require('./workflows/.github/scripts/issue-pull.js');
-          return await script({github, context, core});
+          return await script({github, context, core, DateTime, Settings});
 
     - name: 'Output errors'
       id: output_errors

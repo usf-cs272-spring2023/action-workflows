@@ -149,15 +149,20 @@ module.exports = async ({github, context, core}) => {
         const code_reviews  = (current?.['resubmit-code-review']?.length  || 0);
         const quick_reviews = (current?.['resubmit-quick-review']?.length || 0); 
 
-        if (code_reviews == 0) {
-          labels.push('request-code-review');
-        }
-        else {
+        output.last_type = false;
+        output.last_pull = false;
+        output.last_date = false;
+
+        output.this_type = 'request-code-review';
+        output.this_date = false;
+
+        if (code_reviews != 0) {
           // check most recent pull request to determine if should be a code review or quick review
           error_messages.push('This option is not yet supported.');
           return;
         }
 
+        labels.push(output.this_type);
         break;
 
       case 'grade_review':
