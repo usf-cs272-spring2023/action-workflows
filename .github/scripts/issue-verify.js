@@ -2,7 +2,6 @@
 module.exports = async ({github, context, core}) => {
   const error_messages = [];
   const output = {};
-
   const labels = [];
 
   // most actions use _ underscore in names, e.g. grade_tests
@@ -168,6 +167,54 @@ module.exports = async ({github, context, core}) => {
         break;
 
       case 'grade_review':
+        // places to look for approved code reviews
+        let search = ['resubmit-quick-review', 'resubmit-code-review', 'review-passed'];
+
+        // see if can find a code review for this request
+        let found = undefined;
+
+        for (const property of search) {
+          if (current.hasOwnProperty(property)) {
+            found = current[property].find(item => item.labels.some(label => label.name == release));
+
+            // no need to keep looking if found the pull request
+            if (found != undefined) {
+              core.info(`Found pull request #${found.number} for release ${release}.`);
+              break;
+            }
+          }
+        }
+
+        if (found == undefined) {
+          error_messages.push(`Could not find an approved code review pull request for release ${release}. You cannot request this grade until the professor has reviewed your code and approved the pull request.`);
+          return;
+        }
+
+        // figure out when the review was approved
+        try {
+          const list_reviews = await github.rest.pulls.listReviews({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: found.number,
+            per_page: 100
+          });
+
+          const approved = list_reviews.data.find(review => review.user.login == 'sjengle');
+          output.submitted_date = approved.submitted_at;
+        }
+        catch (error) {
+          core.info(error);
+          error_messages.push(`Unable to determine when pull request #${found.number} was approved.`);
+          return;
+        }
+
+        // set the other values
+        labels.push('grade-review');
+        output.assignment_name = `Project ${major} Review ${minor + 1}`;
+        output.starting_points = minor < 1 ? 30 : 20;
+        output.pull_request = found.number;
+        break;
+
       case 'grade_design':
         error_messages.push('This request type is not yet supported.');
         break;
