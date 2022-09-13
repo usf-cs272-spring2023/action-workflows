@@ -36,18 +36,23 @@ module.exports = async ({github, context, core, DateTime, Settings}) => {
       const grade_possible  = results?.calculate_grade?.outputs?.grade_possible;
       const grade_percent   = results?.calculate_grade?.outputs?.grade_percent;
 
+      // check if a pull request is provided
+      let pull_request = results?.verify_request?.outputs?.pull_request;
+      pull_request = pull_request == undefined ? '*N/A*' : `Pull Request #${pull_request}`;
+
       message = `
 :octocat: @${ context.actor }, your [grade request](${request_link}) has been processed! See the details below:
 
 |  |  |
 |----:|:-----|
-|  Student: | ${student_name} |
-| Username: | \`${user_name}\` |
+|   Student: | ${student_name} |
+| USF Email: | <${user_name}@dons.usfca.edu> |
 | | |
-| Assignment: | ${results?.calculate_grade?.outputs?.assignment_name} |
-|    Release: | [\`${release_tag}\`](${release_link}) (verified in [run ${verified_id}](${verified_link})) |
-|   Deadline: | ${results?.calculate_grade?.outputs?.deadline_text} |
-|  Submitted: | ${results?.calculate_grade?.outputs?.submitted_text} |
+|   Assignment: | ${results?.calculate_grade?.outputs?.assignment_name} |
+|      Release: | [\`${release_tag}\`](${release_link}) (verified in [run ${verified_id}](${verified_link})) |
+| Pull Request: | ${pull_request} |
+|     Deadline: | ${results?.calculate_grade?.outputs?.deadline_text} |
+|    Submitted: | ${results?.calculate_grade?.outputs?.submitted_text} |
 | | |
 | Late&nbsp;Interval: | ${late_interval} hours (x${late_multiplier} multiplier) |
 | Late&nbsp;Penalty:  | -${late_points} points (-${late_percent}%) |
@@ -89,8 +94,8 @@ module.exports = async ({github, context, core, DateTime, Settings}) => {
 
 |  |  |
 |----:|:-----|
-|  Student: | ${student_name} |
-| Username: | \`${user_name}\` |
+|   Student: | ${student_name} |
+| USF Email: | <${user_name}@dons.usfca.edu> |
 | | |
 | Project: | ${results?.verify_request?.outputs?.milestone_name} |
 | Release: | [\`${release_tag}\`](${release_link}) (verified in [run ${verified_id}](${verified_link})) |
