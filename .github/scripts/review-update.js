@@ -22,7 +22,7 @@ module.exports = async ({github, context, core}) => {
     }
 
     // add instructions to comment
-    let header  = ':octocat: @${context.actor}, ';
+    let header  = `:octocat: @${context.actor}, `;
     let comment = '';
     let footer  = `See [run #${context.runNumber} (id ${context.runId})](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for details.`;
 
@@ -60,15 +60,13 @@ module.exports = async ({github, context, core}) => {
           case 'resubmit-code-review':
             header += `your code review for project ${version_major} has been processed. Your next steps are:`
             comment = `
-  - [ ] On GitHub, click the "Merge" button to merge this pull request #${number} into the \`main\` branch.
-  - [ ] In Eclipse, use the "Team" » "Pull" option to pull the changes made to your \`main\` branch.
-  - [ ] Fix any remaining \`TODO\` comments in the code, then commit and push those changes to GitHub.
-  - [ ] Create a new \`v${version_major}.${version_minor + 1}.x\` release that passes all of the checks.
+  - [ ] On GitHub, click the "Merge" button to merge this pull request #${number} into the \`main\` branch. Then, in Eclipse, use the "Team" » "Pull" option to pull the changes made to your \`main\` branch.
+  - [ ] Fix any remaining \`TODO\` comments in the code, then commit and push those changes to GitHub. Then, create a new \`v${version_major}.${version_minor + 1}.x\` release that passes all of the checks.
   - [ ] Use the [Request Project Code Review](${context.payload.repository.html_url}/issues/new?assignees=&labels=&template=request-project-review.md&title=Request+Project+Code+Review) issue template to request your next code review appointment for the new \`v${version_major}.${version_minor + 1}.x\` release.`;
 
             if (version_minor < 2) {
               comment = `
-  - [ ] Use the [Request Project Review Grade](${context.payload.repository.html_url}/issues/new?assignees=&labels=&template=request-project-grade-review.md&title=Request+Project+Review+Grade) issue template to request your review grade. Use release \`${parsed.release}\` in the request.${comment}`;
+  - [ ] Use the [Request Project Review Grade](${context.payload.repository.html_url}/issues/new?assignees=&labels=&template=request-project-grade-review.md&title=Request+Project+Review+Grade) issue template to request your project ${version_major} review ${version_minor + 1} grade. Use release \`${parsed.release}\` in the request.${comment}`;
             }
 
             break;
@@ -76,11 +74,9 @@ module.exports = async ({github, context, core}) => {
           case 'review-passed':
             header = `:tada: Congratulations @${context.actor}, you **passed** code review for project ${version_major}! Your next steps are:`;
             comment = `
-  - [ ] On GitHub, click the "Merge" button to merge this pull request #${number} into the \`main\` branch.
-  - [ ] In Eclipse, use the "Team" » "Pull" option to pull the changes made to your \`main\` branch.
-  - [ ] Fix any remaining \`TODO\` comments in the code, then commit and push those changes to GitHub.
-  - [ ] Create a final \`v${version_major}.${version_minor + 1}.x\` release that passes all of the checks.
-  - [ ] Use the [Request Project Design Grade](${context.payload.repository.html_url}/issues/new?assignees=&labels=&template=request-project-grade-design.md&title=Request+Project+Design+Grade) issue template to request your design grade. Use the new \`v${version_major}.${version_minor + 1}.x\` release in the request.
+  - [ ] On GitHub, click the "Merge" button to merge this pull request #${number} into the \`main\` branch. Then, in Eclipse, use the "Team" » "Pull" option to pull the changes made to your \`main\` branch.
+  - [ ] Fix any remaining \`TODO\` comments in the code, then commit and push those changes to GitHub. Then, create a final \`v${version_major}.${version_minor + 1}.x\` release that passes all of the checks.
+  - [ ] Use the [Request Project Design Grade](${context.payload.repository.html_url}/issues/new?assignees=&labels=&template=request-project-grade-design.md&title=Request+Project+Design+Grade) issue template to request your project ${version_major} design grade. Use the new \`v${version_major}.${version_minor + 1}.x\` release in the request.
   - [ ] Merge the functionality for project ${version_major + 1} into the \`main\` branch.`;
 
             break;
