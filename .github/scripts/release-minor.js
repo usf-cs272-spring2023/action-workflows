@@ -8,7 +8,7 @@ module.exports = async ({github, context, core}) => {
   core.info(`Release: ${release}, Project: ${major}, Review: ${minor}, Patch: ${patch}`);
 
   try {
-    const pull_list = github.rest.pulls.list({
+    const pull_list = await github.rest.pulls.list({
       owner: context.repo.owner,
       repo: context.repo.repo,
       state: 'all',
@@ -17,13 +17,13 @@ module.exports = async ({github, context, core}) => {
 
     core.info(JSON.stringify(pull_list));
 
-    core.info(JSON.stringify(await github.rest.issues.listForRepo({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-      state: 'all',
-      per_page: 100,
-      labels: `project${major}`
-    })));
+    // core.info(JSON.stringify(await github.rest.issues.listForRepo({
+    //   owner: context.repo.owner,
+    //   repo: context.repo.repo,
+    //   state: 'all',
+    //   per_page: 100,
+    //   labels: `project${major}`
+    // })));
 
     // check if no pull requests yet in repository
     if (!pull_list.hasOwnProperty('data') || pull_list.data.length == 0) {
