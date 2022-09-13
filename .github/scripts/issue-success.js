@@ -56,7 +56,7 @@ module.exports = async ({github, context, core, DateTime, Settings}) => {
 | | |
 | Late&nbsp;Interval: | ${late_interval} hours (x${late_multiplier} multiplier) |
 | Late&nbsp;Penalty:  | -${late_points} points (-${late_percent}%) |
-| Late&nbsp;Grade:    | **${grade_points}** / ${grade_possible} points (${grade_percent}%) |
+| Final&nbsp;Grade:   | **${grade_points}** / ${grade_possible} points (${grade_percent}%) |
 
 :white_check_mark: We will close this issue after updating your grade on Canvas. If your grade is not updated in 2 business days, please reach out on Piazza.
       `;
