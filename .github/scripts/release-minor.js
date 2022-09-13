@@ -11,7 +11,6 @@ module.exports = async ({github, context, core}) => {
     const pull_list = github.rest.pulls.list({
       owner: context.repo.owner,
       repo: context.repo.repo,
-      state: 'all',
       per_page: 100
     });
 
