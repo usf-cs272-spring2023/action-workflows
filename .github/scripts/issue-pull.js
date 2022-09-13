@@ -5,6 +5,7 @@ module.exports = async ({github, context, core}) => {
   const release = process.env.RELEASE_TAG;
 
   try {
+    // create the pull request
     const result = await github.rest.pulls.create({
       owner: context.repo.owner,
       repo: context.repo.repo,
@@ -14,6 +15,23 @@ module.exports = async ({github, context, core}) => {
     });
 
     output.pull_request = result.data.number;
+
+    // prevent merging on the pull request until after a review is approved
+    await github.rest.repos.updateBranchProtection({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      branch: `review/${release}`,
+      required_status_checks: null,
+      enforce_admins: null,
+      required_pull_request_reviews: {
+        required_approving_review_count: 1,
+        bypass_pull_request_allowances: {
+          users: ['sjengle']
+        }
+      },
+      restrictions: null,
+      allow_deletions: true
+    });
   }
   catch (error) {
     error_messages.push(`Unable to create pull request for release ${release} (${error.name}: ${error.message}).`);
