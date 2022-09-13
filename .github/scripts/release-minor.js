@@ -11,10 +11,19 @@ module.exports = async ({github, context, core}) => {
     const pull_list = github.rest.pulls.list({
       owner: context.repo.owner,
       repo: context.repo.repo,
+      state: 'all',
       per_page: 100
     });
 
     core.info(JSON.stringify(pull_list));
+
+    core.info(JSON.stringify(github.rest.issues.listForRepo({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      state: 'all',
+      per_page: 100,
+      milestone: `Project ${major}`
+    })));
 
     // check if no pull requests yet in repository
     if (!pull_list.hasOwnProperty('data') || pull_list.data.length == 0) {
