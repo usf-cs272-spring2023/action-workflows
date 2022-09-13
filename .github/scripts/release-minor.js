@@ -17,12 +17,12 @@ module.exports = async ({github, context, core}) => {
 
     core.info(JSON.stringify(pull_list));
 
-    core.info(JSON.stringify(github.rest.issues.listForRepo({
+    core.info(JSON.stringify(await github.rest.issues.listForRepo({
       owner: context.repo.owner,
       repo: context.repo.repo,
       state: 'all',
       per_page: 100,
-      milestone: `Project ${major}`
+      labels: `project${major}`
     })));
 
     // check if no pull requests yet in repository
