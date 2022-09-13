@@ -1,9 +1,9 @@
 // checks the pull requests to determine if the minor number makes sense
 module.exports = async ({github, context, core}) => {
-  const release = process.env.RELEASE_TAG;
   const major = parseInt(process.env.VERSION_MAJOR);
   const minor = parseInt(process.env.VERSION_MINOR);
   const patch = parseInt(process.env.VERSION_PATCH);
+  const release = `v${major}.${minor}.${patch}`;
 
   core.info(`Release: ${release}, Project: ${major}, Review: ${minor}, Patch: ${patch}`);
 
@@ -14,6 +14,8 @@ module.exports = async ({github, context, core}) => {
       state: 'all',
       per_page: 100
     });
+
+    core.info(JSON.stringify(pull_list));
 
     // check if no pull requests yet in repository
     if (!pull_list.hasOwnProperty('data') || pull_list.data.length == 0) {
