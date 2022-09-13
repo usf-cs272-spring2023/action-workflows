@@ -15,16 +15,6 @@ module.exports = async ({github, context, core}) => {
       per_page: 100
     });
 
-    core.info(JSON.stringify(pull_list));
-
-    // core.info(JSON.stringify(await github.rest.issues.listForRepo({
-    //   owner: context.repo.owner,
-    //   repo: context.repo.repo,
-    //   state: 'all',
-    //   per_page: 100,
-    //   labels: `project${major}`
-    // })));
-
     // check if no pull requests yet in repository
     if (!pull_list.hasOwnProperty('data') || pull_list.data.length == 0) {
       core.info('Found 0 pull requests.');
@@ -49,32 +39,27 @@ module.exports = async ({github, context, core}) => {
 
     // loop through all of the pull requests
     for (const pull of pull_list.data) {
+      // assume only instructor can modify labels, use to determine passing code reviews
+      const labels = new Set(pull.labels.map(label => label.name));
+
       // check if pull request is for this project
-      if (pull.labels.some(label => label.name == project)) {
-        // get pull request reviews
-        const reviews = github.rest.pulls.listReviews({
-          owner: context.repo.owner,
-          repo: context.repo.repo,
-          pull_number: pull.number, // pull.id: issue number, pull.number: pull number
-          per_page: 100
-        });
-
-        // check if the pull request was approved by the professor
-        if (reviews.hasOwnProperty('data') && reviews.data.some(review => review.user.login == 'sjengle' && review.state == 'APPROVED')) {
-          approved[project].push(pull);
-
-          // check if this pull request passed code review
-          if (pull.labels.some(label => label.name == 'review-passed')) {
-            core.info(`Pull request #${pull.id} passed code review.`);
-            core.setOutput('review_passed', pull.id);
-          }
+      if (labels.has(project)) {
+        if (labels.has('review-passed')) {
+          core.info(`Pull request #${pull.id} passed code review.`);
+          core.setOutput('review_passed', pull.id);
+          approved.push(pull);
+        }
+        else if (labels.has('resubmit-quick-review') || labels.has('resubmit-code-review')) {
+          approved.push(pull);
         }
       }
     }
 
-    core.info(`Found ${approved.length} approved code reviews for project ${major}.`);
+    core.info(`Found ${approved.length} code reviews for project ${major}.`);
 
-    // TODO Add output if found passing pull request for this project!
+    if (approved.length != minor) {
+      core.setFailed(`This release version should start with v${major}.${approved.length}, not with v${major}.${minor}, since you have ${approved.length} code reviews for project ${major} already. You may want to delete the ${release} release *and* tag (two separate steps).`);
+    }
   }
   catch (error) {
     core.info(`${error.name}: ${error.message}`);
