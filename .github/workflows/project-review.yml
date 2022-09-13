@@ -13,7 +13,7 @@ jobs:
   main:
     name: 'Run'
     runs-on: ubuntu-latest
-    if: ${{ github.event.review.user.login == "sjengle" }}
+    if: ${{ github.event.review.user.login == 'sjengle' }}
 
     steps:
       - name: 'Checkout workflows'
