@@ -5,19 +5,25 @@ module.exports = async ({github, context, core}) => {
   const release = process.env.RELEASE_TAG;
 
   try {
-    // create the pull request
-    const result = await github.rest.pulls.create({
+    // prevent merging on the pull request until after a review is approved
+    await github.rest.repos.updateBranchProtection({
       owner: context.repo.owner,
       repo: context.repo.repo,
-      head: `review/${release}`,
-      base: 'main',
-      issue: context.payload.issue.number
+      branch: `review/${release}`,
+      required_status_checks: null,
+      enforce_admins: null,
+      required_pull_request_reviews: {
+        required_approving_review_count: 1,
+        bypass_pull_request_allowances: {
+          users: ['mtquach2', 'par5ul1', 'igentle292', 'ybsolomon', 'sjengle', 'cardi', 'ryscheng']
+        }
+      },
+      restrictions: null,
+      allow_deletions: true
     });
-
-    output.pull_request = result.data.number;
   }
   catch (error) {
-    error_messages.push(`Unable to create pull request for release ${release} (${error.name}: ${error.message}).`);
+    error_messages.push(`Unable to protect review branch for release ${release} (${error.name}: ${error.message}).`);
   }
   finally {
     // output and set results
@@ -39,7 +45,7 @@ module.exports = async ({github, context, core}) => {
       }
       core.endGroup();
 
-      core.setFailed(`Found ${error_messages.length} problems while creating the pull request.`);
+      core.setFailed(`Found ${error_messages.length} problems while protecting the review branch.`);
     }
   }
 };

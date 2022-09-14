@@ -11,6 +11,10 @@ inputs:
     description: "Project release version number or tag (e.g. v1.0.0)"
     required: true
 
+  branch_token:
+    description: "Token to use for branch protection"
+    required: true
+
 outputs:
   error_messages:
     description: 'Errors encountered trying to create pull request'
@@ -134,11 +138,26 @@ runs:
             core.setFailed(message);
           }
 
+    - name: 'Protect review branch'
+      id: protect_branch
+      uses: actions/github-script@v6
+      continue-on-error: true
+      env:
+        RELEASE_TAG: '${{ inputs.release_tag }}'
+        BRANCH_TOKEN: '${{ inputs.branch_token }}'
+      with:
+        script: |
+          const toolkit = require('@actions/github');
+          const octokit = toolkit.getOctokit(process.env.BRANCH_TOKEN);
+
+          const script = require('./workflows/.github/scripts/issue-protect.js');
+          return await script({octokit, context, core});
+
     - name: 'Create pull request'
       id: create_pull
       uses: actions/github-script@v6
       env:
-        RELEASE_TAG:  '${{ inputs.release_tag }}'
+        RELEASE_TAG: '${{ inputs.release_tag }}'
       with:
         script: |
           const script = require('./workflows/.github/scripts/issue-pull.js');
