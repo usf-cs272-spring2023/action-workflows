@@ -106,7 +106,7 @@ jobs:
         with:
           action_ref:   '${{ inputs.action_ref }}'
           release_tag:  '${{ steps.parse_request.outputs.release_tag }}'
-          branch_token: '${{ secrets.FA22_BRANCH_PROTECTION }}'
+          # branch_token: '${{ secrets.FA22_BRANCH_PROTECTION }}'
 
       - name: 'Install luxon'
         shell: bash

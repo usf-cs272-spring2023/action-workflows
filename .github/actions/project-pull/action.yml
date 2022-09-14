@@ -1,5 +1,5 @@
 name: 'Create Pull Request'
-descripton: 'Reusable action for creating a pull request for code review'
+description: 'Reusable action for creating a pull request for code review'
 
 inputs:
   action_ref:
@@ -11,9 +11,9 @@ inputs:
     description: "Project release version number or tag (e.g. v1.0.0)"
     required: true
 
-  branch_token:
-    description: "Token to use for branch protection"
-    required: true
+  # branch_token:
+  #   description: "Token to use for branch protection"
+  #   required: true
 
 outputs:
   error_messages:
@@ -138,17 +138,18 @@ runs:
             core.setFailed(message);
           }
 
-    - name: 'Protect review branch'
-      id: protect_branch
-      uses: actions/github-script@v6
-      continue-on-error: true
-      env:
-        RELEASE_TAG: '${{ inputs.release_tag }}'
-      with:
-        github-token: '${{ inputs.branch_token }}'
-        script: |
-          const script = require('./workflows/.github/scripts/issue-protect.js');
-          return await script({github, context, core});
+    # CANNOT DO UNTIL use secrets:inherit on calling workflow  
+    # - name: 'Protect review branch'
+    #   id: protect_branch
+    #   uses: actions/github-script@v6
+    #   continue-on-error: true
+    #   env:
+    #     RELEASE_TAG: '${{ inputs.release_tag }}'
+    #   with:
+    #     github-token: '${{ inputs.branch_token }}'
+    #     script: |
+    #       const script = require('./workflows/.github/scripts/issue-protect.js');
+    #       return await script({github, context, core});
 
     - name: 'Create pull request'
       id: create_pull
@@ -173,7 +174,7 @@ runs:
 
           for (const property in results) {
             if (results[property]?.outputs?.error_messages != undefined) {
-              messages += `  1. ${results[property].outputs.error_messages}\n`;
+              messages += `${results[property].outputs.error_messages}`;
             }
           }
 
