@@ -85,7 +85,7 @@ module.exports = async ({github, context, core, DateTime, Settings}) => {
         let last_date = DateTime.fromISO(`${results?.verify_request?.outputs?.last_date}`);
         let check_date = DateTime.fromISO(`${results?.verify_request?.outputs?.check_date}`);
 
-        if (!parsed_date.isValid) {
+        if (!last_date.isValid) {
           core.warning(`Unable to parse last code review date: ${results?.verify_request?.outputs?.last_date}`);
           last_date_text = '*Undefined*';
         }

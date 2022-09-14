@@ -144,14 +144,11 @@ runs:
       continue-on-error: true
       env:
         RELEASE_TAG: '${{ inputs.release_tag }}'
-        BRANCH_TOKEN: '${{ inputs.branch_token }}'
       with:
+        github-token: '${{ inputs.branch_token }}'
         script: |
-          const toolkit = require('@actions/github');
-          const octokit = toolkit.getOctokit(process.env.BRANCH_TOKEN);
-
           const script = require('./workflows/.github/scripts/issue-protect.js');
-          return await script({octokit, context, core});
+          return await script({github, context, core});
 
     - name: 'Create pull request'
       id: create_pull
