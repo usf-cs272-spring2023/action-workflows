@@ -163,13 +163,20 @@ module.exports = async ({github, context, core}) => {
 
         output.check_date = ''; // date to check eligibility against
 
-        output.next_type = 'request-code-review';
+        output.next_type = output.found_reviews > 0 ? 'request-quick-review' : 'request-code-review';
 
         if (output.found_reviews != 0) {
           const latest = code_reviews[0];
 
           output.last_pull = latest.number;
           output.last_type = latest.labels.find(label => label.name.startsWith('request'))?.name;
+
+          // check if shouldn't be a quick review for some reason
+          const resubmit = `${latest.labels.find(label => label.name.startsWith('resubmit'))?.name}`;
+
+          if(resubmit.includes('code')) {
+            output.next_type = 'request-code-review';
+          } 
 
           // figure out when the latest review was approved
           try {
