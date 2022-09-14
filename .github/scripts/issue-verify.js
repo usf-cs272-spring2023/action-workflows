@@ -228,6 +228,13 @@ module.exports = async ({github, context, core}) => {
         break;
 
       case 'grade_review':
+        // check if there is an issue for this request already
+        if (current?.['grade_review']?.length > 2) {
+          const past_issues = current['grade_review'].map(issue => `#${issue.number}`);
+          error_messages.push(`You already requested ${past_issues.length} project ${major} review grades in issues ${past_issues.join(', ')}. You only need to request review grades TWICE per project. If you are missing an expected grade on Canvas, please post on Piazza.`);
+          return; // exit out of try block
+        }
+
         // see if can find a code review for this request
         let found = code_reviews.find(item => item.labels.some(label => label.name == release));
 
