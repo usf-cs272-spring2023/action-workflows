@@ -94,6 +94,19 @@ module.exports = async ({github, context, core}) => {
     const current  = parsed[`project${major}`];
     const previous = major > 1 ? parsed[`project${major - 1}`] : undefined;
 
+    // collect code reviews into one array
+    const code_reviews = [];
+
+    for (const property of ['resubmit-code-review', 'resubmit-quick-review', 'review-passed']) {
+      if (property in current) {
+        code_reviews.push(...current[property]);
+      }
+    }
+
+    output.found_reviews = code_reviews.length;
+    core.info(`Found ${output.found_reviews} code reviews for project ${major}...` );
+
+    // process each request type
     switch (request_type) {
       case 'grade_tests':
         // check if there is an issue for this request already
@@ -144,51 +157,79 @@ module.exports = async ({github, context, core}) => {
           return; // exit out of try block
         }
 
-        // determine code review type
-        const code_reviews  = (current?.['resubmit-code-review']?.length  || 0);
-        const quick_reviews = (current?.['resubmit-quick-review']?.length || 0); 
+        output.last_type = '';  // type of last pull request
+        output.last_pull = '';  // number of last pull request
+        output.last_date = '';  // date last pull request was approved
 
-        output.found_reviews = code_reviews + quick_reviews;
+        output.check_date = ''; // date to check eligibility against
 
-        output.last_type = '';
-        output.last_pull = '';
-        output.last_date = '';
-
-        output.this_type = 'request-code-review';
-        output.this_date = '';
+        output.next_type = 'request-code-review';
 
         if (output.found_reviews != 0) {
-          // check most recent pull request to determine if should be a code review or quick review
-          error_messages.push('This option is not yet supported.');
-          return;
-        }
+          const latest = code_reviews[0];
 
-        labels.push(output.this_type);
-        break;
+          output.last_pull = latest.number;
+          output.last_type = latest.labels.find(label => label.name.startsWith('request'))?.name;
 
-      case 'grade_review':
-        // places to look for approved code reviews
-        let search = ['resubmit-quick-review', 'resubmit-code-review', 'review-passed'];
+          // figure out when the latest review was approved
+          try {
+            const list_reviews = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: latest.number,
+              per_page: 100
+            });
 
-        // see if can find a code review for this request
-        let found = undefined;
+            const approved = list_reviews.data.find(review => review.user.login == 'sjengle');
+            output.last_date = approved.submitted_at;
+            output.check_date = output.last_date;
 
-        for (const property of search) {
-          if (current.hasOwnProperty(property)) {
-            found = current[property].find(item => item.labels.some(label => label.name == release));
+            core.info(`Latest pull request #${earlier.number} was approved at: ${output.check_date}`);
+          }
+          catch (error) {
+            core.info(error);
+            error_messages.push(`Unable to determine when pull request #${latest.number} was approved.`);
+            return;
+          }
 
-            // no need to keep looking if found the pull request
-            if (found != undefined) {
-              core.info(`Found pull request #${found.number} for release ${release}.`);
-              break;
+          // if the last review was a 15 minute review, look one more back for the check date
+          if (output.last_type == 'request-quick-review' && code_reviews.length > 1) {
+            const earlier = code_reviews[1];
+
+            // figure out when the latest review was approved
+            try {
+              const list_reviews = await github.rest.pulls.listReviews({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: latest.number,
+                per_page: 100
+              });
+
+              const approved = list_reviews.data.find(review => review.user.login == 'sjengle');
+              output.check_date = approved.submitted_at;
+              core.info(`Earlier pull request #${earlier.number} was approved at: ${output.check_date}`);
+            }
+            catch (error) {
+              core.info(error);
+              error_messages.push(`Unable to determine when pull request #${latest.number} was approved.`);
+              return;
             }
           }
         }
+
+        labels.push(output.next_type);
+        break;
+
+      case 'grade_review':
+        // see if can find a code review for this request
+        let found = code_reviews.find(item => item.labels.some(label => label.name == release));
 
         if (found == undefined) {
           error_messages.push(`Could not find an approved code review pull request for release ${release}. You cannot request this grade until the professor has reviewed your code and approved the pull request.`);
           return;
         }
+
+        core.info(`Found pull request #${found.number} for release ${release}.`);
 
         // figure out when the review was approved
         try {

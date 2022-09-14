@@ -62,26 +62,47 @@ module.exports = async ({github, context, core, DateTime, Settings}) => {
       `;
     }
     else if (request_type == 'request_review') {
-      const review_type = results?.verify_request?.outputs?.this_type;
+      const review_type = results?.verify_request?.outputs?.next_type;
       const review_text = review_type == 'request-code-review' ? 'Code' : 'Quick';
       const review_time = review_type == 'request-code-review' ? 30 : 15;
 
-      const last_review = results?.verify_request?.outputs?.last_pull != undefined;
+      const release_date = DateTime.fromISO(JSON.parse(results?.download_json?.outputs?.release_date));
+      const today_date = DateTime.now();
 
-      let last_pull = '*N/A*';
-      let last_time = '*N/A*';
-      let last_date = '*N/A*';
+      let eligible_date = undefined;
+
+      const last_type = results?.verify_request?.outputs?.last_type;
+
+      let last_pull_text = '*N/A*';
+      let last_time_text = '*N/A*';
+      let last_date_text = '*N/A*';
 
       // set last review values if appropriate
-      if (last_review) {
-        // TODO
+      if (last_type != undefined) {
+        last_pull_text = `Pull Request #${results?.verify_request?.outputs?.last_pull}`;
+        last_time_text = last_type == 'request-code-review' ? '30 minutes' : '15 minutes';
+
+        let last_date = DateTime.fromISO(`${results?.verify_request?.outputs?.last_date}`);
+        let check_date = DateTime.fromISO(`${results?.verify_request?.outputs?.check_date}`);
+
+        if (!parsed_date.isValid) {
+          core.warning(`Unable to parse last code review date: ${results?.verify_request?.outputs?.last_date}`);
+          last_date_text = '*Undefined*';
+        }
+        else {
+          last_date_text = `${last_date.toLocaleString(DateTime.DATETIME_FULL)}`;
+          eligible_date = last_date.plus({days: 5});
+        }
+
+        // use check_date instead if it is provided
+        if (check_date.isValid) {
+          eligible_date = check_date.plus({days: 5});
+        }
       }
 
-      const release_date = DateTime.fromISO(JSON.parse(results?.download_json?.outputs?.release_date));
-      let eligible_date = DateTime.fromISO(`${results?.verify_request?.outputs?.this_date}`);
-
-      if (!eligible_date.isValid) {
-        eligible_date = DateTime.now();
+      // make sure we have an eligible date that is today or later (not in the past)
+      if (eligible_date == undefined || !eligible_date.isValid || eligible_date < today_date) {
+        eligible_date = today_date;
       }
 
       // create appointment link
@@ -101,9 +122,9 @@ module.exports = async ({github, context, core, DateTime, Settings}) => {
 | Release: | [\`${release_tag}\`](${release_link}) (verified in [run ${verified_id}](${verified_link})) |
 | Created: | ${release_date.toLocaleString(DateTime.DATETIME_FULL)} |
 | | |
-|   Last Review: | ${last_pull} |
-|   Review Date: | ${last_date} |
-| Review Length: | ${last_time} |
+|   Last Review: | ${last_pull_text} |
+|   Review Date: | ${last_date_text} |
+| Review Length: | ${last_time_text} |
 | | |
 |   This Review: | ${review_time} min ${review_text} Review |
 | Eligible Date: | ${eligible_date.toLocaleString(DateTime.DATETIME_FULL)} |
