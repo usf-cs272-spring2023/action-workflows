@@ -184,7 +184,7 @@ module.exports = async ({github, context, core}) => {
             output.last_date = approved.submitted_at;
             output.check_date = output.last_date;
 
-            core.info(`Latest pull request #${earlier.number} was approved at: ${output.check_date}`);
+            core.info(`Latest pull request #${latest.number} was approved at: ${output.check_date}`);
           }
           catch (error) {
             core.info(error);
