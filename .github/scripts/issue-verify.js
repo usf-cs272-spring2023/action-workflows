@@ -17,7 +17,7 @@ module.exports = async ({github, context, core}) => {
     const patch = parseInt(process.env.VERSION_PATCH);
 
     if (!results.hasOwnProperty(request_type) || `${results[request_type]}` != 'true') {
-      error_messages.push(`The release ${results.release} is not eligible for this type of request.`);
+      error_messages.push(`The release ${results.release} is not eligible for this type of request. See the release run for details.`);
       return; // exit out of try block
     }
 
