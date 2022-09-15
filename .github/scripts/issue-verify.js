@@ -297,12 +297,18 @@ module.exports = async ({github, context, core}) => {
 
         // make sure already pass code review
         const passed = current?.['review-passed']?.[0];
+
         if (passed == undefined) {
           error_messages.push(`Unable to find a passing code review pull request for project ${major}. You must have a pull request that passed code review to request this grade.`);
           return; // exit out of try block
         }
 
-        error_messages.push('This request type is not yet supported.');
+        core.info(`Found pull request #${passed.number} passed code review for project ${major}.`);
+
+        labels.push('grade-design');
+        output.assignment_name = `Project ${major} Design`;
+        output.starting_points = 50;
+        output.submitted_date  = results.release_date;
         break;
       
       default:
