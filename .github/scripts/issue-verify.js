@@ -69,11 +69,6 @@ module.exports = async ({github, context, core}) => {
           case 'review-passed':
             issue_types.push(label.name);
             break;
-          
-          default:
-            if (!label.name.startsWith('v')) {
-              core.info(`Issue #${issue.number} has an unexpected "${label.name}" label.`);
-            }
         }
       }
 
@@ -110,7 +105,7 @@ module.exports = async ({github, context, core}) => {
     switch (request_type) {
       case 'grade_tests':
         // check if there is an issue for this request already
-        if (current?.['grade-tests']?.length > 0) {
+        if ('grade-tests' in current) {
           const found = current['grade-tests'][0];
 
           // if the found issue isn't this one
@@ -123,8 +118,8 @@ module.exports = async ({github, context, core}) => {
         // check if there is a previous project
         if (previous != undefined) {
           // check if there is at least one code review for that project
-          const reviews = previous?.['grade-review']?.length;
-          if (reviews == undefined || reviews < 1) {
+          const has_reviews = 'grade-review' in previous;
+          if (!has_reviews) {
             error_messages.push(`You must request at least one review grade for project ${major - 1} before requesting a tests grade for project ${major}.`);
             return; // exit out of try block
           }
@@ -140,22 +135,29 @@ module.exports = async ({github, context, core}) => {
 
       case 'request_review':
         // make sure there is already a test grade issue
-        if ((current?.['grade-tests']?.length || 0) < 1) {
+        const has_tests = 'grade-tests' in current;
+        if (!has_tests) {
           error_messages.push(`You must have a passing project ${major} tests grade issue before requesting your first code review appointment.`);
           return; // exit out of try block
         }
 
-        // check if there is a design grade issue for that project
-        if ((previous != undefined)  && (previous?.['grade-design']?.length || 0) < 1 ) {
-          error_messages.push(`You must have a passing project ${major - 1} design grade issue before requesting your first project ${major} code review appointment.`);
-          return; // exit out of try block
-        }
-
         // make sure didn't already pass code review
-        if ((current?.['review-passed']?.length || 0) > 0) {
+        if ('review-passed' in current) {
           error_messages.push(`You passed code review in #${current['review-passed'][0].number} and do not need any more project ${major} code reviews. Did you mean to request a design grade instead?`);
           return; // exit out of try block
         }
+
+        // check if there is a design grade issue for the previous project
+        if (previous != undefined) {
+          const has_design = 'grade-design' in previous;
+          if (!has_design) {
+            error_messages.push(`You must have a passing project ${major - 1} design grade issue before requesting your first project ${major} code review appointment.`);
+            return; // exit out of try block  
+          }
+        }
+
+        // check if this review was already requested (duplicate request)
+        // TODO
 
         output.last_type = '';  // type of last pull request
         output.last_pull = '';  // number of last pull request
@@ -229,10 +231,15 @@ module.exports = async ({github, context, core}) => {
 
       case 'grade_review':
         // check if there is an issue for this request already
-        if (current?.['grade_review']?.length > 2) {
-          const past_issues = current['grade_review'].map(issue => `#${issue.number}`);
-          error_messages.push(`You already requested ${past_issues.length} project ${major} review grades in issues ${past_issues.join(', ')}. You only need to request review grades TWICE per project. If you are missing an expected grade on Canvas, please post on Piazza.`);
-          return; // exit out of try block
+        const has_reviews = 'grade-review' in current;
+        if (has_reviews) {
+          for (const issue of current['grade-review']) {
+            const found = issue.labels.find(label => label.name.startsWith(`v${major}.${minor}`));
+            if (found != undefined) {
+              error_messages.push(`You already requested project ${major} review grade for release ${found} in issue #${issue.number}. If you are missing an expected grade on Canvas, please post on Piazza.`);
+              return; // exit out of try block
+            }
+          }
         }
 
         // see if can find a code review for this request
