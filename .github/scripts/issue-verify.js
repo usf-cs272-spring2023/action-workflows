@@ -157,7 +157,13 @@ module.exports = async ({github, context, core}) => {
         }
 
         // check if this review was already requested (duplicate request)
-        // TODO
+        for (const issue of code_reviews) {
+          const found = issue.labels.find(label => label.name.startsWith(`v${major}.${minor}`));
+          if (found != undefined) {
+            error_messages.push(`You already had release ${found.name} code reviewed in pull request #${issue.number}. Did you mean to request a code review for a different release?`);
+            return; // exit out of try block
+          }
+        }
 
         output.last_type = '';  // type of last pull request
         output.last_pull = '';  // number of last pull request
@@ -236,7 +242,7 @@ module.exports = async ({github, context, core}) => {
           for (const issue of current['grade-review']) {
             const found = issue.labels.find(label => label.name.startsWith(`v${major}.${minor}`));
             if (found != undefined) {
-              error_messages.push(`You already requested project ${major} review grade for release ${found} in issue #${issue.number}. If you are missing an expected grade on Canvas, please post on Piazza.`);
+              error_messages.push(`You already requested project ${major} review grade for release ${found.name} in issue #${issue.number}. If you are missing an expected grade on Canvas, please post on Piazza.`);
               return; // exit out of try block
             }
           }
