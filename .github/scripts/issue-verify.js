@@ -124,7 +124,7 @@ module.exports = async ({github, context, core}) => {
             return; // exit out of try block
           }
 
-          core.info(`Found ${reviews} review grade requests for project ${major - 1}.`);
+          core.info(`Found ${previous['grade-review'].length} review grade requests for project ${major - 1}.`);
         }
 
         labels.push('grade-tests');
