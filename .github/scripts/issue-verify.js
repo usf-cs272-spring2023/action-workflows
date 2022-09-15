@@ -309,6 +309,7 @@ module.exports = async ({github, context, core}) => {
         output.assignment_name = `Project ${major} Design`;
         output.starting_points = 50;
         output.submitted_date  = results.release_date;
+        output.pull_request = passed.number;
         break;
       
       default:
