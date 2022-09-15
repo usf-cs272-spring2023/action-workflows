@@ -284,6 +284,24 @@ module.exports = async ({github, context, core}) => {
         break;
 
       case 'grade_design':
+        // check if there is an issue for this request already
+        if ('grade-design' in current) {
+          const found = current['grade-design'][0];
+
+          // if the found issue isn't this one
+          if (found.number != context.issue.number) {
+            error_messages.push(`You already requested a project ${major} design grade in issue #${found.number}. You only need to request this grade ONCE per project. If the issue is closed and you do not see a grade on Canvas yet, please post on Piazza asking for an update.`);
+            return; // exit out of try block
+          }
+        }
+
+        // make sure already pass code review
+        const passed = current?.['review-passed']?.[0];
+        if (passed == undefined) {
+          error_messages.push(`Unable to find a passing code review pull request for project ${major}. You must have a pull request that passed code review to request this grade.`);
+          return; // exit out of try block
+        }
+
         error_messages.push('This request type is not yet supported.');
         break;
       
