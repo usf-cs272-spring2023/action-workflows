@@ -11,8 +11,8 @@ module.exports = async ({github, context, core}) => {
     const review = context.payload.review.body.toLowerCase();
     const login  = context.payload.review.user.login;
 
-    const user = context.actor;
-    core.info(JSON.stringify(context.payload));
+    const user = context.assignee.login;
+    //core.info(JSON.stringify(context.payload));
 
     // add the review label
     let label = 'error';
