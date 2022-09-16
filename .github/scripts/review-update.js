@@ -11,6 +11,9 @@ module.exports = async ({github, context, core}) => {
     const review = context.payload.review.body.toLowerCase();
     const login  = context.payload.review.user.login;
 
+    const user = context.actor;
+    core.info(JSON.stringify(context.payload));
+
     // add the review label
     let label = 'error';
     
@@ -22,7 +25,7 @@ module.exports = async ({github, context, core}) => {
     }
 
     // add instructions to comment
-    let header  = `:octocat: @${context.payload.user.login}, `;
+    let header  = `:octocat: @${user}, `;
     let comment = '';
     let footer  = `See [run #${context.runNumber} (id ${context.runId})](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for details.`;
 
@@ -72,7 +75,7 @@ module.exports = async ({github, context, core}) => {
             break;
 
           case 'review-passed':
-            header = `:tada: Congratulations @${context.payload.user.login}, you **passed** code review for project ${version_major}! Your next steps are:`;
+            header = `:tada: Congratulations @${user}, you **passed** code review for project ${version_major}! Your next steps are:`;
             comment = `
   - [ ] On GitHub, click the "Merge" button to merge this pull request #${number} into the \`main\` branch. Then, in Eclipse, use the "Team" » "Pull" option to pull the changes made to your \`main\` branch.
   - [ ] Fix any remaining \`TODO\` comments in the code, then commit and push those changes to GitHub. Then, create a final \`v${version_major}.${version_minor + 1}.x\` release that passes all of the checks.
