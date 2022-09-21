@@ -108,7 +108,7 @@ module.exports = async ({github, context, core, DateTime, Settings}) => {
       // create appointment link
       const autofill = `name=${encodeURIComponent(student_name)}&email=${encodeURIComponent(user_name.concat('@dons.usfca.edu'))}&a1=${encodeURIComponent(context.payload.issue.html_url)}`;
 
-      const signup_link = undefined;
+      let signup_link = undefined;
 
       if (context.repo.owner == 'usf-cs272-03-fall2022') {
         signup_link = `https://usfca.instructure.com/courses/1610487`;
