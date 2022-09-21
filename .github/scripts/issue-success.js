@@ -194,7 +194,12 @@ Make sure to attend your appointment on-time; arriving more than 5 minutes late 
     };
 
     if (grade_request) {
-      params.assignees = ['mtquach2', 'par5ul1', 'igentle292'];
+      if (context.repo.owner == 'usf-cs272-03-fall2022') {
+        params.assignees = ['mtquach2', 'ybsolomon'];
+      }
+      else {
+        params.assignees = ['mtquach2', 'par5ul1', 'igentle292'];
+      }
     }
     else if (request_type == 'request_review') {
       params.assignees = [context.actor];
