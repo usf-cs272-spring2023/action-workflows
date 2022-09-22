@@ -109,7 +109,7 @@ module.exports = async ({github, context, core}) => {
     }));
 
     // check the review state
-    if (state != 'approved') {
+    /* if (state != 'approved') {
       core.warning(`Unexpected review state: ${state}`);
       const message = `:octocat: Oops @${login}, did you mean to set the review status to \`${state}\`? Reviews must be set to \`approved\` to be recognized by the autograder system. @${context.actor}, if you don't receive a response from the professor within 2 business days, please reach out on Piazza!`;
 
@@ -119,7 +119,7 @@ module.exports = async ({github, context, core}) => {
         issue_number: number,
         body: message
       }));
-    }
+    } */
 
     Promise.all(requests).then(values => core.info(`Pull request ${number} updated successfully.`));
   }
