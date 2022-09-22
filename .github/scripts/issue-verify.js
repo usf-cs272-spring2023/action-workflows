@@ -220,7 +220,8 @@ module.exports = async ({github, context, core}) => {
                 per_page: 100
               });
 
-              const approved = list_reviews.data.find(review => review.user.login == 'sjengle');
+              const approvers = new Set(['ryscheng', 'cardi', 'sjengle']);
+              const approved = list_reviews.data.find(review => approvers.has(review.user.login));
               output.check_date = approved.submitted_at;
               core.info(`Earlier pull request #${earlier.number} was approved at: ${output.check_date}`);
             }
