@@ -109,15 +109,12 @@ module.exports = async ({github, context, core, DateTime, Settings}) => {
       const autofill = `name=${encodeURIComponent(student_name)}&email=${encodeURIComponent(user_name.concat('@dons.usfca.edu'))}&a1=${encodeURIComponent(context.payload.issue.html_url)}`;
 
       let signup_link = undefined;
-      let reviewers = [];
 
       if (context.repo.owner == 'usf-cs272-03-fall2022') {
         signup_link = `https://usfca.instructure.com/courses/1610487`;
-        reviewers = ['ryscheng', 'cardi'];
       }
       else {
         signup_link = `https://calendly.com/sjengle/${review_text.toLowerCase()}-review?month=${eligible_date.toFormat('yyyy-MM')}&date=${eligible_date.toFormat('yyyy-MM-dd')}&${autofill}`;
-        reviewers = ['sjengle'];
       }
 
       core.info(`Signup Link: ${signup_link}`);
@@ -177,6 +174,15 @@ Make sure to attend your appointment on-time; arriving more than 5 minutes late 
   }
 
   try {
+    let reviewers = [];
+
+    if (context.repo.owner == 'usf-cs272-03-fall2022') {
+      reviewers = ['ryscheng', 'cardi'];
+    }
+    else {
+      reviewers = ['sjengle'];
+    }
+
     // request code review if necessary
     if (request_type == 'request_review') {
       const reviewed = await github.rest.pulls.requestReviewers({
