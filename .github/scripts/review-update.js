@@ -6,12 +6,16 @@ module.exports = async ({github, context, core}) => {
 
     // fetch request details
     const state  = context.payload.review.state;
+
+    core.info(JSON.stringify(context.payload.pull_request));
     const number = context.payload.pull_request.number;
     const body   = context.payload.pull_request.body;
+    const user = context.payload.pull_request.assignee.login;
+
+    core.info(JSON.stringify(context.payload.review));
     const review = context.payload.review.body.toLowerCase();
     const login  = context.payload.review.user.login;
-
-    const user = context.payload.pull_request.assignee.login;
+    
     //core.info(JSON.stringify(context.payload));
 
     // add the review label
