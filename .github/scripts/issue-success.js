@@ -2,6 +2,8 @@
 module.exports = async ({github, context, core, DateTime, Settings}) => {
   const results = JSON.parse(process.env.RESULTS);
 
+  const review_delay = 4; // days to wait in between code reviews
+
   const request_type = results.parse_request.outputs.request_type;
   const grade_request = request_type.startsWith('grade_');
   core.info(`Request Type: ${request_type}`);
@@ -91,12 +93,12 @@ module.exports = async ({github, context, core, DateTime, Settings}) => {
         }
         else {
           last_date_text = `${last_date.toLocaleString(DateTime.DATETIME_FULL)}`;
-          eligible_date = last_date.plus({days: 5});
+          eligible_date = last_date.plus({days: review_delay});
         }
 
         // use check_date instead if it is provided
         if (check_date.isValid) {
-          eligible_date = check_date.plus({days: 5});
+          eligible_date = check_date.plus({days: review_delay});
         }
       }
 
