@@ -165,8 +165,19 @@ module.exports = async ({github, context, core}) => {
           }
         }
 
+        // check minor number and found reviews matches
+        if (minor != output.found_reviews) {
+          error_messages.push(`The release version should be v${major}.${output.found_reviews}.x instead of v${major}.${minor}.x to match the number of previous code reviews for this project.`);
+          return; // exit out of try block
+        }
+
         // check if have a grade for previous review
-        // TODO 
+        const review_grades = 'grade-review' in current ? current['grade-review'].length : 0;
+        
+        if (output.found_reviews != review_grades && minor < 3) {
+          error_messages.push(`Found ${output.found_reviews} code reviews but only ${review_grades} review grade requests. Please request a review grade for your last code review before requesting your next code review appointment.`);
+          return; // exit out of try block
+        }
 
         output.last_type = '';  // type of last pull request
         output.last_pull = '';  // number of last pull request
