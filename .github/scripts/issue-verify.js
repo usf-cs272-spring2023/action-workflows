@@ -165,6 +165,9 @@ module.exports = async ({github, context, core}) => {
           }
         }
 
+        // check if have a grade for previous review
+        // TODO 
+
         output.last_type = '';  // type of last pull request
         output.last_pull = '';  // number of last pull request
         output.last_date = '';  // date last pull request was approved
