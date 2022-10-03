@@ -101,6 +101,9 @@ module.exports = async ({github, context, core}) => {
     output.found_reviews = code_reviews.length;
     core.info(`Found ${output.found_reviews} code reviews for project ${major}...` );
 
+    const review_grades = 'grade-review' in current ? current['grade-review'].length : 0;
+    output.review_grades = review_grades;
+
     // process each request type
     switch (request_type) {
       case 'grade_tests':
@@ -172,8 +175,6 @@ module.exports = async ({github, context, core}) => {
         }
 
         // check if have a grade for previous review
-        const review_grades = 'grade-review' in current ? current['grade-review'].length : 0;
-        
         if (output.found_reviews != review_grades && minor < 3) {
           error_messages.push(`Found ${output.found_reviews} code reviews but only ${review_grades} review grade requests. Please request a review grade for your last code review before requesting your next code review appointment.`);
           return; // exit out of try block
@@ -315,6 +316,11 @@ module.exports = async ({github, context, core}) => {
 
         if (passed == undefined) {
           error_messages.push(`Unable to find a passing code review pull request for project ${major}. You must have a pull request that passed code review to request this grade.`);
+          return; // exit out of try block
+        }
+
+        if (review_grades < 2) {
+          error_messages.push(`Found ${review_grades} review grade requests. Please request all review grades before requesting your design grade.`);
           return; // exit out of try block
         }
 
