@@ -320,7 +320,7 @@ module.exports = async ({github, context, core}) => {
         }
 
         if (review_grades < 2) {
-          error_messages.push(`Found ${review_grades} review grade requests. Please request all review grades before requesting your design grade.`);
+          error_messages.push(`Found only ${review_grades} review grade request(s). Please request all review grades before requesting your design grade.`);
           return; // exit out of try block
         }
 
