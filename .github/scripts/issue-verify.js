@@ -16,6 +16,9 @@ module.exports = async ({github, context, core}) => {
     const minor = parseInt(process.env.VERSION_MINOR);
     const patch = parseInt(process.env.VERSION_PATCH);
 
+    // list of github usernames that can approve PRs
+    const approvers = new Set(['ryscheng', 'cardi', 'sjengle']);
+
     if (!results.hasOwnProperty(request_type) || `${results[request_type]}` != 'true') {
       error_messages.push(`The release ${results.release} is not eligible for this type of request. See the release run for details.`);
       return; // exit out of try block
@@ -210,7 +213,7 @@ module.exports = async ({github, context, core}) => {
               per_page: 100
             });
 
-            const approved = list_reviews.data.find(review => review.user.login == 'sjengle');
+            const approved = list_reviews.data.find(review => approvers.has(review.user.login));
             output.last_date = approved.submitted_at;
             output.check_date = output.last_date;
 
@@ -235,7 +238,6 @@ module.exports = async ({github, context, core}) => {
                 per_page: 100
               });
 
-              const approvers = new Set(['ryscheng', 'cardi', 'sjengle']);
               const approved = list_reviews.data.find(review => approvers.has(review.user.login));
               output.check_date = approved.submitted_at;
               core.info(`Earlier pull request #${earlier.number} was approved at: ${output.check_date}`);
@@ -283,7 +285,7 @@ module.exports = async ({github, context, core}) => {
             per_page: 100
           });
 
-          const approved = list_reviews.data.find(review => review.user.login == 'sjengle');
+          const approved = list_reviews.data.find(review => approvers.has(review.user.login));
           output.submitted_date = approved.submitted_at;
         }
         catch (error) {
