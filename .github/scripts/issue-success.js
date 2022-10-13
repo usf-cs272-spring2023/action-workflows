@@ -113,10 +113,14 @@ module.exports = async ({github, context, core, DateTime, Settings}) => {
       let signup_link = undefined;
 
       if (context.repo.owner == 'usf-cs272-03-fall2022') {
-        signup_link = `https://usfca.instructure.com/courses/1610487`;
+        const raymond_link = 'https://calendly.com/ryscheng/30min';
+        const calvin_link  = 'https://calendly.com/calvinardi/30min';
+
+        signup_link = `Signup with [Raymond](${raymond_link}) or [Calvin](${calvin_link}) for a code review appointment.`;
       }
       else {
-        signup_link = `https://calendly.com/sjengle/${review_text.toLowerCase()}-review?month=${eligible_date.toFormat('yyyy-MM')}&date=${eligible_date.toFormat('yyyy-MM-dd')}&${autofill}`;
+        const sophie_link = `https://calendly.com/sjengle/${review_text.toLowerCase()}-review?month=${eligible_date.toFormat('yyyy-MM')}&date=${eligible_date.toFormat('yyyy-MM-dd')}&${autofill}`;
+        signup_link = `Use [this personalized appointment signup link](${sophie_link}) to sign up for a code review appointment. *This link will autofill most of the required information.*`;
       }
 
       core.info(`Signup Link: ${signup_link}`);
@@ -144,7 +148,7 @@ module.exports = async ({github, context, core, DateTime, Settings}) => {
 
 :eyes: Read the instructions below **carefully** to avoid common issues that will delay your appointment!
 
-  1. :spiral_calendar: Use [this personalized appointment signup link](${signup_link}) to sign up for a code review appointment. *This link will autofill most of the required information.*
+  1. :spiral_calendar: ${signup_link}
 
   2. :warning: Make sure to sign up for a single appointment on or after **${eligible_date.toLocaleString(DateTime.DATETIME_FULL)}**. *If there are no appointments in the next 3 business days, make a **public post** on Piazza to see if more can be added to the schedule.*
 
