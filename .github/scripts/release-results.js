@@ -92,6 +92,12 @@ module.exports = async ({github, context, core, fs}) => {
       else {
         core.notice(`❌ The release ${release} cannot be used to request a project ${major} code review, review, or design grade because of the style checks.`);
       }
+
+      // TODO
+      // there should be benchmark output 
+      // if (major >= 3) {
+
+      // }
     }
   }
   catch (error) {
