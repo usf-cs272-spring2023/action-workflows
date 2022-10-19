@@ -121,7 +121,7 @@ runs:
     - name: "Setup Java version"
       id: setup_java
       if: ${{ steps.skip_java.outcome == 'skipped' }}
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v3
       with:
         distribution: 'temurin'
         java-version: '17'
