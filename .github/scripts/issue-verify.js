@@ -101,6 +101,9 @@ module.exports = async ({github, context, core}) => {
       }
     }
 
+    // sort by pull request number
+    code_reviews.sort((a,b) => b.number - a.number);
+
     output.found_reviews = code_reviews.length;
     core.info(`Found ${output.found_reviews} code reviews for project ${major}: ${code_reviews.map(x => x.number).join(', ')}` );
 
