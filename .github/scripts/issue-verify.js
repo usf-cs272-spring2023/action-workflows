@@ -102,7 +102,7 @@ module.exports = async ({github, context, core}) => {
     }
 
     output.found_reviews = code_reviews.length;
-    core.info(`Found ${output.found_reviews} code reviews for project ${major}...` );
+    core.info(`Found ${output.found_reviews} code reviews for project ${major}: ${code_reviews.map(x => x.number).join(', ')}` );
 
     const review_grades = 'grade-review' in current ? current['grade-review'].length : 0;
     output.review_grades = review_grades;
@@ -158,7 +158,7 @@ module.exports = async ({github, context, core}) => {
           const has_design = 'grade-design' in previous;
           if (!has_design) {
             error_messages.push(`You must have a passing project ${major - 1} design grade issue before requesting your first project ${major} code review appointment.`);
-            return; // exit out of try block  
+            return; // exit out of try block
           }
         }
 
@@ -193,6 +193,8 @@ module.exports = async ({github, context, core}) => {
 
         if (output.found_reviews != 0) {
           const latest = code_reviews[0];
+
+          core.info(JSON.stringify(latest));
 
           output.last_pull = latest.number;
           output.last_type = latest.labels.find(label => label.name.startsWith('request'))?.name;
