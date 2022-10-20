@@ -193,8 +193,7 @@ module.exports = async ({github, context, core}) => {
 
         if (output.found_reviews != 0) {
           const latest = code_reviews[0];
-
-          core.info(JSON.stringify(latest));
+          core.info(`Latest review: #${latest.number}, labels: ${latest.labels.map(x => x.name).join(', ')}`);
 
           output.last_pull = latest.number;
           output.last_type = latest.labels.find(label => label.name.startsWith('request'))?.name;
@@ -230,6 +229,7 @@ module.exports = async ({github, context, core}) => {
           // if the last review was a 15 minute review, look one more back for the check date
           if (output.last_type == 'request-quick-review' && code_reviews.length > 1) {
             const earlier = code_reviews[1];
+            core.info(`Earlier review: #${earlier.number}, labels: ${earlier.labels.map(x => x.name).join(', ')}`);
 
             // figure out when the latest review was approved
             try {
