@@ -133,14 +133,20 @@ module.exports = async ({github, context, core}) => {
 
         // check if there is a previous project
         if (previous != undefined) {
-          // check if there is at least one code review for that project
-          const has_reviews = 'grade-review' in previous;
-          if (!has_reviews) {
-            error_messages.push(`You must request at least one review grade for project ${major - 1} before requesting a tests grade for project ${major}.`);
-            return; // exit out of try block
+          if (section3) { // adding check for section 3
+            core.info(`Skipping check for code reviews...`);
           }
+          else {
+            // check if there is at least one code review for that project
+            const has_reviews = 'grade-review' in previous;
 
-          core.info(`Found ${previous['grade-review'].length} review grade requests for project ${major - 1}.`);
+            if (!has_reviews) {
+              error_messages.push(`You must request at least one review grade for project ${major - 1} before requesting a tests grade for project ${major}.`);
+              return; // exit out of try block
+            }
+
+            core.info(`Found ${previous['grade-review'].length} review grade requests for project ${major - 1}.`);
+          }
         }
 
         labels.push('grade-tests');
