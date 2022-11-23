@@ -16,6 +16,9 @@ module.exports = async ({github, context, core}) => {
     const minor = parseInt(process.env.VERSION_MINOR);
     const patch = parseInt(process.env.VERSION_PATCH);
 
+    const section3 = context.repo.owner.includes('usf-cs272-03-fall2022');
+    core.info(`Detected section 3: ${context.repo.owner}`);
+
     // list of github usernames that can approve PRs
     const approvers = new Set(['ryscheng', 'cardi', 'sjengle']);
 
