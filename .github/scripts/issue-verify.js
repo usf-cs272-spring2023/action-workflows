@@ -24,7 +24,7 @@ module.exports = async ({github, context, core}) => {
     }
 
     // list of github usernames that can approve PRs
-    const approvers = new Set(['ryscheng', 'cardi', 'sjengle']);
+    const approvers = new Set(['sjengle']);
 
     if (!results.hasOwnProperty(request_type) || `${results[request_type]}` != 'true') {
       error_messages.push(`The release ${results.release} is not eligible for this type of request. See the release run for details.`);

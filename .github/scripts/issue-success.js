@@ -180,14 +180,7 @@ Make sure to attend your appointment on-time; arriving more than 5 minutes late 
   }
 
   try {
-    let reviewers = [];
-
-    if (context.repo.owner == 'usf-cs272-03-fall2022') {
-      reviewers = ['ryscheng', 'cardi'];
-    }
-    else {
-      reviewers = ['sjengle'];
-    }
+    let reviewers = ['sjengle'];
 
     // request code review if necessary
     if (request_type == 'request_review') {
@@ -218,12 +211,7 @@ Make sure to attend your appointment on-time; arriving more than 5 minutes late 
     };
 
     if (grade_request) {
-      if (context.repo.owner == 'usf-cs272-03-fall2022') {
-        params.assignees = ['mtquach2', 'ybsolomon'];
-      }
-      else {
-        params.assignees = ['mtquach2', 'par5ul1', 'igentle292'];
-      }
+      params.assignees = ['halenander', 'mtquach2', 'ybsolomon'];
     }
     else if (request_type == 'request_review') {
       params.assignees = [context.actor];

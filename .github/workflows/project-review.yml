@@ -13,7 +13,7 @@ jobs:
   main:
     name: 'Main'
     runs-on: ubuntu-latest
-    if: ${{ contains(fromJson('["sjengle", "cardi", "ryscheng"]'), github.event.review.user.login) }}
+    if: ${{ contains(fromJson('["sjengle"]'), github.event.review.user.login) }}
 
     steps:
       - name: 'Checkout workflows'

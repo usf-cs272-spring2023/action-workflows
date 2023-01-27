@@ -15,7 +15,7 @@ module.exports = async ({github, context, core}) => {
       required_pull_request_reviews: {
         required_approving_review_count: 1,
         bypass_pull_request_allowances: {
-          users: ['mtquach2', 'par5ul1', 'igentle292', 'ybsolomon', 'sjengle', 'cardi', 'ryscheng']
+          users: ['halenander', 'mtquach2', 'ybsolomon', 'sjengle']
         }
       },
       restrictions: null,
