@@ -196,7 +196,7 @@ jobs:
         id: run_this_tests
         uses: actions/github-script@v6
         env:
-          TEST_TAG: 'test${{ steps.parse_release.outputs.test_number }}'
+          TEST_TAG: 'test-${{ steps.parse_release.outputs.test_number }}'
           USER_PATH: '${{ steps.generate_keys.outputs.user_path }}'
         with:
           script: |
@@ -217,7 +217,7 @@ jobs:
         id: run_past_tests
         uses: actions/github-script@v6
         env:
-          TEST_TAG: 'past${{ steps.parse_release.outputs.test_number }}'
+          TEST_TAG: 'past-${{ steps.parse_release.outputs.version_major }}'
           USER_PATH: '${{ steps.generate_keys.outputs.user_path }}'
         with:
           script: |
@@ -238,7 +238,7 @@ jobs:
         id: run_next_tests
         uses: actions/github-script@v6
         env:
-          TEST_TAG: 'next${{ steps.parse_release.outputs.test_number }}'
+          TEST_TAG: 'next-${{ steps.parse_release.outputs.test_number }}'
           USER_PATH: '${{ steps.generate_keys.outputs.user_path }}'
         with:
           script: |
