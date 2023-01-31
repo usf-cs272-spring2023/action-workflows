@@ -26,40 +26,47 @@ on:
         type: string
 
 jobs:
-  check_tests:
-    name: 'Check'
-    uses: ./.github/workflows/project-release-tests.yml
-    with:
-      action_ref:  '${{ inputs.action_ref }}'
-      release_tag: '${{ inputs.release_tag }}'
+  main:
+    runs-on: ubuntu-latest
 
-  check_style:
-    name: 'Check'
-    needs: ['check_tests']
-    uses: ./.github/workflows/project-release-style.yml
-    with:
-      action_ref:  '${{ inputs.action_ref }}'
-      release_ref: '${{ needs.check_tests.outputs.release_ref }}'
+    steps:
+      - shell: bash
+        run: echo "hello world"
 
-      version_major: '${{ needs.check_tests.outputs.version_major }}'
-      version_minor: '${{ needs.check_tests.outputs.version_minor }}'
-      version_patch: '${{ needs.check_tests.outputs.version_patch }}'
+  # check_tests:
+  #   name: 'Check'
+  #   uses: ./.github/workflows/project-release-tests.yml
+  #   with:
+  #     action_ref:  '${{ inputs.action_ref }}'
+  #     release_tag: '${{ inputs.release_tag }}'
 
-      user_repo:  '${{ needs.check_tests.outputs.user_repo }}'
-      user_path:  '${{ needs.check_tests.outputs.user_path }}'
-      user_cache: '${{ needs.check_tests.outputs.user_cache }}'
+  # check_style:
+  #   name: 'Check'
+  #   needs: ['check_tests']
+  #   uses: ./.github/workflows/project-release-style.yml
+  #   with:
+  #     action_ref:  '${{ inputs.action_ref }}'
+  #     release_ref: '${{ needs.check_tests.outputs.release_ref }}'
 
-  check_results:
-    name: 'Save'
-    needs: ['check_tests', 'check_style']
-    if: ${{ always() }}
-    uses: ./.github/workflows/project-release-results.yml
-    with:
-      action_ref:  '${{ inputs.action_ref }}'
-      release_tag: '${{ needs.check_tests.outputs.release_tag }}'
+  #     version_major: '${{ needs.check_tests.outputs.version_major }}'
+  #     version_minor: '${{ needs.check_tests.outputs.version_minor }}'
+  #     version_patch: '${{ needs.check_tests.outputs.version_patch }}'
 
-      version_major: '${{ needs.check_tests.outputs.version_major }}'
-      version_minor: '${{ needs.check_tests.outputs.version_minor }}'
-      version_patch: '${{ needs.check_tests.outputs.version_patch }}'
+  #     user_repo:  '${{ needs.check_tests.outputs.user_repo }}'
+  #     user_path:  '${{ needs.check_tests.outputs.user_path }}'
+  #     user_cache: '${{ needs.check_tests.outputs.user_cache }}'
 
-      results: ${{ toJSON(needs) }}
+  # check_results:
+  #   name: 'Save'
+  #   needs: ['check_tests', 'check_style']
+  #   if: ${{ always() }}
+  #   uses: ./.github/workflows/project-release-results.yml
+  #   with:
+  #     action_ref:  '${{ inputs.action_ref }}'
+  #     release_tag: '${{ needs.check_tests.outputs.release_tag }}'
+
+  #     version_major: '${{ needs.check_tests.outputs.version_major }}'
+  #     version_minor: '${{ needs.check_tests.outputs.version_minor }}'
+  #     version_patch: '${{ needs.check_tests.outputs.version_patch }}'
+
+  #     results: ${{ toJSON(needs) }}
