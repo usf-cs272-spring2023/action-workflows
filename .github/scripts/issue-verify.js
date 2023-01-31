@@ -16,13 +16,6 @@ module.exports = async ({github, context, core}) => {
     const minor = parseInt(process.env.VERSION_MINOR);
     const patch = parseInt(process.env.VERSION_PATCH);
 
-    // check if this is coming from section 3
-    const section3 = context.repo.owner.includes('usf-cs272-03-fall2022');
-    
-    if (section3) {
-      core.info(`Detected section 3: ${context.repo.owner}`);
-    }
-
     // list of github usernames that can approve PRs
     const approvers = new Set(['sjengle']);
 
@@ -133,20 +126,15 @@ module.exports = async ({github, context, core}) => {
 
         // check if there is a previous project
         if (previous != undefined) {
-          if (section3) { // adding check for section 3
-            core.info(`Skipping check for code reviews...`);
-          }
-          else {
-            // check if there is at least one code review for that project
-            const has_reviews = 'grade-review' in previous;
+          // check if there is at least one code review for that project
+          const has_reviews = 'grade-review' in previous;
 
-            if (!has_reviews) {
-              error_messages.push(`You must request at least one review grade for project ${major - 1} before requesting a tests grade for project ${major}.`);
-              return; // exit out of try block
-            }
-
-            core.info(`Found ${previous['grade-review'].length} review grade requests for project ${major - 1}.`);
+          if (!has_reviews) {
+            error_messages.push(`You must request at least one review grade for project ${major - 1} before requesting a tests grade for project ${major}.`);
+            return; // exit out of try block
           }
+
+          core.info(`Found ${previous['grade-review'].length} review grade requests for project ${major - 1}.`);
         }
 
         labels.push('grade-tests');

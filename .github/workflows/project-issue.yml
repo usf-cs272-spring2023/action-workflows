@@ -20,7 +20,7 @@ jobs:
         id: checkout_workflows
         uses: actions/checkout@v3
         with:
-          repository: usf-cs272-fall2022/action-workflows
+          repository: usf-cs272-spring2023/action-workflows
           path: 'workflows'
           ref: '${{ inputs.action_ref }}'
 
@@ -52,7 +52,7 @@ jobs:
 
       - name: 'Download release results'
         id: download_json
-        uses: usf-cs272-fall2022/action-check-results@main
+        uses: usf-cs272-spring2023/action-check-results@main
         with:
           artifact_name: 'check-release-results'
           artifact_json: 'check-release-results.json'
@@ -90,7 +90,7 @@ jobs:
       - name: 'Get grade information'
         id: calculate_grade
         if: ${{ startsWith(steps.parse_request.outputs.request_type, 'grade_') }}
-        uses: usf-cs272-fall2022/action-check-deadline@main
+        uses: usf-cs272-spring2023/action-check-deadline@main
         env:
           SUBMITTED_DATE: '${{ steps.verify_request.outputs.submitted_date }}'
         with:
